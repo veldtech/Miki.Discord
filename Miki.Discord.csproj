@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Miki.Discord</AssemblyName>
+    <RootNamespace>Miki.Discord</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Common\Miki.Common.csproj" />
+    <ProjectReference Include="..\Miki.Rest\Miki.Rest.csproj" />
+  </ItemGroup>
+
+</Project>
