@@ -7,13 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Miki.Common\Miki.Common.csproj" />
-    <ProjectReference Include="..\Miki.Rest\Miki.Rest.csproj" />
+    <PackageReference Include="Miki.Rest" Version="1.3.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.4.0" />
   </ItemGroup>
 
 </Project>

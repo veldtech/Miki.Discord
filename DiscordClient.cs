@@ -1,7 +1,6 @@
 ﻿using Miki.Discord.Rest.Entities;
 using Miki.Rest;
 using Newtonsoft.Json;
-using Rest;
 using StackExchange.Redis.Extensions.Core;
 using System;
 using System.Collections.Generic;
@@ -26,7 +25,8 @@ namespace Miki.Discord.Rest
 		{
 			this.redis = redis;
 			this.token = token;
-			rest = new RestClient(discordUrl);
+			rest = new RestClient(discordUrl + baseUrl)
+				.SetAuthorization("Bot", token);
 		}
 
 		public async Task<DiscordMessage> EditMessageAsync(ulong channelId, ulong messageId, string text, EmbedBuilder embed = null)
@@ -48,7 +48,7 @@ namespace Miki.Discord.Rest
 
 		public string GetAvatarUrl(ulong id, string hash)
 		{
-			return $"{baseUrl}/avatars/{id}/{hash}";
+			return $"/avatars/{id}/{hash}";
 		}
 
 		public async Task<DiscordChannel> GetChannelAsync(ulong id)
@@ -62,8 +62,7 @@ namespace Miki.Discord.Rest
 			else
 			{
 				RestResponse<DiscordChannel> rc = await rest
-					.SetAuthorization("Bot", token)
-					.GetAsync<DiscordChannel>($"{baseUrl}/channels/{id}");
+					.GetAsync<DiscordChannel>($"/channels/{id}");
 				await redis.AddAsync(key, rc.Data);
 				return rc.Data;
 			}
@@ -78,11 +77,18 @@ namespace Miki.Discord.Rest
 			}
 
 			RestResponse<DiscordUser> rc = await rest
-				.SetAuthorization("Bot", token)
-				.GetAsync<DiscordUser>($"{baseUrl}/users/@me");
+				.GetAsync<DiscordUser>($"/users/@me");
 			await redis.AddAsync(key, rc.Data);
 			return rc.Data;
 		}
+
+		public async Task<DiscordChannel> CreateDMAsync(ulong userid)
+		{
+			RestResponse<DiscordChannel> rc = await rest
+				.PostAsync<DiscordChannel>($"/users/@me/channels", $"{{ \"recipient_id\": {userid} }}");
+			return rc.Data;
+		}
+
 		public async Task<DiscordGuild> GetGuildAsync(ulong id)
 		{
 			string key = $"discord:guild:{id}";
@@ -94,8 +100,7 @@ namespace Miki.Discord.Rest
 			else
 			{
 				RestResponse<DiscordGuild> rc = await rest
-					.SetAuthorization("Bot", token)
-					.GetAsync<DiscordGuild>($"{baseUrl}/guilds/{id}");
+					.GetAsync<DiscordGuild>($"/guilds/{id}");
 				await redis.AddAsync(key, rc.Data);
 				return rc.Data;
 			}
@@ -111,14 +116,13 @@ namespace Miki.Discord.Rest
 			else
 			{
 				RestResponse<DiscordUser> rc = await rest
-					.SetAuthorization("Bot", token)
-					.GetAsync<DiscordUser>($"{baseUrl}/users/{id}");
+					.GetAsync<DiscordUser>($"/users/{id}");
 				await redis.AddAsync(key, rc.Data);
 				return rc.Data;
 			}
 		}
 
-		public async Task<DiscordMessage> SendMessageAsync(ulong channelId, string text, EmbedBuilder embed = null)
+		public async Task<DiscordMessage> SendMessageAsync(ulong channelId, MessageArgs message)
 		{
 			string key = $"discord:ratelimit:post:channel:{channelId}:messages";
 			Ratelimit rateLimit = await redis.GetAsync<Ratelimit>(key);
@@ -127,23 +131,25 @@ namespace Miki.Discord.Rest
 				rateLimit.Remaining--;
 				await redis.AddAsync(key, rateLimit);
 			}
-
+			return await InternalSendMessageAsync(rateLimit, key, channelId, message);
+		}
+		public async Task<DiscordMessage> SendMessageAsync(ulong channelId, string text, EmbedBuilder embed = null)
+		{
 			MessageArgs margs = new MessageArgs();
 			margs.content = text;
 			margs.embed = embed?.ToEmbed() ?? null;
-
-			return await InternalSendMessageAsync(rateLimit, key, channelId, margs);
+			return await SendMessageAsync(channelId, margs);
 		}
-		
-		private async Task<DiscordMessage> InternalSendMessageAsync(Ratelimit ratelimit, string key, ulong channelId, MessageArgs args)
+
+		private async Task<DiscordMessage> InternalSendMessageAsync(Ratelimit ratelimit, string key, ulong channelId, MessageArgs args, bool toChannel = true)
 		{
 			string json = JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+			string route = toChannel ? "channels" : "users";
 
 			if (!IsRatelimited(ratelimit))
 			{
 				RestResponse<DiscordMessage> rc = await rest
-					.SetAuthorization("Bot", token)
-					.PostAsync<DiscordMessage>($"{baseUrl}/channels/{channelId}/messages", json);
+					.PostAsync<DiscordMessage>($"/{route}/{channelId}/messages", json);
 				await HandleRateLimit(rc, ratelimit, key);
 				return rc.Data;
 			}
@@ -154,8 +160,7 @@ namespace Miki.Discord.Rest
 			if (!IsRatelimited(ratelimit))
 			{
 				RestResponse<DiscordMessage> rc = await rest
-					.SetAuthorization("Bot", token)
-					.PatchAsync<DiscordMessage>($"{baseUrl}/channels/{channelId}/messages/{messageId}", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){ NullValueHandling = NullValueHandling.Ignore }));
+					.PatchAsync<DiscordMessage>($"/channels/{channelId}/messages/{messageId}", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){ NullValueHandling = NullValueHandling.Ignore }));
 				await HandleRateLimit(rc, ratelimit, key);
 				return rc.Data;
 			}
@@ -187,12 +192,12 @@ namespace Miki.Discord.Rest
 		}
 	}
 
-	internal class MessageArgs : EditMessageArgs
+	public class MessageArgs : EditMessageArgs
 	{
 		public bool tts = false;
 	}
 
-	internal class EditMessageArgs
+	public class EditMessageArgs
 	{
 		public string content;
 		public DiscordEmbed embed;

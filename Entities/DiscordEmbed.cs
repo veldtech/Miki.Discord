@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Miki.Discord.Rest.Entities
 {
-    internal class DiscordEmbed
+    public class DiscordEmbed
     {
 		[JsonProperty("title")]
 		public string Title { get; set; }
