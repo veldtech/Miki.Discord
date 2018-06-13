@@ -1,4 +1,5 @@
-﻿using Miki.Discord.Rest.Entities;
+﻿using Miki.Discord.Common;
+using Miki.Discord.Rest.Entities;
 using Miki.Rest;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
@@ -137,7 +138,7 @@ namespace Miki.Discord.Rest
 		{
 			MessageArgs margs = new MessageArgs();
 			margs.content = text;
-			margs.embed = embed?.Build() ?? null;
+			margs.embed = embed?.ToEmbed() ?? null;
 			return await SendMessageAsync(channelId, margs);
 		}
 
