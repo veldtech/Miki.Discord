@@ -137,7 +137,7 @@ namespace Miki.Discord.Rest
 		{
 			MessageArgs margs = new MessageArgs();
 			margs.content = text;
-			margs.embed = embed?.ToEmbed() ?? null;
+			margs.embed = embed?.Build() ?? null;
 			return await SendMessageAsync(channelId, margs);
 		}
 
