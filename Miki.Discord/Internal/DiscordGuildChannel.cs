@@ -19,15 +19,6 @@ namespace Miki.Discord.Internal
 		public ulong GuildId
 			=> _packet.GuildId;
 
-		public bool IsNsfw
-			=> _packet.IsNsfw;
-
-		public string Name
-			=> _packet.Name;
-
-		public ulong Id
-			=> _packet.Id;
-
 		public async Task<IDiscordGuild> GetGuildAsync()
 			=> await _client.GetGuildAsync(GuildId);
 
@@ -80,21 +71,5 @@ namespace Miki.Discord.Internal
 
 		public async Task<IDiscordGuildUser> GetUserAsync(ulong id)
 			=> await _client.GetGuildUserAsync(id, GuildId);
-
-		public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
-			=> await _client.SendFileAsync(Id, file, fileName, new MessageArgs
-			{
-				content = content,
-				tts = isTTS,
-				embed = embed
-			});
-
-		public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
-			=> await _client.SendMessageAsync(Id, new MessageArgs
-			{
-				content = content,
-				tts = isTTS,
-				embed = embed
-			}, true);
 	}
 }

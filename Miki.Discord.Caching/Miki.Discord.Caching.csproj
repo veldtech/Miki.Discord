@@ -2,11 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Caching worker for Miki.Discord</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
-    <ProjectReference Include="..\Miki.Messaging\Miki.Discord.Messaging.csproj" />
+    <PackageReference Include="Miki.Discord.Messaging" Version="1.0.0" />
+    <PackageReference Include="Miki.Discord.Rest" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
