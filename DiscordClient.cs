@@ -1,206 +1,228 @@
 ﻿using Miki.Discord.Common;
+using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Packets;
+using Miki.Discord.Internal;
+using Miki.Discord.Messaging;
+using Miki.Discord.Rest;
 using Miki.Discord.Rest.Entities;
 using Miki.Rest;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Miki.Discord.Rest
+namespace Miki.Discord
 {
-    public class DiscordClient
+    public partial class DiscordClient
     {
-		ICacheClient redis;
-		RestClient rest;
+		public DiscordApiClient _apiClient;
+		public MessageClient _websocketClient;
 
-		string token;
-
-		const string discordUrl = "https://discordapp.com";
-		const string baseUrl = "/api/v6";
-
-		public DiscordClient(string token, ICacheClient redis)
+		public DiscordClient(DiscordClientConfigurations config)
 		{
-			this.redis = redis;
-			this.token = token;
-			rest = new RestClient(discordUrl + baseUrl)
-				.SetAuthorization("Bot", token);
-		}
+			_apiClient = new DiscordApiClient(
+				config.Token, config.CacheClient
+			);
 
-		public async Task<DiscordMessage> EditMessageAsync(ulong channelId, ulong messageId, string text, EmbedBuilder embed = null)
-		{
-			string key = $"discord:ratelimit:patch:channel:{channelId}:messages:{messageId}";
-			Ratelimit rateLimit = await redis.GetAsync<Ratelimit>(key);
-			if (rateLimit != null)
-			{
-				rateLimit.Remaining--;
-				await redis.AddAsync(key, rateLimit);
-			}
-
-			EditMessageArgs ma = new EditMessageArgs();
-			ma.content = text;
-			ma.embed = embed?.ToEmbed() ?? null;
-
-			return await InternalEditMessageAsync(rateLimit, key, channelId, messageId, ma);
-		}
-
-		public string GetAvatarUrl(ulong id, string hash)
-		{
-			return $"/avatars/{id}/{hash}";
-		}
-
-		public async Task<DiscordChannel> GetChannelAsync(ulong id)
-		{
-			string key = $"discord:channel:{id}";
-
-			if (await redis.ExistsAsync(key))
-			{
-				return await redis.GetAsync<DiscordChannel>(key);
-			}
-			else
-			{
-				RestResponse<DiscordChannel> rc = await rest
-					.GetAsync<DiscordChannel>($"/channels/{id}");
-				await redis.AddAsync(key, rc.Data);
-				return rc.Data;
-			}
-		}
-		public async Task<DiscordUser> GetCurrentUserAsync()
-		{
-			string key = $"discord:user:self";
-
-			if (await redis.ExistsAsync(key))
-			{
-				return await redis.GetAsync<DiscordUser>(key);
-			}
-
-			RestResponse<DiscordUser> rc = await rest
-				.GetAsync<DiscordUser>($"/users/@me");
-			await redis.AddAsync(key, rc.Data);
-			return rc.Data;
-		}
-
-		public async Task<DiscordChannel> CreateDMAsync(ulong userid)
-		{
-			RestResponse<DiscordChannel> rc = await rest
-				.PostAsync<DiscordChannel>($"/users/@me/channels", $"{{ \"recipient_id\": {userid} }}");
-			return rc.Data;
-		}
-
-		public async Task<DiscordGuild> GetGuildAsync(ulong id)
-		{
-			string key = $"discord:guild:{id}";
-
-			if (await redis.ExistsAsync(key))
-			{
-				return await redis.GetAsync<DiscordGuild>(key);
-			}
-			else
-			{
-				RestResponse<DiscordGuild> rc = await rest
-					.GetAsync<DiscordGuild>($"/guilds/{id}");
-				await redis.AddAsync(key, rc.Data);
-				return rc.Data;
-			}
-		}
-		public async Task<DiscordUser> GetUserAsync(ulong id)
-		{
-			string key = $"discord:user:{id}";
-
-			if (await redis.ExistsAsync(key))
-			{
-				return await redis.GetAsync<DiscordUser>(key);
-			}
-			else
-			{
-				RestResponse<DiscordUser> rc = await rest
-					.GetAsync<DiscordUser>($"/users/{id}");
-				await redis.AddAsync(key, rc.Data);
-				return rc.Data;
-			}
-		}
-
-		public async Task<DiscordMessage> SendMessageAsync(ulong channelId, MessageArgs message)
-		{
-			string key = $"discord:ratelimit:post:channel:{channelId}:messages";
-			Ratelimit rateLimit = await redis.GetAsync<Ratelimit>(key);
-			if (rateLimit != null)
-			{
-				rateLimit.Remaining--;
-				await redis.AddAsync(key, rateLimit);
-			}
-			return await InternalSendMessageAsync(rateLimit, key, channelId, message);
-		}
-		public async Task<DiscordMessage> SendMessageAsync(ulong channelId, string text, EmbedBuilder embed = null)
-		{
-			MessageArgs margs = new MessageArgs();
-			margs.content = text;
-			margs.embed = embed?.ToEmbed() ?? null;
-			return await SendMessageAsync(channelId, margs);
-		}
-
-		private async Task<DiscordMessage> InternalSendMessageAsync(Ratelimit ratelimit, string key, ulong channelId, MessageArgs args, bool toChannel = true)
-		{
-			string json = JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
-			string route = toChannel ? "channels" : "users";
-
-			if (!IsRatelimited(ratelimit))
-			{
-				RestResponse<DiscordMessage> rc = await rest
-					.PostAsync<DiscordMessage>($"/{route}/{channelId}/messages", json);
-				await HandleRateLimit(rc, ratelimit, key);
-				return rc.Data;
-			}
-			return null;
-		}
-		private async Task<DiscordMessage> InternalEditMessageAsync(Ratelimit ratelimit, string key, ulong channelId, ulong messageId, EditMessageArgs args)
-		{
-			if (!IsRatelimited(ratelimit))
-			{
-				RestResponse<DiscordMessage> rc = await rest
-					.PatchAsync<DiscordMessage>($"/channels/{channelId}/messages/{messageId}", JsonConvert.SerializeObject(args, new JsonSerializerSettings(){ NullValueHandling = NullValueHandling.Ignore }));
-				await HandleRateLimit(rc, ratelimit, key);
-				return rc.Data;
-			}
-			return null;
-		}
-
-		private async Task HandleRateLimit<T>(RestResponse<T> rc, Ratelimit ratelimit, string key)
-		{
-			if (!IsRatelimited(ratelimit))
-			{
-				if (rc.HttpResponseMessage.Headers.Contains("X-RateLimit-Limit"))
+			_websocketClient = new MessageClient(
+				new MessageClientConfiguration
 				{
-					ratelimit = new Ratelimit();
-					ratelimit.Remaining = int.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Remaining").ToList().FirstOrDefault());
-					ratelimit.Limit = int.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Limit").ToList().FirstOrDefault());
-					ratelimit.Reset = long.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Reset").ToList().FirstOrDefault());
-					if(rc.HttpResponseMessage.Headers.Contains("X-RateLimit-Global"))
-					{
-						ratelimit.Global = int.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Global").ToList().FirstOrDefault());
-					}
-					await redis.AddAsync(key, ratelimit);
+					Token = config.Token,
+					DatabaseClient = config.CacheClient,
+					ExchangeName = config.RabbitMQExchangeName,
+					MessengerConfigurations = config.RabbitMQUri,
+					QueueName = config.RabbitMQQueueName
 				}
+			);
+
+			_websocketClient.MessageCreate += OnMessageCreate;
+			_websocketClient.MessageUpdate += OnMessageUpdate;
+
+			_websocketClient.GuildCreate += OnGuildJoin;
+			_websocketClient.GuildDelete += OnGuildLeave;
+
+			_websocketClient.UserUpdate += OnUserUpdate;
+
+			_websocketClient.Start();
+		}
+
+		public async Task AddBanAsync(ulong guildId, ulong userId, int pruneDays = 7, string reason = null)
+			=> await _apiClient.AddGuildBanAsync(guildId, userId, pruneDays, reason);
+
+		public async Task<IDiscordMessage> EditMessageAsync(
+			ulong channelId, ulong messageId, string text, DiscordEmbed embed = null
+		)
+			=> new DiscordMessage(
+				await _apiClient.EditMessageAsync(channelId, messageId, new EditMessageArgs
+				{
+					content = text,
+					embed = embed
+				}),
+				this
+			);
+
+		public async Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
+			=> await _apiClient.AddGuildMemberRoleAsync(guildId, userId, roleId);
+
+		public async Task<IDiscordRole> EditRoleAsync(ulong guildId, DiscordRolePacket role)
+			=> new DiscordRole(await _apiClient.EditRoleAsync(guildId, role), this);
+
+		public async Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId)
+			=> (await GetRolesAsync(guildId))
+				.FirstOrDefault(x => x.Id == roleId);
+
+		public async Task<IReadOnlyCollection<IDiscordRole>> GetRolesAsync(ulong guildId)
+			=> (await _apiClient.GetRolesAsync(guildId))
+				.Select(x => new DiscordRole(x, this))
+				.ToList();
+
+		public async Task RemoveGuildMemberAsync(ulong guildId, ulong id)
+			=> await _apiClient.RemoveGuildMemberAsync(guildId, id);
+
+		public string GetUserAvatarUrl(ulong id, string hash)
+			=> _apiClient.GetUserAvatarUrl(id, hash);
+
+		public async Task<IReadOnlyCollection<IDiscordChannel>> GetChannelsAsync(ulong guildId)
+			=> (await _apiClient.GetChannelsAsync(guildId))
+				.Select(x => (x.GuildId != 0) 
+					? new DiscordGuildChannel(x, this) 
+					: new DiscordChannel(x, this)
+				).ToList();
+
+		public async Task<IDiscordChannel> GetChannelAsync(ulong id)
+		{
+			var packet = await _apiClient.GetChannelAsync(id);
+
+			if (packet.GuildId != 0)
+				return new DiscordGuildChannel(packet, this);
+			return new DiscordChannel(packet, this);
+		}
+
+		public async Task<IDiscordUser> GetCurrentUserAsync()
+			=> new DiscordUser(
+				await _apiClient.GetCurrentUserAsync(), 
+				this
+			);
+
+		public async Task<IDiscordChannel> CreateDMAsync(ulong userid)
+		{
+			return new DiscordChannel(
+				await _apiClient.CreateDMChannelAsync(userid), 
+				this
+			);
+		}
+
+		public async Task<IDiscordRole> CreateRoleAsync(ulong guildId, CreateRoleArgs args = null)
+			=> new DiscordRole(
+				await _apiClient.CreateGuildRoleAsync(guildId, args),
+				this
+			);
+
+		public async Task<IDiscordGuild> GetGuildAsync(ulong id)
+			=> new DiscordGuild(
+				await _apiClient.GetGuildAsync(id),
+				this
+			);
+
+		public async Task<IDiscordUser> GetUserAsync(ulong id)
+			=> new DiscordUser(
+				await _apiClient.GetUserAsync(id), 
+				this
+			);
+
+		public async Task<IDiscordGuildUser> GetGuildUserAsync(ulong id, ulong guildId)
+			=> new DiscordGuildUser(
+				await _apiClient.GetGuildUserAsync(id, guildId), 
+				this
+			);
+
+		public async Task DeleteMessageAsync(ulong channelId, ulong messageId)
+			=> await _apiClient.DeleteMessageAsync(channelId, messageId);
+
+		public async Task RemoveBanAsync(ulong guildId, ulong userId)
+			=> await _apiClient.RemoveGuildBanAsync(guildId, userId);
+
+		public async Task RemoveGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
+			=> await _apiClient.RemoveGuildMemberRoleAsync(guildId, userId, roleId);
+
+		public async Task<IDiscordMessage> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs message = null)
+			=> new DiscordMessage(
+				await _apiClient.SendFileAsync(channelId, stream, fileName, message),
+				this
+			);
+
+		public async Task<IDiscordMessage> SendMessageAsync(ulong channelId, MessageArgs message, bool toChannel)
+			=> new DiscordMessage(
+				await _apiClient.SendMessageAsync(channelId, message, toChannel),
+				this
+			);
+
+		public async Task<IDiscordMessage> SendMessageAsync(ulong channelId, string text, DiscordEmbed embed = null, bool toChannel = true)
+			=> await SendMessageAsync(channelId, new MessageArgs
+			{
+				content = text,
+				embed  = embed
+			}, toChannel);
+	}
+
+	// Events
+	public partial class DiscordClient
+	{
+		public event Func<IDiscordMessage, Task> MessageCreate;
+		public event Func<IDiscordMessage, Task> MessageUpdate;
+
+		public event Func<IDiscordGuild, Task> GuildJoin;
+		public event Func<ulong, Task> GuildLeave;
+
+		public event Func<IDiscordUser, IDiscordUser, Task> UserUpdate;
+
+		private async Task OnMessageCreate(DiscordMessagePacket packet)
+		{
+			if (MessageCreate != null)
+			{
+				await MessageCreate(new DiscordMessage(packet, this));
 			}
 		}
 
-		private bool IsRatelimited(Ratelimit rl)
+		private async Task OnMessageUpdate(DiscordMessagePacket packet)
 		{
-			return (rl?.Remaining ?? 1) <= 0 && DateTime.UtcNow <= DateTimeOffset.FromUnixTimeSeconds(rl?.Reset ?? 0);
+			if (MessageUpdate != null)
+			{
+				await MessageUpdate(new DiscordMessage(packet, this));
+			}
 		}
-	}
 
-	public class MessageArgs : EditMessageArgs
-	{
-		public bool tts = false;
-	}
+		private async Task OnGuildJoin(DiscordGuildPacket guild)
+		{
+			if(GuildJoin != null)
+			{
+				await GuildJoin(new DiscordGuild(guild, this));
+			}
+		}
 
-	public class EditMessageArgs
-	{
-		public string content;
-		public DiscordEmbed embed;
+		private async Task OnGuildLeave(DiscordGuildUnavailablePacket guild)
+		{
+			if(GuildLeave != null)
+			{
+				await GuildLeave(guild.GuildId);
+			}
+		}
+
+		private async Task OnUserUpdate(DiscordUserPacket user)
+		{
+			if(UserUpdate != null)
+			{
+				await UserUpdate(
+					await GetUserAsync(user.Id),
+					new DiscordUser(user, this)
+				);
+			}
+		}
 	}
 }
