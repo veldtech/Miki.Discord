@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
+    <ProjectReference Include="..\Miki.Messaging\Miki.Discord.Messaging.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+    <ProjectReference Include="..\..\Miki.Rest\Miki.Rest\Miki.Rest.csproj" />
+  </ItemGroup>
+
+</Project>

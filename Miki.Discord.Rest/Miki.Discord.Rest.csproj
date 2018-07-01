@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+    <ProjectReference Include="..\..\Miki.Rest\Miki.Rest\Miki.Rest.csproj" />
+  </ItemGroup>
+
+</Project>
