@@ -133,13 +133,13 @@ namespace Miki.Discord.Messaging
 
 				case Opcode.GuildRoleDelete:
 				{
-					RoleEventArgs role = body.Data.ToObject<RoleEventArgs>();
-
 					if (GuildRoleDelete != null)
 					{
+						RoleDeleteEventArgs role = body.Data.ToObject<RoleDeleteEventArgs>();
+
 						await GuildRoleDelete(
 							role.GuildId,
-							role.Role
+							role.RoleId
 						);
 					}
 				} break;
@@ -320,7 +320,7 @@ namespace Miki.Discord.Messaging
 
 		public Func<ulong, DiscordRolePacket, Task> GuildRoleCreate;
 		public Func<ulong, DiscordRolePacket, Task> GuildRoleUpdate;
-		public Func<ulong, DiscordRolePacket, Task> GuildRoleDelete;
+		public Func<ulong, ulong, Task> GuildRoleDelete;
 
 		public Func<DiscordMessagePacket, Task> MessageCreate;
 		public Func<DiscordMessagePacket, Task> MessageUpdate;

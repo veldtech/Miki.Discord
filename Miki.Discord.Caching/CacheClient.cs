@@ -151,13 +151,16 @@ namespace Miki.Discord.Caching
 			await _cacheClient.AddAsync($"discord:guild:{guildId}", guild);
 		}
 
-		private async Task OnGuildRoleDelete(ulong guildId, DiscordRolePacket arg2)
+		private async Task OnGuildRoleDelete(ulong guildId, ulong roleId)
 		{
 			DiscordGuildPacket guild = await _discordClient.GetGuildAsync(guildId);
 
+			if (guild == null)
+				Console.WriteLine("OnGuildRoleDelete: Cache miss: guild was not found.");
+
 			if (guild.Roles != null)
 			{
-				int index = guild.Roles.FindIndex(x => x.Id == guildId);
+				int index = guild.Roles.FindIndex(x => x.Id == roleId);
 
 				if (index != -1)
 				{
@@ -167,7 +170,7 @@ namespace Miki.Discord.Caching
 				await _cacheClient.AddAsync($"discord:guild:{guildId}", guild);
 			}
 
-			await _cacheClient.RemoveAsync($"discord:guild:{guildId}:role:{arg2.Id}");
+			await _cacheClient.RemoveAsync($"discord:guild:{guildId}:role:{roleId}");
 		}
 
 		private async Task OnGuildRoleCreate(ulong guildId, DiscordRolePacket arg2)

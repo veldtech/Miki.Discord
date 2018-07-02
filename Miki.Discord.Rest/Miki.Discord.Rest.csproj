@@ -4,11 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Discord rest API</Description>
+    <Company>Velddev</Company>
+    <Product>Miki.Discord.Rest</Product>
+    <Authors>Velddev</Authors>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Discord.Common" Version="1.0.0" />
-    <PackageReference Include="Miki.Rest" Version="1.4.0" />
+    <PackageReference Include="Miki.Discord.Common" Version="1.0.1" />
+    <PackageReference Include="Miki.Rest" Version="1.4.1" />
     <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.4.0" />
   </ItemGroup>
 
