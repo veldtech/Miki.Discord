@@ -77,11 +77,13 @@ namespace Miki.Discord.Internal
 			IDiscordRole everyoneRole = await GetRoleAsync(Id);
 			permissions = everyoneRole.Permissions;
 
-
-			foreach (IDiscordRole role in (await GetRolesAsync())
-				.Where(x => user.RoleIds.Contains(x.Id)))
+			if (user.RoleIds != null)
 			{
-				permissions |= role.Permissions;
+				foreach (IDiscordRole role in (await GetRolesAsync())
+					.Where(x => user.RoleIds.Contains(x.Id)))
+				{
+					permissions |= role.Permissions;
+				}
 			}
 
 			if (permissions.HasFlag(GuildPermission.Administrator))

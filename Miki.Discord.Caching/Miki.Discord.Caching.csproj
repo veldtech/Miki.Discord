@@ -1,17 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Caching worker for Miki.Discord</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.0.6</Version>
     <Authors>Velddev</Authors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Discord.Common" Version="1.0.1" />
-    <PackageReference Include="Miki.Discord.Messaging" Version="1.0.1" />
-    <PackageReference Include="Miki.Discord.Rest" Version="1.0.1" />
+    <PackageReference Include="Miki.Discord.Common" Version="1.0.2" />
+    <PackageReference Include="Miki.Discord.Messaging" Version="1.0.3" />
+    <PackageReference Include="Miki.Discord.Rest" Version="1.0.3" />
     <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="3.4.0" />
   </ItemGroup>
 

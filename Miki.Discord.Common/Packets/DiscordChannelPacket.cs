@@ -27,11 +27,11 @@ namespace Miki.Discord.Rest.Entities
 
 		[JsonProperty("guild_id")]
 		[ProtoMember(5)]
-		public ulong GuildId { get; set; }
+		public ulong? GuildId { get; set; }
 
 		[JsonProperty("position")]
 		[ProtoMember(6)]
-		public int Position { get; set; }
+		public int? Position { get; set; }
 
 		[JsonProperty("permission_overwrites")]
 		[ProtoMember(7)]
@@ -43,7 +43,7 @@ namespace Miki.Discord.Rest.Entities
 
 		[JsonProperty("nsfw")]
 		[ProtoMember(9)]
-		public bool IsNsfw { get; set; }
+		public bool? IsNsfw { get; set; }
 
 		[JsonProperty("topic")]
 		[ProtoMember(10)]

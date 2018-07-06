@@ -4,6 +4,7 @@ using Miki.Discord.Internal;
 using Miki.Discord.Messaging.Sharder;
 using Miki.Discord.Rest;
 using Miki.Discord.Rest.Entities;
+using Miki.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -30,6 +31,21 @@ namespace Miki.Discord.Messaging
 
 			connection = connectionFactory.CreateConnection();
 
+			connection.CallbackException += (s, args) =>
+			{
+				Log.Error(args.Exception);
+			};
+
+			connection.ConnectionRecoveryError += (s, args) =>
+			{
+				Log.Error(args.Exception);
+			};
+
+			connection.RecoverySucceeded += (s, args) =>
+			{
+				Log.Message("Rabbit Connection Recovered!");
+			};
+
 			channel = connection.CreateModel();
 			channel.ExchangeDeclare(config.ExchangeName, ExchangeType.Direct);
 			channel.QueueDeclare(config.QueueName, false, false, false, null);
@@ -40,6 +56,7 @@ namespace Miki.Discord.Messaging
 		{
 			consumer = new EventingBasicConsumer(channel);
 			consumer.Received += async (o, e) => await OnMessageAsync(o, e);
+
 			string consumerTag = channel.BasicConsume(config.QueueName, false, consumer);
 		}
 

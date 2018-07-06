@@ -17,7 +17,7 @@ namespace Miki.Discord.Internal
 		}
 
 		public ulong GuildId
-			=> _packet.GuildId;
+			=> _packet.GuildId.Value;
 
 		public async Task<IDiscordGuild> GetGuildAsync()
 			=> await _client.GetGuildAsync(GuildId);
@@ -44,14 +44,17 @@ namespace Miki.Discord.Internal
 
 			PermissionOverwrite overwrites = new PermissionOverwrite();
 
-			foreach(ulong roleId in user.RoleIds)
+			if (user.RoleIds != null)
 			{
-				PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
-
-				if(roleOverwrites != null)
+				foreach (ulong roleId in user.RoleIds)
 				{
-					overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
-					overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
+					PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
+
+					if (roleOverwrites != null)
+					{
+						overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
+						overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
+					}
 				}
 			}
 

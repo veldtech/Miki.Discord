@@ -4,12 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Websocket alternative for microsystems</Description>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Discord.Common" Version="1.0.1" />
-    <PackageReference Include="Miki.Rest" Version="1.4.1" />
+    <PackageReference Include="Miki.Logging" Version="1.0.0" />
+    <PackageReference Include="Miki.Rest" Version="1.5.1" />
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
     <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="3.4.0" />
   </ItemGroup>

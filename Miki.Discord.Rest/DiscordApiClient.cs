@@ -18,18 +18,23 @@ namespace Miki.Discord.Rest
 {
     public class DiscordApiClient
     {
-		RestClient rest;
+		public RestClient RestClient { get; private set; }
+
 		ICacheClient cache;
 
 		const string discordUrl = "https://discordapp.com";
 		const string baseUrl = "/api/v6";
 		const string cdnUrl = "https://cdn.discordapp.com/";
 
-		JsonSerializerSettings serializer;
+		readonly JsonSerializerSettings serializer;
+
+		public event Action<string> OnCacheHit;
+		public event Action<string> OnCacheMiss;
+		public event Action<string> OnCacheNull;
 
 		public DiscordApiClient(string token, ICacheClient cacheClient)
 		{
-			rest = new RestClient(discordUrl + baseUrl)
+			RestClient = new RestClient(discordUrl + baseUrl)
 				.SetAuthorization("Bot", token);
 			cache = cacheClient;
 
@@ -53,73 +58,73 @@ namespace Miki.Discord.Rest
 				qs.Add("delete-message-days", pruneDays);
 			}
 
-			await rest.PutAsync($"/guilds/{guildId}/bans/{userId}" + qs.Query);
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () =>
+				{
+					return await RestClient.PutAsync($"/guilds/{guildId}/bans/{userId}" + qs.Query);
+				});
 		}
 
 		public async Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
 		{
-			await rest.PutAsync($"/guilds/{guildId}/members/{userId}/roles/{roleId}");
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () =>
+				{
+					return await RestClient.PutAsync($"/guilds/{guildId}/members/{userId}/roles/{roleId}");
+				});
 		}
 
 		public async Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId)
 		{
-			var response = await rest
+			var response = await RestClient
 				.PostAsync<DiscordChannelPacket>($"/users/@me/channels", $"{{ \"recipient_id\": {userId} }}");
 			return response.Data;
 		}
 
 		public async Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args)
 		{
-			var  response = await rest.PostAsync<DiscordRolePacket>(
-					$"/guilds/{guildId}/roles", 
-					JsonConvert.SerializeObject(args) ?? ""
-			);
-
-			return response.Data;
+			return (await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () =>
+				{
+					return await RestClient.PostAsync<DiscordRolePacket>(
+						$"/guilds/{guildId}/roles",
+						JsonConvert.SerializeObject(args) ?? ""
+					);
+				})).Data;
 		}
 
 		public async Task DeleteMessageAsync(ulong channelId, ulong messageId)
 		{
-			await rest.DeleteAsync($"/channels/{channelId}/messages/{messageId}");
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"channels:{channelId}:delete", cache,
+				async () =>
+				{
+					return await RestClient.DeleteAsync($"/channels/{channelId}/messages/{messageId}");
+				});
 		}
 
-		public async Task<DiscordMessagePacket> EditMessageAsync(ulong channelId, ulong messageId, EditMessageArgs args, bool toChannel = true)
+		public async Task<DiscordMessagePacket> EditMessageAsync(ulong channelId, ulong messageId, EditMessageArgs args)
 		{
-			string key = $"discord:ratelimit:patch:channel:{channelId}:messages:{messageId}";
-			Ratelimit rateLimit = await cache.GetAsync<Ratelimit>(key);
-			if (rateLimit != null)
-			{
-				rateLimit.Remaining--;
-				await cache.AddAsync(key, rateLimit);
-			}
-
-			string route = toChannel ? "channels" : "users";
-
-			if (!IsRatelimited(rateLimit))
-			{
-				RestResponse<DiscordMessagePacket> rc = await rest
-					.PatchAsync<DiscordMessagePacket>($"/{route}/{channelId}/messages/{messageId}", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
-				await HandleRateLimit(rc, rateLimit, key);
-				return rc.Data;
-			}
-			return null;
+			return (await RatelimitHelper.ProcessRateLimitedAsync(
+				$"channels:{channelId}", cache,
+				async () =>
+				{
+					return await RestClient
+						.PatchAsync<DiscordMessagePacket>($"/channels/{channelId}/messages/{messageId}", JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+				})).Data;
 		}
 
 		public async Task<DiscordRolePacket> EditRoleAsync(ulong guildId, DiscordRolePacket role)
 		{
-			string key = $"discord:ratelimit:put:guild:{guildId}:role:{role.Id}";
-
-			Ratelimit rateLimit = await cache.GetAsync<Ratelimit>(key);
-
-			if (rateLimit != null)
-			{
-				rateLimit.Remaining--;
-				await cache.AddAsync(key, rateLimit);
-			}
-
-			return (await rest.PutAsync<DiscordRolePacket>(
-				$"/guilds/{guildId}/roles/{role.Id}", 
-				JsonConvert.SerializeObject(role)
+			return (await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () => await RestClient.PutAsync<DiscordRolePacket>(
+					$"/guilds/{guildId}/roles/{role.Id}",
+					JsonConvert.SerializeObject(role)
+				)
 			)).Data;
 		}
 
@@ -132,7 +137,7 @@ namespace Miki.Discord.Rest
 				return await cache.GetAsync<DiscordUserPacket>(key);
 			}
 
-			RestResponse<DiscordUserPacket> rc = await rest
+			RestResponse<DiscordUserPacket> rc = await RestClient
 				.GetAsync<DiscordUserPacket>($"/users/@me");
 			await cache.AddAsync(key, rc.Data);
 			return rc.Data;
@@ -146,15 +151,23 @@ namespace Miki.Discord.Rest
 			if (await cache.ExistsAsync(key))
 			{
 				packet = await cache.GetAsync<DiscordChannelPacket>(key);
+
+				if (packet == null)
+				{
+					Console.WriteLine("CACHE HIT -- null, removed");
+					await cache.RemoveAsync(key);
+					return await GetChannelAsync(channelId);
+				}
 			}
 			else
 			{
-				var response = await rest.GetAsync<DiscordChannelPacket>($"/channels/{channelId}");
-				response.HttpResponseMessage.EnsureSuccessStatusCode();
+				var data = await RatelimitHelper.ProcessRateLimitedAsync(
+					$"channels:{channelId}", cache,
+					async () => await RestClient.GetAsync<DiscordChannelPacket>($"/channels/{channelId}")
+					);
 
-				await cache.AddAsync(key, response.Data);
-
-				packet = response.Data;
+				await cache.AddAsync(key, data.Data);
+				packet = data.Data;
 			}
 
 			return packet;
@@ -171,12 +184,15 @@ namespace Miki.Discord.Rest
 			}
 			else
 			{
-				var response = await rest.GetAsync<List<DiscordChannelPacket>>($"/guild/{guildId}/channels");
-				response.HttpResponseMessage.EnsureSuccessStatusCode();
+				var data = await RatelimitHelper.ProcessRateLimitedAsync(
+					$"guilds:{guildId}", cache,
+					async () =>
+					{
+						return await RestClient.GetAsync<List<DiscordChannelPacket>>($"/guild/{guildId}/channels");
+					});
 
-				await cache.AddAsync(key, response.Data);
-
-				packet = response.Data;
+				await cache.AddAsync(key, data.Data);
+				packet = data.Data;
 			}
 			return packet;
 		}
@@ -191,12 +207,15 @@ namespace Miki.Discord.Rest
 			}
 			else
 			{
-				RestResponse<DiscordGuildPacket> rc = await rest
-					.GetAsync<DiscordGuildPacket>($"/guilds/{guildId}");
+				var data = await RatelimitHelper.ProcessRateLimitedAsync(
+					$"guilds:{guildId}", cache,
+					async () =>
+					{
+						return await RestClient.GetAsync<DiscordGuildPacket>($"/guilds/{guildId}");
+					});
 
-				await cache.AddAsync(key, rc.Data);
-
-				return rc.Data;
+				await cache.AddAsync(key, data.Data);
+				return data.Data;
 			}
 		}
 
@@ -204,7 +223,7 @@ namespace Miki.Discord.Rest
 		{
 			string key = $"discord:guild:{guildId}:user:{userId}";
 
-			DiscordGuildMemberPacket packet;
+			DiscordGuildMemberPacket packet = null;
 
 			if (await cache.ExistsAsync(key))
 			{
@@ -212,8 +231,13 @@ namespace Miki.Discord.Rest
 			}
 			else
 			{
-				RestResponse<DiscordGuildMemberPacket> rc = await rest
-					.GetAsync<DiscordGuildMemberPacket>($"/guilds/{guildId}/members/{userId}");
+				var rc = await RatelimitHelper.ProcessRateLimitedAsync(
+					$"guilds:{guildId}", cache,
+					async () =>
+					{
+						return await RestClient.GetAsync<DiscordGuildMemberPacket>($"/guilds/{guildId}/members/{userId}");
+					});
+
 				packet = rc.Data;
 				await cache.AddAsync(key, rc.Data);
 			}
@@ -246,7 +270,7 @@ namespace Miki.Discord.Rest
 			}
 			else
 			{
-				RestResponse<DiscordUserPacket> rc = await rest
+				RestResponse<DiscordUserPacket> rc = await RestClient
 					.GetAsync<DiscordUserPacket>($"/users/{userId}");
 				await cache.AddAsync(key, rc.Data);
 				return rc.Data;
@@ -258,25 +282,6 @@ namespace Miki.Discord.Rest
 			return $"{cdnUrl}avatars/{id}/{hash}.png";
 		}
 
-		private async Task HandleRateLimit(RestResponse rc, Ratelimit ratelimit, string key)
-		{
-			if (!IsRatelimited(ratelimit))
-			{
-				if (rc.HttpResponseMessage.Headers.Contains("X-RateLimit-Limit"))
-				{
-					ratelimit = new Ratelimit();
-					ratelimit.Remaining = int.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Remaining").ToList().FirstOrDefault());
-					ratelimit.Limit = int.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Limit").ToList().FirstOrDefault());
-					ratelimit.Reset = long.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Reset").ToList().FirstOrDefault());
-					if (rc.HttpResponseMessage.Headers.Contains("X-RateLimit-Global"))
-					{
-						ratelimit.Global = int.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Global").ToList().FirstOrDefault());
-					}
-					await cache.AddAsync(key, ratelimit);
-				}
-			}
-		}
-
 		private bool IsRatelimited(Ratelimit rl)
 		{
 			return (rl?.Remaining ?? 1) <= 0 && DateTime.UtcNow <= DateTimeOffset.FromUnixTimeSeconds(rl?.Reset ?? 0);
@@ -284,107 +289,97 @@ namespace Miki.Discord.Rest
 
 		public async Task ModifyGuildMemberAsync(ulong guildId, ulong userId, ModifyGuildMemberArgs packet)
 		{
-			await rest.PatchAsync($"/guilds/{guildId}/members/{userId}",
-				JsonConvert.SerializeObject(packet, serializer)
-			);
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () =>
+				{
+					return await RestClient.PatchAsync($"/guilds/{guildId}/members/{userId}",
+						JsonConvert.SerializeObject(packet, serializer)
+					);
+				});
 		}
 
 		public async Task RemoveGuildBanAsync(ulong guildId, ulong userId)
-			=> await rest.DeleteAsync($"/guilds/{guildId}/bans/{userId}");
+		{
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () => await RestClient.DeleteAsync($"/guilds/{guildId}/bans/{userId}")
+			);
+		}
 
 		public async Task RemoveGuildMemberAsync(ulong guildId, ulong userId)
 		{
-			string key = $"discord:ratelimit:delete:guild:{guildId}:members:{userId}";
-
-			Ratelimit rateLimit = await cache.GetAsync<Ratelimit>(key);
-
-			if (rateLimit != null)
-			{
-				rateLimit.Remaining--;
-				await cache.AddAsync(key, rateLimit);
-			}
-
-			await rest.DeleteAsync($"/guilds/{guildId}/members/{userId}");
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () => await RestClient.DeleteAsync($"/guilds/{guildId}/members/{userId}")
+			);
 		}
 
 		public async Task RemoveGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
 		{
-			await rest.DeleteAsync($"/guilds/{guildId}/members/{userId}/roles/{roleId}");
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", cache,
+				async () =>
+				{
+					var rc = await RestClient.DeleteAsync($"/guilds/{guildId}/members/{userId}/roles/{roleId}");
+					return rc;
+				});
 		}
 
 
 		public async Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true)
 		{
-			string key = $"discord:ratelimit:post:channel:{channelId}:messages";
-
-			Ratelimit rateLimit = await cache.GetAsync<Ratelimit>(key);
-
-			if (rateLimit != null)
+			args.embed = new DiscordEmbed
 			{
-				rateLimit.Remaining--;
-				await cache.AddAsync(key, rateLimit);
-			}
-
-			args.embed = new DiscordEmbed();
-			args.embed.Image = new EmbedImage()
-			{
-				Url = "attachment://" + fileName
+				Image = new EmbedImage
+				{
+					Url = "attachment://" + fileName
+				}
 			};
 
 			string json = JsonConvert.SerializeObject(args, serializer);
-			string route = toChannel ? "channels" : "users";
 
-			if (!IsRatelimited(rateLimit))
+			List<MultiformItem> items = new List<MultiformItem>();
+
+			var content = new StringContent(args.content);
+			items.Add(new MultiformItem { Name = "content", Content = content });
+
+			if (stream.CanSeek)
 			{
-				List<MultiformItem> items = new List<MultiformItem>();
-
-				var content = new StringContent(args.content);
-				items.Add(new MultiformItem { Name = "content", Content = content });
-
-				if (stream.CanSeek)
-				{
-					var memoryStream = new MemoryStream();
-					await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
-					memoryStream.Position = 0;
-					stream = memoryStream;
-				}
-
-				var image = new StreamContent(stream);
-				items.Add(new MultiformItem { Name = "file", Content = image, FileName = fileName });
-				image.Headers.Add("Content-Type", "image/png");
-
-				image.Headers.Add("Content-Disposition", "form-data; name=\"file\"; filename=\"" + fileName + "\"");
-				RestResponse rc = await rest
-					.PostMultipartAsync($"/{route}/{channelId}/messages",
-					items.ToArray()
-				);
-				await HandleRateLimit(rc, rateLimit, key);
-				return null;
+				var memoryStream = new MemoryStream();
+				await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
+				memoryStream.Position = 0;
+				stream = memoryStream;
 			}
+
+			var image = new StreamContent(stream);
+			items.Add(new MultiformItem { Name = "file", Content = image, FileName = fileName });
+			image.Headers.Add("Content-Type", "image/png");
+
+			image.Headers.Add("Content-Disposition", "form-data; name=\"file\"; filename=\"" + fileName + "\"");
+
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"channels:{channelId}",
+				cache, async () => {
+					RestResponse rc = await RestClient
+						.PostMultipartAsync($"/channels/{channelId}/messages",
+						items.ToArray()
+					);
+					return rc;
+				});
+			// TODO: fix returns
 			return null;
 		}
 
 		public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true)
 		{
-			string key = $"discord:ratelimit:post:channel:{channelId}:messages";
-			Ratelimit rateLimit = await cache.GetAsync<Ratelimit>(key);
-			if (rateLimit != null)
-			{
-				rateLimit.Remaining--;
-				await cache.AddAsync(key, rateLimit);
-			}
-
 			string json = JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
-			string route = toChannel ? "channels" : "users";
 
-			if (!IsRatelimited(rateLimit))
-			{
-				RestResponse<DiscordMessagePacket> rc = await rest
-					.PostAsync<DiscordMessagePacket>($"/{route}/{channelId}/messages", json);
-				await HandleRateLimit(rc, rateLimit, key);
-				return rc.Data;
-			}
-			return null;
+			return (await RatelimitHelper.ProcessRateLimitedAsync(
+				$"channels:{channelId}",
+				cache, async () => {
+					return await RestClient.PostAsync<DiscordMessagePacket>($"/channels/{channelId}/messages", json);
+			})).Data;
 		}
 	}
 }

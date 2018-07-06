@@ -5,6 +5,7 @@ using Miki.Discord.Internal;
 using Miki.Discord.Messaging;
 using Miki.Discord.Rest;
 using Miki.Discord.Rest.Entities;
+using Miki.Logging;
 using StackExchange.Redis.Extensions.Core;
 using System;
 using System.Collections.Generic;
@@ -65,10 +66,16 @@ namespace Miki.Discord.Caching
 
 			if(index == -1)
 			{
-				var u = await _discordClient.GetGuildUserAsync(arg.User.Id, guild.Id);
+				packet = new DiscordGuildMemberPacket
+				{
+					User = arg.User,
+					Roles = arg.RoleIds.ToList(),
+					Nickname = arg.Nickname,
+					UserId = arg.User.Id,
+					GuildId = arg.GuildId,
+				};
 
-				packet = u;
-				guild.Members.Add(u);
+				guild.Members.Add(packet);
 			}
 			else
 			{
@@ -87,16 +94,24 @@ namespace Miki.Discord.Caching
 		{
 			DiscordGuildPacket guild = await _discordClient.GetGuildAsync(guildId);
 
+			if(guild == null)
+			{
+				Log.Error($"Guild '{guildId}' not found");
+				return;
+			}
+
 			if (guild.Members == null)
 			{
 				guild.Members = new List<DiscordGuildMemberPacket>();
 			}
-
-			int index = guild.Members.FindIndex(x => x.UserId == arg2.Id);
-
-			if (index != -1)
+			else
 			{
-				guild.Members.RemoveAt(index);
+				int index = guild.Members.FindIndex(x => x.UserId == arg2.Id);
+
+				if (index != -1)
+				{
+					guild.Members.RemoveAt(index);
+				}
 			}
 
 			await _cacheClient.RemoveAsync($"discord:guild:{guildId}:user:{arg2.Id}");

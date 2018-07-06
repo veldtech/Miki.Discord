@@ -26,7 +26,7 @@ namespace Miki.Discord.Internal
 			=> _packet.Id;
 
 		public bool IsNsfw
-			=> _packet.IsNsfw;
+			=> _packet.IsNsfw.Value;
 
 		public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
 			=> await _client.SendFileAsync(Id, file, fileName, new MessageArgs
