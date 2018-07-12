@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Miki.Discord.Rest.Entities
@@ -32,10 +33,25 @@ namespace Miki.Discord.Rest.Entities
 		public long JoinedAt { get; set; }
 
 		[JsonProperty("joined_at")]
-		internal DateTimeOffset _joinedAt
+		internal string _joinedAt
 		{
-			get => DateTimeOffset.FromUnixTimeSeconds(JoinedAt);
-			set => JoinedAt = value.ToUnixTimeSeconds();
+			get
+			{
+				return new DateTime(JoinedAt).ToString("MM/dd/yyyy HH:mm:ss");
+			}
+
+			set
+			{
+				if (DateTime.TryParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime d))
+				{
+					JoinedAt = d.Ticks;
+				}
+
+				if (DateTime.TryParse(value, out DateTime e))
+				{
+					JoinedAt = e.Ticks;
+				}
+			}
 		}
 
 		[ProtoMember(6)]

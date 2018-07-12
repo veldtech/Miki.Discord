@@ -7,11 +7,11 @@
     <Company>Velddev</Company>
     <Product>Miki.Discord.Rest</Product>
     <Authors>Velddev</Authors>
-    <Version>1.0.3</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Discord.Common" Version="1.0.1" />
+    <PackageReference Include="Miki.Discord.Common" Version="1.0.3" />
     <PackageReference Include="Miki.Rest" Version="1.5.1" />
     <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.4.0" />
   </ItemGroup>

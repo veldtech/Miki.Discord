@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Miki.Discord.Rest;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -11,16 +12,33 @@ namespace Miki.Discord.Messaging.Sharder
 		[JsonProperty("d")]
 		public JToken Data;
 
-		[JsonProperty("meta")]
-		public ShardMeta Meta;
-	}
+		[JsonProperty("t")]
+		public string Opcode {
+			get
+			{
+				return opcode.ToString();
+			}
+			set
+			{
+				if (Enum.TryParse(value.Replace("_", ""), true, out Opcode op))
+				{
+					opcode = op;
+				}
+				else
+				{
+					opcode = Rest.Opcode.None;
+				}
+			}
+		}
+			internal Opcode opcode;
+		}
 
-	public class ShardPacket<T>
+		public class ShardPacket<T>
 	{
 		[JsonProperty("d")]
 		public T Data;
 
-		[JsonProperty("meta")]
-		public ShardMeta Meta;
+		[JsonProperty("t")]
+		public Opcode Opcode;
 	}
 }

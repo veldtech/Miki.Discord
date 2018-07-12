@@ -46,8 +46,8 @@ namespace Miki.Discord.Internal
 		public ulong GuildId 
 			=> _packet.GuildId;
 
-		public DateTimeOffset JoinedAt 
-			=> new DateTimeOffset(_packet.JoinedAt, TimeSpan.Zero);
+		public DateTimeOffset JoinedAt
+			=> new DateTimeOffset();
 
 		public int Hierarchy
 		{

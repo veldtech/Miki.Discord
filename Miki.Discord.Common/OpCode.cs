@@ -34,5 +34,6 @@ namespace Miki.Discord.Rest
 		UserUpdate = 19,
 		VoiceServerUpdate = 20,
 		VoiceStateUpdate = 21,
+		None = 99,
 	}
 }

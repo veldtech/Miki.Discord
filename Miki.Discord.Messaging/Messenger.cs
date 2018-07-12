@@ -1,4 +1,5 @@
-﻿using Miki.Discord.Common.Events;
+﻿using Miki.Discord.Common;
+using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
 using Miki.Discord.Messaging.Sharder;
@@ -48,7 +49,7 @@ namespace Miki.Discord.Messaging
 
 			channel = connection.CreateModel();
 			channel.ExchangeDeclare(config.ExchangeName, ExchangeType.Direct);
-			channel.QueueDeclare(config.QueueName, false, false, false, null);
+			channel.QueueDeclare(config.QueueName, true, false, false, null);
 			channel.QueueBind(config.QueueName, config.ExchangeName, "*", null);
 		}
 
@@ -70,7 +71,9 @@ namespace Miki.Discord.Messaging
 			var payload = Encoding.UTF8.GetString(ea.Body);
 			ShardPacket body = JsonConvert.DeserializeObject<ShardPacket>(payload);
 
-			switch (body.Meta.Opcode)
+			Log.Message("=> " + body.opcode);
+
+			switch (body.opcode)
 			{
 				case Opcode.MessageCreate:
 				{
@@ -85,8 +88,10 @@ namespace Miki.Discord.Messaging
 				{
 					if (GuildCreate != null)
 					{
+						var guild = body.Data.ToObject<DiscordGuildPacket>();
+
 						await GuildCreate(
-							body.Data.ToObject<DiscordGuildPacket>()
+							guild
 						);
 					}
 				} break;
@@ -94,8 +99,10 @@ namespace Miki.Discord.Messaging
 				{
 					if (GuildCreate != null)
 					{
+						var channel = body.Data.ToObject<DiscordChannelPacket>();
+
 						await ChannelCreate(
-							body.Data.ToObject<DiscordChannelPacket>()
+							channel
 						);
 					}
 				}	break;

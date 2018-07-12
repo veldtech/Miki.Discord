@@ -3,13 +3,14 @@ using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Miki.Discord.Rest.Entities
 {
 	[ProtoContract]
 	public class DiscordGuildPacket
-    {
+	{
 		[JsonProperty("id")]
 		[ProtoMember(1)]
 		public ulong Id;
@@ -94,9 +95,23 @@ namespace Miki.Discord.Rest.Entities
 		[ProtoMember(21)]
 		public ulong? SystemChannelId;
 
-		[JsonProperty("joined_at")]
 		[ProtoMember(22)]
 		public long CreatedAt;
+
+		[JsonProperty("joined_at")]
+		internal string _createdAt
+		{
+			get
+			{
+				return new DateTime(CreatedAt).ToString("MM/dd/yyyy HH:mm:ss");
+			}
+
+			set
+			{
+				var d = DateTime.ParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None);
+				CreatedAt = d.Ticks;
+			}
+		}
 
 		[JsonProperty("large")]
 		[ProtoMember(23)]
