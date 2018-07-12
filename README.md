@@ -1,6 +1,4 @@
-<p align="center">
-<h3> Miki.Discord </h3>
-<img src="https://img.shields.io/nuget/dt/Microsoft.AspNetCore.Mvc.svg"/>
-</center>
+### Miki.Discord
+[![](https://img.shields.io/discord/160067691783127041.svg?style=for-the-badge&logo=discord)](https://discord.gg/55sAjsW)
 </p>
 A low-level C# discord API for microservices
