@@ -7,7 +7,6 @@ using Miki.Discord.Rest;
 using Miki.Discord.Rest.Entities;
 using Miki.Rest;
 using Newtonsoft.Json;
-using StackExchange.Redis.Extensions.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,14 +26,13 @@ namespace Miki.Discord
 		public DiscordClient(DiscordClientConfigurations config)
 		{
 			_apiClient = new DiscordApiClient(
-				config.Token, config.CacheClient
+				config.Token, config.Pool
 			);
 
 			_websocketClient = new MessageClient(
 				new MessageClientConfiguration
 				{
 					Token = config.Token,
-					DatabaseClient = config.CacheClient,
 					ExchangeName = config.RabbitMQExchangeName,
 					MessengerConfigurations = config.RabbitMQUri,
 					QueueName = config.RabbitMQQueueName
@@ -88,24 +86,22 @@ namespace Miki.Discord
 		public string GetUserAvatarUrl(ulong id, string hash)
 			=> _apiClient.GetUserAvatarUrl(id, hash);
 
-		public async Task<IReadOnlyCollection<IDiscordChannel>> GetChannelsAsync(ulong guildId)
+		public async Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
 			=> (await _apiClient.GetChannelsAsync(guildId))
-				.Select(x => (x.GuildId != 0) 
-					? new DiscordGuildChannel(x, this) 
-					: new DiscordChannel(x, this)
-				).ToList();
+				.Select(x => new DiscordGuildChannel(x, this))
+				.ToList();
 
 		public async Task<IDiscordChannel> GetChannelAsync(ulong id)
 		{
 			var packet = await _apiClient.GetChannelAsync(id);
 
-			if (packet.GuildId != 0)
+			if (packet.GuildId.GetValueOrDefault(0) != 0)
 				return new DiscordGuildChannel(packet, this);
 			return new DiscordChannel(packet, this);
 		}
 
 		public async Task<IDiscordUser> GetCurrentUserAsync()
-			=> new DiscordUser(
+			=> new DiscordUser( 
 				await _apiClient.GetCurrentUserAsync(), 
 				this
 			);
@@ -171,7 +167,6 @@ namespace Miki.Discord
 			}, toChannel);
 	}
 
-	// Events
 	public partial class DiscordClient
 	{
 		public event Func<IDiscordMessage, Task> MessageCreate;

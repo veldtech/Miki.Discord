@@ -1,5 +1,4 @@
-﻿using StackExchange.Redis.Extensions.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,6 +10,5 @@ namespace Miki.Discord.Messaging
 		public string MessengerConfigurations;
 		public string ExchangeName;
 		public string QueueName;
-		public ICacheClient DatabaseClient;
 	}
 }

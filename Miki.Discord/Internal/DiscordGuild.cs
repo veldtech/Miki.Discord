@@ -42,14 +42,12 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordRole> CreateRoleAsync(CreateRoleArgs roleParams = null)
 			=> await _client.CreateRoleAsync(Id, roleParams);
 
-		public Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync()
-		{
-			throw new NotImplementedException();
-		}
+		public async Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync()
+			=> await _client.GetChannelsAsync(Id);
 
 		public async Task<IDiscordChannel> GetDefaultChannelAsync()
 		{
-			if (_packet.SystemChannelId.HasValue)
+			if (!_packet.SystemChannelId.HasValue)
 			{
 				return null;
 			}
@@ -105,7 +103,7 @@ namespace Miki.Discord.Internal
 				Id
 			);
 
-		public Task<IReadOnlyCollection<IDiscordChannel>> GetTextChannelsAsync()
+		public async Task<IReadOnlyCollection<IDiscordChannel>> GetTextChannelsAsync()
 		{
 			throw new NotImplementedException();
 		}

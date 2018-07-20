@@ -4,14 +4,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Caching worker for Miki.Discord</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.7</Version>
+    <Version>2.0.2</Version>
     <Authors>Velddev</Authors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Discord.Messaging" Version="1.0.4" />
-    <PackageReference Include="Miki.Discord.Rest" Version="1.0.5" />
-    <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="3.4.0" />
+    <PackageReference Include="Miki.Cache" Version="0.3.0" />
+    <PackageReference Include="Miki.Discord.Common" Version="1.0.3" />
+    <PackageReference Include="Miki.Discord.Messaging" Version="1.0.7" />
+    <PackageReference Include="Miki.Discord.Rest" Version="2.0.2" />
+    <PackageReference Include="Miki.Logging" Version="1.1.2" />
   </ItemGroup>
 
 </Project>

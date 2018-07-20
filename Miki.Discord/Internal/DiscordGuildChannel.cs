@@ -33,40 +33,43 @@ namespace Miki.Discord.Internal
 				return GuildPermission.All;
 			}
 
-			PermissionOverwrite overwriteEveryone = _packet.PermissionOverwrites
-				.FirstOrDefault(x => x.Id == GuildId);
-
-			if(overwriteEveryone != null)
+			if (_packet.PermissionOverwrites != null)
 			{
-				permissions &= ~overwriteEveryone.DeniedPermissions;
-				permissions |= overwriteEveryone.AllowedPermissions;
-			}
+				PermissionOverwrite overwriteEveryone = _packet.PermissionOverwrites
+					.FirstOrDefault(x => x.Id == GuildId) ?? null;
 
-			PermissionOverwrite overwrites = new PermissionOverwrite();
-
-			if (user.RoleIds != null)
-			{
-				foreach (ulong roleId in user.RoleIds)
+				if (overwriteEveryone != null)
 				{
-					PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
+					permissions &= ~overwriteEveryone.DeniedPermissions;
+					permissions |= overwriteEveryone.AllowedPermissions;
+				}
 
-					if (roleOverwrites != null)
+				PermissionOverwrite overwrites = new PermissionOverwrite();
+
+				if (user.RoleIds != null)
+				{
+					foreach (ulong roleId in user.RoleIds)
 					{
-						overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
-						overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
+						PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
+
+						if (roleOverwrites != null)
+						{
+							overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
+							overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
+						}
 					}
 				}
-			}
 
-			permissions &= ~overwrites.DeniedPermissions;
-			permissions |= overwrites.AllowedPermissions;
+				permissions &= ~overwrites.DeniedPermissions;
+				permissions |= overwrites.AllowedPermissions;
 
-			PermissionOverwrite userOverwrite = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == user.Id);
+				PermissionOverwrite userOverwrite = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == user.Id);
 
-			if(userOverwrite != null)
-			{
-				permissions &= ~userOverwrite.DeniedPermissions;
-				permissions |= userOverwrite.AllowedPermissions;
+				if (userOverwrite != null)
+				{
+					permissions &= ~userOverwrite.DeniedPermissions;
+					permissions |= userOverwrite.AllowedPermissions;
+				}
 			}
 
 			return permissions;

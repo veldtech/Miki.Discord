@@ -1,5 +1,5 @@
-﻿using Miki.Rest;
-using StackExchange.Redis.Extensions.Core;
+﻿using Miki.Cache;
+using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace Miki.Discord.Rest
 			if (rateLimit != null)
 			{
 				rateLimit.Remaining--;
-				await cache.AddAsync(key, rateLimit);
+				await cache.UpsertAsync(key, rateLimit);
 			}
 
 			if (!IsRatelimited(rateLimit))
@@ -33,7 +33,7 @@ namespace Miki.Discord.Rest
 			if (rateLimit != null)
 			{
 				rateLimit.Remaining--;
-				await cache.AddAsync(key, rateLimit);
+				await cache.UpsertAsync(key, rateLimit);
 			}
 
 			if(!IsRatelimited(rateLimit))
@@ -59,7 +59,7 @@ namespace Miki.Discord.Rest
 					{
 						ratelimit.Global = int.Parse(rc.HttpResponseMessage.Headers.GetValues("X-RateLimit-Global").ToList().FirstOrDefault());
 					}
-					await cache.AddAsync(key, ratelimit);
+					await cache.UpsertAsync(key, ratelimit);
 				}
 			}
 		}

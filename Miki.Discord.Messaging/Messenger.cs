@@ -68,259 +68,294 @@ namespace Miki.Discord.Messaging
 
 		private async Task OnMessageAsync(object ch, BasicDeliverEventArgs ea)
 		{
-			var payload = Encoding.UTF8.GetString(ea.Body);
-			ShardPacket body = JsonConvert.DeserializeObject<ShardPacket>(payload);
-
-			Log.Message("=> " + body.opcode);
-
-			switch (body.opcode)
+			try
 			{
-				case Opcode.MessageCreate:
+				var payload = Encoding.UTF8.GetString(ea.Body);
+				ShardPacket body = JsonConvert.DeserializeObject<ShardPacket>(payload);
+
+				Log.Trace("packet with the op-code '" + body.opcode + "' received.");
+
+				switch (body.opcode)
 				{
-					if (MessageCreate != null)
+					case Opcode.MessageCreate:
 					{
-						await MessageCreate(
-							body.Data.ToObject<DiscordMessagePacket>()
-						);
+						if (MessageCreate != null)
+						{
+							await MessageCreate(
+								body.Data.ToObject<DiscordMessagePacket>()
+							);
+						}
 					}
-				} break;
-				case Opcode.GuildCreate:
-				{
-					if (GuildCreate != null)
+					break;
+					case Opcode.GuildCreate:
 					{
-						var guild = body.Data.ToObject<DiscordGuildPacket>();
+						if (GuildCreate != null)
+						{
+							var guild = body.Data.ToObject<DiscordGuildPacket>();
 
-						await GuildCreate(
-							guild
-						);
+							await GuildCreate(
+								guild
+							);
+						}
 					}
-				} break;
-				case Opcode.ChannelCreate:
-				{
-					if (GuildCreate != null)
+					break;
+					case Opcode.ChannelCreate:
 					{
-						var channel = body.Data.ToObject<DiscordChannelPacket>();
+						if (GuildCreate != null)
+						{
+							var channel = body.Data.ToObject<DiscordChannelPacket>();
 
-						await ChannelCreate(
-							channel
-						);
+							await ChannelCreate(
+								channel
+							);
+						}
 					}
-				}	break;
+					break;
 
-				case Opcode.GuildMemberRemove:
-				{
-					if (GuildMemberRemove != null)
+					case Opcode.GuildMemberRemove:
 					{
-						var packet = body.Data.ToObject<GuildIdUserArgs>();
+						if (GuildMemberRemove != null)
+						{
+							var packet = body.Data.ToObject<GuildIdUserArgs>();
 
-						await GuildMemberRemove(
-							packet.guildId,
-							packet.user
-						);
+							await GuildMemberRemove(
+								packet.guildId,
+								packet.user
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildMemberAdd:
-				{
-					DiscordGuildMemberPacket guildMember = body.Data.ToObject<DiscordGuildMemberPacket>();
-
-					if(GuildMemberAdd != null)
+					case Opcode.GuildMemberAdd:
 					{
-						await GuildMemberAdd(guildMember);
+						DiscordGuildMemberPacket guildMember = body.Data.ToObject<DiscordGuildMemberPacket>();
+
+						if (GuildMemberAdd != null)
+						{
+							await GuildMemberAdd(guildMember);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildMemberUpdate:
-				{
-					GuildMemberUpdateEventArgs guildMember = body.Data.ToObject<GuildMemberUpdateEventArgs>();
-
-					if (GuildMemberUpdate != null)
+					case Opcode.GuildMemberUpdate:
 					{
-						await GuildMemberUpdate(
-							guildMember
-						);
+						GuildMemberUpdateEventArgs guildMember = body.Data.ToObject<GuildMemberUpdateEventArgs>();
+
+						if (GuildMemberUpdate != null)
+						{
+							await GuildMemberUpdate(
+								guildMember
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildRoleCreate:
-				{
-					RoleEventArgs role = body.Data.ToObject<RoleEventArgs>();
-
-					if (GuildRoleCreate != null)
+					case Opcode.GuildRoleCreate:
 					{
-						await GuildRoleCreate(
-							role.GuildId,
-							role.Role
-						);
-					}
-				} break;
+						RoleEventArgs role = body.Data.ToObject<RoleEventArgs>();
 
-				case Opcode.GuildRoleDelete:
-				{
-					if (GuildRoleDelete != null)
+						if (GuildRoleCreate != null)
+						{
+							await GuildRoleCreate(
+								role.GuildId,
+								role.Role
+							);
+						}
+					}
+					break;
+
+					case Opcode.GuildRoleDelete:
 					{
-						RoleDeleteEventArgs role = body.Data.ToObject<RoleDeleteEventArgs>();
+						if (GuildRoleDelete != null)
+						{
+							RoleDeleteEventArgs role = body.Data.ToObject<RoleDeleteEventArgs>();
 
-						await GuildRoleDelete(
-							role.GuildId,
-							role.RoleId
-						);
+							await GuildRoleDelete(
+								role.GuildId,
+								role.RoleId
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildRoleUpdate:
-				{
-					RoleEventArgs role = body.Data.ToObject<RoleEventArgs>();
-
-					if (GuildRoleUpdate != null)
+					case Opcode.GuildRoleUpdate:
 					{
-						await GuildRoleUpdate(
-							role.GuildId,
-							role.Role
-						);
-					}
-				} break;
+						RoleEventArgs role = body.Data.ToObject<RoleEventArgs>();
 
-				case Opcode.ChannelDelete:
-				{
-					if(ChannelDelete != null)
+						if (GuildRoleUpdate != null)
+						{
+							await GuildRoleUpdate(
+								role.GuildId,
+								role.Role
+							);
+						}
+					}
+					break;
+
+					case Opcode.ChannelDelete:
 					{
-						await ChannelDelete(
-							body.Data.ToObject<DiscordChannelPacket>()
-						);
+						if (ChannelDelete != null)
+						{
+							await ChannelDelete(
+								body.Data.ToObject<DiscordChannelPacket>()
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.ChannelUpdate:
-				{
-					if (ChannelUpdate != null)
+					case Opcode.ChannelUpdate:
 					{
-						await ChannelUpdate(
-							body.Data.ToObject<DiscordChannelPacket>()
-						);
+						if (ChannelUpdate != null)
+						{
+							await ChannelUpdate(
+								body.Data.ToObject<DiscordChannelPacket>()
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildBanAdd:
-				{
-					if (GuildBanAdd != null)
+					case Opcode.GuildBanAdd:
 					{
-						var packet = body.Data.ToObject<GuildIdUserArgs>();
+						if (GuildBanAdd != null)
+						{
+							var packet = body.Data.ToObject<GuildIdUserArgs>();
 
-						await GuildBanAdd(
-							packet.guildId,
-							packet.user
-						);
+							await GuildBanAdd(
+								packet.guildId,
+								packet.user
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildBanRemove:
-				{
-					if (GuildBanRemove != null)
+					case Opcode.GuildBanRemove:
 					{
-						var packet = body.Data.ToObject<GuildIdUserArgs>();
+						if (GuildBanRemove != null)
+						{
+							var packet = body.Data.ToObject<GuildIdUserArgs>();
 
-						await GuildBanRemove(
-							packet.guildId,
-							packet.user
-						);
+							await GuildBanRemove(
+								packet.guildId,
+								packet.user
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildDelete:
-				{
-					if (GuildDelete != null)
+					case Opcode.GuildDelete:
 					{
-						var packet = body.Data.ToObject<DiscordGuildUnavailablePacket>();
+						if (GuildDelete != null)
+						{
+							var packet = body.Data.ToObject<DiscordGuildUnavailablePacket>();
 
-						await GuildDelete(
-							packet
-						);
+							await GuildDelete(
+								packet
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.GuildEmojiUpdate:
-				{
-				} break;
-
-				case Opcode.GuildIntegrationsUpdate:
-				{
-				} break;
-
-				case Opcode.GuildMembersChunk:
-				{
-				} break;
-
-				case Opcode.GuildUpdate:
-				{
-					if(GuildUpdate != null)
+					case Opcode.GuildEmojiUpdate:
 					{
-						await GuildUpdate(
-							body.Data.ToObject<DiscordGuildPacket>()
-						);
 					}
-				} break;
+					break;
 
-				case Opcode.MessageDelete:
-				{
-					if (MessageDelete != null)
+					case Opcode.GuildIntegrationsUpdate:
 					{
-						await MessageDelete(
-							body.Data.ToObject<MessageDeleteArgs>()
-						);
 					}
-				} break;
+					break;
 
-				case Opcode.MessageDeleteBulk:
-				{
-				} break;
-
-				case Opcode.MessageUpdate:
-				{
-					if (MessageUpdate != null)
+					case Opcode.GuildMembersChunk:
 					{
-						await MessageUpdate(
-							body.Data.ToObject<DiscordMessagePacket>()
-						);
 					}
-				} break;
+					break;
 
-				case Opcode.PresenceUpdate:
-				{
-				} break;
-
-				case Opcode.Ready:
-				{
-				} break;
-
-				case Opcode.Resumed:
-				{
-				} break;
-
-				case Opcode.TypingStart:
-				{
-				} break;
-
-				case Opcode.UserUpdate:
-				{
-					if (UserUpdate != null)
+					case Opcode.GuildUpdate:
 					{
-						await UserUpdate(
-							body.Data.ToObject<DiscordUserPacket>()
-						);
+						if (GuildUpdate != null)
+						{
+							await GuildUpdate(
+								body.Data.ToObject<DiscordGuildPacket>()
+							);
+						}
 					}
-				} break;
+					break;
 
-				case Opcode.VoiceServerUpdate:
-				{
-				} break;
+					case Opcode.MessageDelete:
+					{
+						if (MessageDelete != null)
+						{
+							await MessageDelete(
+								body.Data.ToObject<MessageDeleteArgs>()
+							);
+						}
+					}
+					break;
 
-				case Opcode.VoiceStateUpdate:
-				{
-				} break;
+					case Opcode.MessageDeleteBulk:
+					{
+					}
+					break;
+
+					case Opcode.MessageUpdate:
+					{
+						if (MessageUpdate != null)
+						{
+							await MessageUpdate(
+								body.Data.ToObject<DiscordMessagePacket>()
+							);
+						}
+					}
+					break;
+
+					case Opcode.PresenceUpdate:
+					{
+					}
+					break;
+
+					case Opcode.Ready:
+					{
+					}
+					break;
+
+					case Opcode.Resumed:
+					{
+					}
+					break;
+
+					case Opcode.TypingStart:
+					{
+					}
+					break;
+
+					case Opcode.UserUpdate:
+					{
+						if (UserUpdate != null)
+						{
+							await UserUpdate(
+								body.Data.ToObject<DiscordUserPacket>()
+							);
+						}
+					}
+					break;
+
+					case Opcode.VoiceServerUpdate:
+					{
+					}
+					break;
+
+					case Opcode.VoiceStateUpdate:
+					{
+					}
+					break;
+				}
+
+				channel.BasicAck(ea.DeliveryTag, false);
 			}
-
-			channel.BasicAck(ea.DeliveryTag, false);
+			catch (Exception e)
+			{
+				Log.Error(e);
+			}
 		}
 	}
 

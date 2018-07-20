@@ -1,4 +1,4 @@
-﻿using StackExchange.Redis.Extensions.Core;
+﻿using Miki.Cache;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +11,6 @@ namespace Miki.Discord
 		public string RabbitMQUri;
 		public string RabbitMQExchangeName;
 		public string RabbitMQQueueName;
-		public ICacheClient CacheClient;
-    }
+		public ICachePool Pool;
+	}
 }
