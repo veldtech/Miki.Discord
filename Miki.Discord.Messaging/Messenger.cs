@@ -44,7 +44,7 @@ namespace Miki.Discord.Messaging
 
 			connection.RecoverySucceeded += (s, args) =>
 			{
-				Log.Message("Rabbit Connection Recovered!");
+				Log.Debug("Rabbit Connection Recovered!");
 			};
 
 			channel = connection.CreateModel();
@@ -58,7 +58,7 @@ namespace Miki.Discord.Messaging
 			consumer = new EventingBasicConsumer(channel);
 			consumer.Received += async (o, e) => await OnMessageAsync(o, e);
 
-			string consumerTag = channel.BasicConsume(config.QueueName, false, consumer);
+			string consumerTag = channel.BasicConsume(config.QueueName, true, consumer);
 		}
 
 		public void Stop()
@@ -310,6 +310,12 @@ namespace Miki.Discord.Messaging
 
 					case Opcode.PresenceUpdate:
 					{
+						if(PresenceUpdate != null)
+						{
+							await PresenceUpdate(
+								body.Data.ToObject<DiscordPresencePacket>()
+							);
+						}
 					}
 					break;
 
@@ -349,8 +355,6 @@ namespace Miki.Discord.Messaging
 					}
 					break;
 				}
-
-				channel.BasicAck(ea.DeliveryTag, false);
 			}
 			catch (Exception e)
 			{
@@ -385,6 +389,8 @@ namespace Miki.Discord.Messaging
 		public Func<DiscordMessagePacket, Task> MessageUpdate;
 		public Func<MessageDeleteArgs, Task> MessageDelete;
 		public Func<DiscordMessagePacket, Task> MessageDeleteBulk;
+
+		public Func<DiscordPresencePacket, Task> PresenceUpdate;
 
 		public Func<DiscordUserPacket, Task> UserUpdate;
 	}

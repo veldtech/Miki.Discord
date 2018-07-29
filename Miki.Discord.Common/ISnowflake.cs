@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Miki.Discord.Common
 {
-    public interface ISnowflake<T>
+    public interface ISnowflake
     {
-		T Id { get; }
+		ulong Id { get; }
     }
 }

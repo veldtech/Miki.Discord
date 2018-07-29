@@ -63,7 +63,8 @@ namespace Miki.Discord.Internal
 			}
 		}
 
-		public DateTimeOffset CreatedAt => throw new NotImplementedException();
+		public DateTimeOffset CreatedAt 
+			=> new DateTimeOffset((long)Id >> 22, TimeSpan.FromTicks(1420070400000));
 
 		public async Task AddRoleAsync(IDiscordRole role)
 			=> await _client.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
@@ -71,9 +72,11 @@ namespace Miki.Discord.Internal
 		public string GetAvatarUrl()
 			=>	_client.GetUserAvatarUrl(_packet.UserId, _packet.User.Avatar);
 
-		public async Task<IDiscordChannel> GetDMChannel()
+		public async Task<IDiscordChannel> GetDMChannelAsync()
 			=> await _client.CreateDMAsync(_packet.UserId);
 
+		public async Task<IDiscordPresence> GetPresenceAsync()
+			=> await _client.GetUserPresence(_packet.UserId);
 
 		public async Task<IDiscordGuild> GetGuildAsync()
 			=> await _client.GetGuildAsync(_packet.GuildId);
@@ -83,6 +86,5 @@ namespace Miki.Discord.Internal
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
 			=> await _client.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
-
 	}
 }

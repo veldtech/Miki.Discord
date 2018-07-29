@@ -49,6 +49,31 @@ namespace Miki.Discord.Caching
 			_messenger.GuildMemberAdd += OnGuildMemberAdd;
 			_messenger.GuildMemberRemove += OnGuildMemberRemove;
 			_messenger.GuildMemberUpdate += OnGuildMemberUpdate;
+
+			_messenger.PresenceUpdate += OnPresenceUpdate;
+		}
+
+		private async Task OnPresenceUpdate(DiscordPresencePacket arg)
+		{
+			try
+			{
+				ICacheClient client = _cacheClient.Get;
+
+				if (arg.User.Avatar != null || arg.User.Discriminator != null || arg.User.Username != null)
+				{
+					DiscordUserPacket user = await _discordClient.GetUserAsync(arg.User.Id);
+					user.Username = arg.User.Username ?? user.Username;
+					user.Discriminator = arg.User.Discriminator ?? user.Discriminator;
+					user.Avatar = arg.User.Avatar ?? user.Avatar;
+					await client.UpsertAsync($"discord:user:{arg.User.Id}", user);
+				}
+
+				await client.UpsertAsync($"discord:user:presence:{arg.User.Id}", new DiscordPresence(arg));
+			}
+			catch(Exception e)
+			{
+				Log.Error(e);
+			}
 		}
 
 		private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs arg)
@@ -183,7 +208,7 @@ namespace Miki.Discord.Caching
 					guild.Roles = new List<DiscordRolePacket>();
 				}
 
-				int index = guild.Roles.FindIndex(x => x.Id == guildId);
+				int index = guild.Roles.FindIndex(x => x.Id == arg2.Id);
 
 				if (index == -1)
 				{
@@ -248,21 +273,14 @@ namespace Miki.Discord.Caching
 					guild.Roles = new List<DiscordRolePacket>();
 				}
 
-				int index = guild.Roles.FindIndex(x => x.Id == guildId);
+				int index = guild.Roles.FindIndex(x => x.Id == arg2.Id);
 
-				if (index == -1)
-				{
-					guild.Roles.Add(arg2);
-				}
-				else
-				{
-					guild.Roles[index] = arg2;
-				}
+				guild.Roles.Add(arg2);
 
 				var cache = _cacheClient.Get;
 
 				await cache.UpsertAsync($"discord:guild:{guildId}:role:{arg2.Id}", arg2);
-					await cache.UpsertAsync($"discord:guild:{guildId}", guild);
+				await cache.UpsertAsync($"discord:guild:{guildId}", guild);
 				
 			}
 			catch (Exception e)

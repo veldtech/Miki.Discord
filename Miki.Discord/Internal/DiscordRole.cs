@@ -10,7 +10,7 @@ namespace Miki.Discord.Internal
 	public class DiscordRole : IDiscordRole
 	{
 		DiscordRolePacket _packet;
-		DiscordClient _client;
+		readonly DiscordClient _client;
 
 		public DiscordRole(DiscordRolePacket packet, DiscordClient client)
 		{

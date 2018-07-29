@@ -1,5 +1,6 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Internal;
+using Miki.Discord.Rest.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,9 +44,12 @@ namespace Miki.Discord.Internal
 		public string Mention
 			=> $"<@{Id}>";
 
+		public async Task<IDiscordPresence> GetPresenceAsync()
+			=> await _client.GetUserPresence(Id);
+
 		public DateTimeOffset CreatedAt => throw new Exception("fucc");
 
-		public async Task<IDiscordChannel> GetDMChannel()
+		public async Task<IDiscordChannel> GetDMChannelAsync()
 			=> await _client.CreateDMAsync(Id);
 	}
 }

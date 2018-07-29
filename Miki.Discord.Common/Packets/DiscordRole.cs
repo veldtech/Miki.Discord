@@ -26,7 +26,7 @@ namespace Miki.Discord.Rest.Entities
 		public bool IsHoisted;
 
 		[ProtoMember(5)]
-		[JsonProperty("postition")]
+		[JsonProperty("position")]
 		public int Position;
 
 		[ProtoMember(6)]

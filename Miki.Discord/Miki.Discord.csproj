@@ -5,7 +5,7 @@
     <AssemblyName>Miki.Discord</AssemblyName>
     <RootNamespace>Miki.Discord</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.3</Version>
+    <Version>2.1.0</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Miki Rest-only Discord client</Description>
@@ -20,9 +20,9 @@
 
   <ItemGroup>
     <PackageReference Include="Miki.Cache" Version="0.3.0" />
-    <PackageReference Include="Miki.Discord.Common" Version="1.0.3" />
-    <PackageReference Include="Miki.Discord.Messaging" Version="1.0.7" />
-    <PackageReference Include="Miki.Discord.Rest" Version="2.0.2" />
+    <PackageReference Include="Miki.Discord.Common" Version="1.1.0" />
+    <PackageReference Include="Miki.Discord.Messaging" Version="1.1.0" />
+    <PackageReference Include="Miki.Discord.Rest" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 

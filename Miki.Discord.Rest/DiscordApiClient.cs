@@ -406,8 +406,11 @@ namespace Miki.Discord.Rest
 
 			List<MultiformItem> items = new List<MultiformItem>();
 
-			var content = new StringContent(args.content);
-			items.Add(new MultiformItem { Name = "content", Content = content });
+			if (!string.IsNullOrEmpty(args.content))
+			{
+				var content = new StringContent(args.content);
+				items.Add(new MultiformItem { Name = "content", Content = content });
+			}
 
 			if (stream.CanSeek)
 			{

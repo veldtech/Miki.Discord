@@ -139,7 +139,7 @@ namespace Miki.Discord.Rest.Entities
 
 		[JsonProperty("presences")]
 		[ProtoMember(29)]
-		public List<DiscordPresence> Presences;
+		public List<DiscordPresencePacket> Presences;
 
 		[JsonProperty("owner")]
 		[ProtoMember(30)]

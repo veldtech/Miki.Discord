@@ -1,4 +1,5 @@
 ﻿using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
 using Newtonsoft.Json;
 using ProtoBuf;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 namespace Miki.Discord.Rest.Entities
 {
 	[ProtoContract]
-	public class DiscordPresence
+	public class DiscordPresencePacket
 	{
 		[JsonProperty("user")]
 		[ProtoMember(1)]
@@ -109,5 +110,13 @@ namespace Miki.Discord.Rest.Entities
 		[JsonProperty("start")]
 		[ProtoMember(1)]
 		public long Start;
+	}
+
+	public enum UserStatus
+	{
+		ONLINE,
+		IDLE,
+		DND,
+		OFFLINE
 	}
 }

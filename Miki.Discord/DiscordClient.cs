@@ -1,4 +1,5 @@
-﻿using Miki.Discord.Common;
+﻿using Miki.Cache;
+using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
@@ -23,8 +24,12 @@ namespace Miki.Discord
 		public DiscordApiClient _apiClient;
 		public MessageClient _websocketClient;
 
+		private ICachePool _cachePool;
+
 		public DiscordClient(DiscordClientConfigurations config)
 		{
+			_cachePool = config.Pool;
+
 			_apiClient = new DiscordApiClient(
 				config.Token, config.Pool
 			);
@@ -71,6 +76,9 @@ namespace Miki.Discord
 		public async Task<IDiscordRole> EditRoleAsync(ulong guildId, DiscordRolePacket role)
 			=> new DiscordRole(await _apiClient.EditRoleAsync(guildId, role), this);
 
+		public async Task<IDiscordPresence> GetUserPresence(ulong userId)
+			=> await _cachePool.Get.GetAsync<DiscordPresence>($"discord:user:presence:{userId}");
+
 		public async Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId)
 			=> (await GetRolesAsync(guildId))
 				.FirstOrDefault(x => x.Id == roleId);
@@ -95,16 +103,22 @@ namespace Miki.Discord
 		{
 			var packet = await _apiClient.GetChannelAsync(id);
 
-			if (packet.GuildId.GetValueOrDefault(0) != 0)
+			if (packet.GuildId != null)
+			{
 				return new DiscordGuildChannel(packet, this);
+			}
 			return new DiscordChannel(packet, this);
 		}
 
 		public async Task<IDiscordUser> GetCurrentUserAsync()
-			=> new DiscordUser( 
-				await _apiClient.GetCurrentUserAsync(), 
+		{
+			var me = await _apiClient.GetCurrentUserAsync();
+
+			return new DiscordUser(
+				me,
 				this
 			);
+		}
 
 		public async Task<IDiscordChannel> CreateDMAsync(ulong userid)
 		{
@@ -128,7 +142,7 @@ namespace Miki.Discord
 
 		public async Task<IDiscordUser> GetUserAsync(ulong id)
 			=> new DiscordUser(
-				await _apiClient.GetUserAsync(id), 
+				await _apiClient.GetUserAsync(id),
 				this
 			);
 

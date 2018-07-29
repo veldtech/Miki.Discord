@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IDiscordChannel : ISnowflake<ulong>
+    public interface IDiscordChannel : ISnowflake
 	{
 		bool IsNsfw { get; }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Miki.Discord.Common
 {
-	public interface IDiscordRole : ISnowflake<ulong>
+	public interface IDiscordRole : ISnowflake
 	{
 		string Name { get; }
 		Color Color { get; }

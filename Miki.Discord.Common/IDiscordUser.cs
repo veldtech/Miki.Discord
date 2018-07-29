@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IDiscordUser : ISnowflake<ulong>
+    public interface IDiscordUser : ISnowflake
     {
 		string AvatarId { get; }
 
@@ -19,7 +19,9 @@ namespace Miki.Discord.Common
 
 		bool IsBot { get; }
 
-		Task<IDiscordChannel> GetDMChannel();
+		Task<IDiscordPresence> GetPresenceAsync();
+
+		Task<IDiscordChannel> GetDMChannelAsync();
 		string GetAvatarUrl();
     }
 }

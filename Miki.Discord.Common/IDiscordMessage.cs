@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IDiscordMessage : ISnowflake<ulong>
+    public interface IDiscordMessage : ISnowflake
     {
 		string Content { get; }
 
