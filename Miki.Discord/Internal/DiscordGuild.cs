@@ -34,6 +34,15 @@ namespace Miki.Discord.Internal
 		public GuildPermission Permissions 
 			=> (GuildPermission)_packet.Permissions.GetValueOrDefault(0);
 
+		public IReadOnlyCollection<IDiscordGuildChannel> Channels 
+			=> _packet.Channels.Select(x => new DiscordGuildChannel(x, _client)).ToList();
+
+		public IReadOnlyCollection<IDiscordGuildUser> Members 
+			=> _packet.Members.Select(x => new DiscordGuildUser(x, _client)).ToList();
+
+		public IReadOnlyCollection<IDiscordRole> Roles 
+			=> _packet.Roles.Select(x => new DiscordRole(x, _client)).ToList();
+
 		public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{
 			await _client.AddBanAsync(Id, user.Id);
@@ -45,6 +54,11 @@ namespace Miki.Discord.Internal
 		public async Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync()
 			=> await _client.GetChannelsAsync(Id);
 
+		public IDiscordChannel GetDefaultChannel()
+		{
+			throw new NotImplementedException();
+		}
+
 		public async Task<IDiscordChannel> GetDefaultChannelAsync()
 		{
 			if (!_packet.SystemChannelId.HasValue)
@@ -53,6 +67,16 @@ namespace Miki.Discord.Internal
 			}
 
 			return await _client.GetChannelAsync(_packet.SystemChannelId.Value);
+		}
+
+		public IDiscordGuildUser GetMember(ulong id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IDiscordGuildUser GetOwner()
+		{
+			throw new NotImplementedException();
 		}
 
 		public async Task<IDiscordGuildUser> GetOwnerAsync()
@@ -91,6 +115,11 @@ namespace Miki.Discord.Internal
 			return permissions;
 		}
 
+		public IDiscordRole GetRole(ulong id)
+		{
+			throw new NotImplementedException();
+		}
+
 		public async Task<IDiscordRole> GetRoleAsync(ulong id)
 			=> (await _client.GetRolesAsync(Id)).FirstOrDefault(x => x.Id == id);
 
@@ -105,7 +134,9 @@ namespace Miki.Discord.Internal
 
 		public async Task<IReadOnlyCollection<IDiscordChannel>> GetTextChannelsAsync()
 		{
-			throw new NotImplementedException();
+			return _packet.Channels
+				.Where(x => x.Type == ChannelType.GUILDTEXT)
+				.Select(x => new DiscordGuildChannel(x, _client)).ToList();
 		}
 
 		public async Task<IDiscordGuildUser> GetUserAsync(ulong id)

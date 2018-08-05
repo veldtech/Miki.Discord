@@ -15,31 +15,27 @@ namespace Miki.Discord.Common
 
 		GuildPermission Permissions { get; }
 
+		IReadOnlyCollection<IDiscordGuildChannel> Channels { get; }
+
+		IReadOnlyCollection<IDiscordGuildUser> Members { get; }
+
+		IReadOnlyCollection<IDiscordRole> Roles { get; }
+
 		Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 1, string reason = null);
 
 		Task<IDiscordRole> CreateRoleAsync(CreateRoleArgs roleArgs);
 
-		Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync();
-
-		Task<IDiscordChannel> GetDefaultChannelAsync();
+		IDiscordChannel GetDefaultChannel();
 
 		Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user);
 
-		Task<IDiscordGuildUser> GetOwnerAsync();
+		IDiscordGuildUser GetOwner();
 
-		Task<IDiscordRole> GetRoleAsync(ulong id);
-
-		Task<IReadOnlyCollection<IDiscordRole>> GetRolesAsync();
-
-		Task<IDiscordGuildUser> GetUserAsync(ulong id);
-
-		Task<IReadOnlyCollection<IDiscordGuildUser>> GetUsersAsync();
+		IDiscordRole GetRole(ulong id);
+		
+		IDiscordGuildUser GetMember(ulong id);
 
 		Task<IDiscordGuildUser> GetSelfAsync();
-
-		Task<IReadOnlyCollection<IDiscordChannel>> GetTextChannelsAsync();
-
-		Task<IReadOnlyCollection<IDiscordChannel>> GetVoiceChannelsAsync();
 
 		Task RemoveBanAsync(IDiscordGuildUser user);
 	}

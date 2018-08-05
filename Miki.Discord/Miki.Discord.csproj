@@ -26,4 +26,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+  </ItemGroup>
+
 </Project>
