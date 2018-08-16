@@ -20,7 +20,7 @@ namespace Miki.Discord.Internal
 		}
 
 		public ulong Id
-			=> _packet.UserId;
+			=> _packet.User.Id;
 
 		public string Username
 			=> _packet.User.Username;
@@ -70,13 +70,13 @@ namespace Miki.Discord.Internal
 			=> await _client.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 
 		public string GetAvatarUrl()
-			=>	_client.GetUserAvatarUrl(_packet.UserId, _packet.User.Avatar);
+			=>	_client.GetUserAvatarUrl(_packet.User.Id, _packet.User.Avatar);
 
 		public async Task<IDiscordChannel> GetDMChannelAsync()
-			=> await _client.CreateDMAsync(_packet.UserId);
+			=> await _client.CreateDMAsync(_packet.User.Id);
 
 		public async Task<IDiscordPresence> GetPresenceAsync()
-			=> await _client.GetUserPresence(_packet.UserId);
+			=> await _client.GetUserPresence(_packet.User.Id);
 
 		public async Task<IDiscordGuild> GetGuildAsync()
 			=> await _client.GetGuildAsync(_packet.GuildId);

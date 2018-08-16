@@ -1,4 +1,5 @@
 ﻿using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
 using Miki.Discord.Rest.Entities;
 using System;

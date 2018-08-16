@@ -27,13 +27,18 @@ namespace Miki.Discord.Common
 
 		IDiscordChannel GetDefaultChannel();
 
-		Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user);
+		GuildPermission GetPermissions(IDiscordGuildUser user);
 
 		IDiscordGuildUser GetOwner();
 
 		IDiscordRole GetRole(ulong id);
 		
-		IDiscordGuildUser GetMember(ulong id);
+		/// <summary>
+		/// Updates the guild member from the current updated cache and returns it
+		/// </summary>
+		/// <param name="id">specified guildmember id</param>
+		/// <returns></returns>
+		Task<IDiscordGuildUser> GetMemberAsync(ulong id);
 
 		Task<IDiscordGuildUser> GetSelfAsync();
 

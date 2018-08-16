@@ -41,5 +41,10 @@ namespace Miki.Discord.Rest
 			int newB = (int)(colorA.B + (ColorB.B - colorA.B) * time);
 			return new Color(newR, newG, newB);
 		}
+
+		public override string ToString()
+		{
+			return $"#{R.ToString("X2")}{G.ToString("X2")}{B.ToString("X2")}";
+		}
 	}
 }

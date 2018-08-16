@@ -19,6 +19,9 @@ namespace Miki.Discord.Internal
 		public ulong GuildId
 			=> _packet.GuildId.Value;
 
+		public ChannelType Type
+			=> _packet.Type;
+
 		public async Task<IDiscordGuild> GetGuildAsync()
 			=> await _client.GetGuildAsync(GuildId);
 
@@ -26,7 +29,7 @@ namespace Miki.Discord.Internal
 		{
 			IDiscordGuild guild = await GetGuildAsync();
 
-			GuildPermission permissions = await guild.GetPermissionsAsync(user);
+			GuildPermission permissions = guild.GetPermissions(user);
 			
 			if(permissions.HasFlag(GuildPermission.Administrator))
 			{

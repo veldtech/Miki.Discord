@@ -5,10 +5,10 @@
     <AssemblyName>Miki.Discord</AssemblyName>
     <RootNamespace>Miki.Discord</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
-    <Description>Miki Rest-only Discord client</Description>
+    <Description>Miki Discord Client</Description>
     <PackageTags>discord, api</PackageTags>
   </PropertyGroup>
 
@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Gateway.Distributed\Miki.Discord.Gateway.Distributed.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
   </ItemGroup>
 
 </Project>

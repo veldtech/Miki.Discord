@@ -1,4 +1,5 @@
-﻿using Miki.Discord.Rest.Entities;
+﻿using Miki.Discord.Common.Packets;
+using Miki.Discord.Rest.Entities;
 using Newtonsoft.Json;
 using ProtoBuf;
 using System;
@@ -17,6 +18,12 @@ namespace Miki.Discord.Common
 		[JsonProperty("status")]
 		[ProtoMember(2)]
 		public UserStatus Status { get; private set; }
+
+		[JsonProperty("since")]
+		public long Since { get; private set; }
+
+		[JsonProperty("afk")]
+		public bool IsAFK { get; private set; }
 
 		public DiscordPresence() { }
 		public DiscordPresence(DiscordPresencePacket packet)

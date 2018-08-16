@@ -1,9 +1,8 @@
 ﻿using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
-using Miki.Discord.Internal;
+using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
-using Miki.Discord.Rest.Entities;
 using Miki.Logging;
 using Miki.Rest;
 using Newtonsoft.Json;
@@ -17,21 +16,17 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Rest
 {
-    public class DiscordApiClient
+    public class DiscordApiClient : IApiClient
     {
-		public RestClient RestClient { get; private set; }
+		private RestClient _restClient;
 
 		ICachePool cache;
-
-		const string discordUrl = "https://discordapp.com";
-		const string baseUrl = "/api/v6";
-		const string cdnUrl = "https://cdn.discordapp.com/";
 
 		readonly JsonSerializerSettings serializer;
 
 		public DiscordApiClient(string token, ICachePool cachePool)
 		{
-			RestClient = new RestClient(discordUrl + baseUrl)
+			_restClient = new RestClient(DiscordHelper.DiscordUrl + DiscordHelper.BaseUrl)
 				.SetAuthorization("Bot", token);
 			cache = cachePool;
 
@@ -61,7 +56,7 @@ namespace Miki.Discord.Rest
 					$"guilds:{guildId}", cacheClient,
 					async () =>
 					{
-						return await RestClient.PutAsync(DiscordApiRoutes.GuildBanRoute(guildId, userId) + qs.Query);
+						return await _restClient.PutAsync(DiscordApiRoutes.GuildBanRoute(guildId, userId) + qs.Query);
 					});
 			}
 		}
@@ -74,14 +69,14 @@ namespace Miki.Discord.Rest
 				$"guilds:{guildId}", cacheClient,
 				async () =>
 				{
-					return await RestClient.PutAsync(DiscordApiRoutes.GuildMemberRoleRoute(guildId, userId, roleId));
+					return await _restClient.PutAsync(DiscordApiRoutes.GuildMemberRoleRoute(guildId, userId, roleId));
 				});
 			}
 		}
 
 		public async Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId)
 		{
-			var response = await RestClient
+			var response = await _restClient
 				.PostAsync<DiscordChannelPacket>(DiscordApiRoutes.UserMeChannelsRoute(), $"{{ \"recipient_id\": {userId} }}");
 			return response.Data;
 		}
@@ -94,7 +89,7 @@ namespace Miki.Discord.Rest
 					$"guilds:{guildId}", cacheClient,
 					async () =>
 					{
-						return await RestClient.PostAsync<DiscordRolePacket>(
+						return await _restClient.PostAsync<DiscordRolePacket>(
 							DiscordApiRoutes.GuildRolesRoute(guildId),
 							JsonConvert.SerializeObject(args) ?? ""
 						);
@@ -110,7 +105,7 @@ namespace Miki.Discord.Rest
 					$"channels:{channelId}:delete", cacheClient,
 					async () =>
 					{
-						return await RestClient.DeleteAsync(DiscordApiRoutes.ChannelMessageRoute(channelId, messageId));
+						return await _restClient.DeleteAsync(DiscordApiRoutes.ChannelMessageRoute(channelId, messageId));
 					});
 			}
 		}
@@ -123,7 +118,7 @@ namespace Miki.Discord.Rest
 				$"channels:{channelId}", cacheClient,
 				async () =>
 				{
-					return await RestClient.PatchAsync<DiscordMessagePacket>(
+					return await _restClient.PatchAsync<DiscordMessagePacket>(
 						DiscordApiRoutes.ChannelMessageRoute(channelId, messageId), 
 						JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore })
 					);
@@ -137,7 +132,7 @@ namespace Miki.Discord.Rest
 			{
 				return (await RatelimitHelper.ProcessRateLimitedAsync(
 					$"guilds:{guildId}", cacheClient,
-					async () => await RestClient.PutAsync<DiscordRolePacket>(
+					async () => await _restClient.PutAsync<DiscordRolePacket>(
 						DiscordApiRoutes.GuildRoleRoute(guildId, role.Id),
 						JsonConvert.SerializeObject(role)
 					)
@@ -156,7 +151,7 @@ namespace Miki.Discord.Rest
 					return await cacheClient.GetAsync<DiscordUserPacket>(key);
 				}
 
-				RestResponse<DiscordUserPacket> rc = await RestClient
+				RestResponse<DiscordUserPacket> rc = await _restClient
 					.GetAsync<DiscordUserPacket>(DiscordApiRoutes.UserMeRoute());
 				await cacheClient.UpsertAsync(key, rc.Data);
 				return rc.Data;
@@ -184,7 +179,7 @@ namespace Miki.Discord.Rest
 				{
 					var data = await RatelimitHelper.ProcessRateLimitedAsync(
 						$"channels:{channelId}", cache.Get,
-						async () => await RestClient.GetAsync<DiscordChannelPacket>(DiscordApiRoutes.ChannelRoute(channelId))
+						async () => await _restClient.GetAsync<DiscordChannelPacket>(DiscordApiRoutes.ChannelRoute(channelId))
 						);
 
 					await cacheClient.UpsertAsync(key, data.Data);
@@ -215,7 +210,7 @@ namespace Miki.Discord.Rest
 						$"guilds:{guildId}", cacheClient,
 						async () =>
 						{
-							return await RestClient.GetAsync<List<DiscordChannelPacket>>(DiscordApiRoutes.GuildChannelsRoute(guildId));
+							return await _restClient.GetAsync<List<DiscordChannelPacket>>(DiscordApiRoutes.GuildChannelsRoute(guildId));
 						});
 
 					await cacheClient.UpsertAsync(key, data.Data);
@@ -247,7 +242,7 @@ namespace Miki.Discord.Rest
 						$"guilds:{guildId}", cacheClient,
 						async () =>
 						{
-							return await RestClient.GetAsync<DiscordGuildPacket>(DiscordApiRoutes.GuildRoute(guildId));
+							return await _restClient.GetAsync<DiscordGuildPacket>(DiscordApiRoutes.GuildRoute(guildId));
 						});
 
 					await cacheClient.UpsertAsync(key, data.Data);
@@ -280,7 +275,7 @@ namespace Miki.Discord.Rest
 						$"guilds:{guildId}", cacheClient,
 						async () =>
 						{
-							return await RestClient.GetAsync<DiscordGuildMemberPacket>(DiscordApiRoutes.GuildMemberRoute(guildId, userId));
+							return await _restClient.GetAsync<DiscordGuildMemberPacket>(DiscordApiRoutes.GuildMemberRoute(guildId, userId));
 						});
 
 					packet = rc.Data;
@@ -289,7 +284,6 @@ namespace Miki.Discord.Rest
 
 				packet.User = await GetUserAsync(userId);
 				packet.GuildId = guildId;
-				packet.UserId = userId;
 			}
 			return packet;
 		}
@@ -300,7 +294,7 @@ namespace Miki.Discord.Rest
 				$"channels:{channelId}", cache.Get,
 				async () =>
 				{
-					return await RestClient.GetAsync<DiscordMessagePacket>(DiscordApiRoutes.ChannelMessageRoute(channelId, messageId));
+					return await _restClient.GetAsync<DiscordMessagePacket>(DiscordApiRoutes.ChannelMessageRoute(channelId, messageId));
 				}
 			)).Data;
 		}
@@ -311,7 +305,7 @@ namespace Miki.Discord.Rest
 				$"channels:{channelId}", cache.Get,
 				async () =>
 				{
-					return await RestClient.GetAsync<List<DiscordMessagePacket>>(DiscordApiRoutes.ChannelMessagesRoute(channelId));
+					return await _restClient.GetAsync<List<DiscordMessagePacket>>(DiscordApiRoutes.ChannelMessagesRoute(channelId));
 				}
 			)).Data;
 		}
@@ -345,18 +339,13 @@ namespace Miki.Discord.Rest
 				}
 				else
 				{
-					RestResponse<DiscordUserPacket> rc = await RestClient
+					RestResponse<DiscordUserPacket> rc = await _restClient
 						.GetAsync<DiscordUserPacket>(DiscordApiRoutes.UserRoute(userId));
 					await cacheClient.UpsertAsync(key, rc.Data);
 					packet = rc.Data;
 				}
 			}
 			return packet;
-		}
-
-		public string GetUserAvatarUrl(ulong id, string hash)
-		{
-			return $"{cdnUrl}avatars/{id}/{hash}.png";
 		}
 
 		public async Task ModifyGuildMemberAsync(ulong guildId, ulong userId, ModifyGuildMemberArgs packet)
@@ -367,7 +356,7 @@ namespace Miki.Discord.Rest
 				$"guilds:{guildId}", cacheClient,
 				async () =>
 				{
-					return await RestClient.PatchAsync(
+					return await _restClient.PatchAsync(
 						DiscordApiRoutes.GuildMemberRoute(guildId, userId),
 						JsonConvert.SerializeObject(packet, serializer)
 					);
@@ -381,7 +370,7 @@ namespace Miki.Discord.Rest
 			{
 				await RatelimitHelper.ProcessRateLimitedAsync(
 					$"guilds:{guildId}", cacheClient,
-					async () => await RestClient.DeleteAsync(DiscordApiRoutes.GuildBanRoute(guildId, userId))
+					async () => await _restClient.DeleteAsync(DiscordApiRoutes.GuildBanRoute(guildId, userId))
 				);
 			}
 		}
@@ -392,7 +381,7 @@ namespace Miki.Discord.Rest
 			{
 				await RatelimitHelper.ProcessRateLimitedAsync(
 					$"guilds:{guildId}", cacheClient,
-					async () => await RestClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoute(guildId, userId))
+					async () => await _restClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoute(guildId, userId))
 				);
 			}
 		}
@@ -405,11 +394,10 @@ namespace Miki.Discord.Rest
 					$"guilds:{guildId}", cacheClient,
 					async () =>
 					{
-						return await RestClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoleRoute(guildId, userId, roleId));
+						return await _restClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoleRoute(guildId, userId, roleId));
 					});
 			}
 		}
-
 
 		public async Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true)
 		{
@@ -450,20 +438,17 @@ namespace Miki.Discord.Rest
 			image.Headers.Add("Content-Disposition", "form-data; name=\"file\"; filename=\"" + fileName + "\"");
 
 			var cacheClient = cache.Get;
-			{
-				await RatelimitHelper.ProcessRateLimitedAsync(
+
+			return (await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}",
 				cacheClient, async () =>
 				{
-					RestResponse rc = await RestClient
+					return new RestResponse<DiscordMessagePacket>(await _restClient
 						.PostMultipartAsync(DiscordApiRoutes.ChannelMessagesRoute(channelId),
 						items.ToArray()
-					);
-					return rc;
-				});
-			}
-			// TODO: fix returns
-			return null;
+					));
+				}
+			)).Data;
 		}
 
 		public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true)
@@ -475,7 +460,7 @@ namespace Miki.Discord.Rest
 				$"channels:{channelId}",
 				cacheClient, async () =>
 				{
-					return await RestClient.PostAsync<DiscordMessagePacket>(DiscordApiRoutes.ChannelMessagesRoute(channelId), json);
+					return await _restClient.PostAsync<DiscordMessagePacket>(DiscordApiRoutes.ChannelMessagesRoute(channelId), json);
 				})).Data;
 			}
 		}

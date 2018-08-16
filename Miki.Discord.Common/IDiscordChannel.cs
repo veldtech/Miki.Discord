@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Miki.Discord.Rest.Entities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -19,6 +20,8 @@ namespace Miki.Discord.Common
 	public interface IDiscordGuildChannel : IDiscordChannel
 	{
 		ulong GuildId { get; }
+
+		ChannelType Type { get; }
 
 		Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user);
 

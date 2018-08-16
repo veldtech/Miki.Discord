@@ -1,4 +1,5 @@
 ﻿using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest.Entities;
 using System;
 using System.Collections.Generic;
@@ -51,12 +52,9 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordRole> CreateRoleAsync(CreateRoleArgs roleParams = null)
 			=> await _client.CreateRoleAsync(Id, roleParams);
 
-		public async Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync()
-			=> await _client.GetChannelsAsync(Id);
-
 		public IDiscordChannel GetDefaultChannel()
 		{
-			throw new NotImplementedException();
+			return Channels.FirstOrDefault(x => x.Id == _packet.SystemChannelId);
 		}
 
 		public async Task<IDiscordChannel> GetDefaultChannelAsync()
@@ -69,20 +67,19 @@ namespace Miki.Discord.Internal
 			return await _client.GetChannelAsync(_packet.SystemChannelId.Value);
 		}
 
-		public IDiscordGuildUser GetMember(ulong id)
+		public async Task<IDiscordGuildUser> GetMemberAsync(ulong id)
 		{
-			throw new NotImplementedException();
+			DiscordGuildMemberPacket packet = _packet.Members.FirstOrDefault(x => x.User.Id == id);
+			packet.User = (await _client._apiClient.GetUserAsync(id));
+			return new DiscordGuildUser(packet, _client);
 		}
 
 		public IDiscordGuildUser GetOwner()
 		{
-			throw new NotImplementedException();
+			return Members.FirstOrDefault(x => x.Id == OwnerId);
 		}
 
-		public async Task<IDiscordGuildUser> GetOwnerAsync()
-			=> await _client.GetGuildUserAsync(OwnerId, Id);
-
-		public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user)
+		public GuildPermission GetPermissions(IDiscordGuildUser user)
 		{
 			if (user.Id == OwnerId)
 			{
@@ -96,13 +93,12 @@ namespace Miki.Discord.Internal
 				return GuildPermission.All;
 			}
 
-			IDiscordRole everyoneRole = await GetRoleAsync(Id);
+			IDiscordRole everyoneRole = GetRole(Id);
 			permissions = everyoneRole.Permissions;
 
 			if (user.RoleIds != null)
 			{
-				foreach (IDiscordRole role in (await GetRolesAsync())
-					.Where(x => user.RoleIds.Contains(x.Id)))
+				foreach (IDiscordRole role in Roles.Where(x => user.RoleIds.Contains(x.Id)))
 				{
 					permissions |= role.Permissions;
 				}
@@ -117,41 +113,25 @@ namespace Miki.Discord.Internal
 
 		public IDiscordRole GetRole(ulong id)
 		{
-			throw new NotImplementedException();
+			return Roles.FirstOrDefault(x => x.Id == id);
 		}
 
-		public async Task<IDiscordRole> GetRoleAsync(ulong id)
-			=> (await _client.GetRolesAsync(Id)).FirstOrDefault(x => x.Id == id);
-
-		public async Task<IReadOnlyCollection<IDiscordRole>> GetRolesAsync()
-			=> await _client.GetRolesAsync(Id);
-
 		public async Task<IDiscordGuildUser> GetSelfAsync()
-			=> await _client.GetGuildUserAsync(
-				(await _client.GetCurrentUserAsync()).Id, 
-				Id
-			);
+		{
+			var me = await _client.GetCurrentUserAsync();
+			return Members.FirstOrDefault(x => x.Id == me.Id);
+		}
 
-		public async Task<IReadOnlyCollection<IDiscordChannel>> GetTextChannelsAsync()
+		public IReadOnlyCollection<IDiscordChannel> GetTextChannels()
 		{
 			return _packet.Channels
 				.Where(x => x.Type == ChannelType.GUILDTEXT)
 				.Select(x => new DiscordGuildChannel(x, _client)).ToList();
 		}
 
-		public async Task<IDiscordGuildUser> GetUserAsync(ulong id)
+		public IReadOnlyCollection<IDiscordChannel> GetVoiceChannels()
 		{
-			return await _client.GetGuildUserAsync(id, Id);
-		}
-
-		public Task<IReadOnlyCollection<IDiscordGuildUser>> GetUsersAsync()
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<IReadOnlyCollection<IDiscordChannel>> GetVoiceChannelsAsync()
-		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public async Task RemoveBanAsync(IDiscordGuildUser user)

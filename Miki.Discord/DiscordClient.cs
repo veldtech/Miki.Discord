@@ -1,11 +1,11 @@
 ﻿using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
 using Miki.Discord.Messaging;
 using Miki.Discord.Rest;
-using Miki.Discord.Rest.Entities;
 using Miki.Rest;
 using Newtonsoft.Json;
 using System;
@@ -21,8 +21,9 @@ namespace Miki.Discord
 {
     public partial class DiscordClient
     {
-		public DiscordApiClient _apiClient;
-		public MessageClient _websocketClient;
+		// TODO (Veld): Privatize these again.
+		public IApiClient _apiClient;
+		public IGateway _gateway;
 
 		private ICachePool _cachePool;
 
@@ -34,25 +35,15 @@ namespace Miki.Discord
 				config.Token, config.Pool
 			);
 
-			_websocketClient = new MessageClient(
-				new MessageClientConfiguration
-				{
-					Token = config.Token,
-					ExchangeName = config.RabbitMQExchangeName,
-					MessengerConfigurations = config.RabbitMQUri,
-					QueueName = config.RabbitMQQueueName
-				}
-			);
+			_gateway = config.Gateway;
 
-			_websocketClient.MessageCreate += OnMessageCreate;
-			_websocketClient.MessageUpdate += OnMessageUpdate;
-
-			_websocketClient.GuildCreate += OnGuildJoin;
-			_websocketClient.GuildDelete += OnGuildLeave;
-
-			_websocketClient.UserUpdate += OnUserUpdate;
-
-			_websocketClient.Start();
+			_gateway.OnMessageCreate += OnMessageCreate;
+			_gateway.OnMessageUpdate += OnMessageUpdate;
+					 
+			_gateway.OnGuildCreate += OnGuildJoin;
+			_gateway.OnGuildDelete += OnGuildLeave;
+					 
+			_gateway.OnUserUpdate += OnUserUpdate;
 		}
 
 		public async Task AddBanAsync(ulong guildId, ulong userId, int pruneDays = 7, string reason = null)
@@ -92,7 +83,7 @@ namespace Miki.Discord
 			=> await _apiClient.RemoveGuildMemberAsync(guildId, id);
 
 		public string GetUserAvatarUrl(ulong id, string hash)
-			=> _apiClient.GetUserAvatarUrl(id, hash);
+			=> DiscordHelper.GetAvatarUrl(id, hash);
 
 		public async Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
 			=> (await _apiClient.GetChannelsAsync(guildId))
@@ -160,6 +151,11 @@ namespace Miki.Discord
 
 		public async Task RemoveGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
 			=> await _apiClient.RemoveGuildMemberRoleAsync(guildId, userId, roleId);
+
+		public async Task SetGameAsync(int shardId, DiscordStatus status)
+		{
+			await _gateway.SendAsync(shardId, GatewayOpcode.StatusUpdate, status);
+		}
 
 		public async Task<IDiscordMessage> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs message = null)
 			=> new DiscordMessage(

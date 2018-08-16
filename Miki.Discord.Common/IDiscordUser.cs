@@ -22,6 +22,7 @@ namespace Miki.Discord.Common
 		Task<IDiscordPresence> GetPresenceAsync();
 
 		Task<IDiscordChannel> GetDMChannelAsync();
+
 		string GetAvatarUrl();
     }
 }

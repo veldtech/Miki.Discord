@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+    <ProjectReference Include="..\..\Miki.Net.Websockets\Miki.Net.Websockets\Miki.Net.Websockets.csproj" />
+  </ItemGroup>
+
+</Project>

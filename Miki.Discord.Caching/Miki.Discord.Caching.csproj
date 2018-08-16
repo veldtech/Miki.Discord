@@ -16,4 +16,8 @@
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+  </ItemGroup>
+
 </Project>

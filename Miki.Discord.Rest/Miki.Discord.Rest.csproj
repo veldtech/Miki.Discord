@@ -17,4 +17,8 @@
     <PackageReference Include="Miki.Rest" Version="1.5.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+  </ItemGroup>
+
 </Project>
