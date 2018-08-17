@@ -1,0 +1,8 @@
+language: csharp
+solution: Miki.Discord.sln
+mono: none
+dotnet: 2.1.2
+script:
+ - dotnet restore 
+ - dotnet build
+ - dotnet test
