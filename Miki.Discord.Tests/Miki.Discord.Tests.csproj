@@ -8,14 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="Miki.Cache.InMemory" Version="0.1.0" />
+    <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Miki.Cache\Miki.Cache.InMemory\Miki.Cache.InMemory.csproj" />
-    <ProjectReference Include="..\..\Miki.Serialization\Miki.Serialization.Protobuf\Miki.Serialization.Protobuf.csproj" />
     <ProjectReference Include="..\Miki.Discord.Caching\Miki.Discord.Caching.csproj" />
     <ProjectReference Include="..\Miki.Discord.Tests.Dummy\Miki.Discord.Tests.Dummy.csproj" />
     <ProjectReference Include="..\Miki.Discord\Miki.Discord.csproj" />
