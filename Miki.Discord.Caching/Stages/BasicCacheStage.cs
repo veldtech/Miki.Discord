@@ -2,7 +2,6 @@
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Rest.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +12,7 @@ namespace Miki.Discord.Caching.Stages
 {
 	public class BasicCacheStage : ICacheStage
 	{
+		#region constants
 		string ChannelCacheKey(ulong id)
 			=> $"discord:channel:{id}";
 
@@ -24,6 +24,7 @@ namespace Miki.Discord.Caching.Stages
 
 		string UserInGuilds(ulong id)
 			=> $"{UserCacheKey(id)}:guilds";
+		#endregion
 
 		public void Initialize(CacheClient client)
 		{
@@ -102,8 +103,20 @@ namespace Miki.Discord.Caching.Stages
 			}
 
 			p.Members.RemoveAll(x => x.User.Id == user.Id);
+			p.MemberCount = p.Members.Count;
 
 			await cache.UpsertAsync(GuildCacheKey(guildId), p);
+
+			HashSet<ulong> allGuilds = await cache.GetAsync<HashSet<ulong>>(UserInGuilds(user.Id));
+
+			if (allGuilds == null)
+			{
+				allGuilds = new HashSet<ulong>();
+			}
+
+			allGuilds.Remove(guildId);
+
+			await cache.UpsertAsync(UserInGuilds(user.Id), allGuilds);
 		}
 
 		private async Task OnGuildMemberAdd(DiscordGuildMemberPacket member, ICacheClient cache)
@@ -115,6 +128,10 @@ namespace Miki.Discord.Caching.Stages
 				return;
 			}
 
+			if(p.Members == null)
+			{
+				p.Members = new List<DiscordGuildMemberPacket>();
+			}
 
 			int index = p.Members.FindIndex(x => x.User.Id == member.User.Id);
 
@@ -127,7 +144,20 @@ namespace Miki.Discord.Caching.Stages
 				p.Members[index] = member;
 			}
 
+			p.MemberCount = p.Members.Count;
+
 			await cache.UpsertAsync(GuildCacheKey(member.GuildId), p);
+
+			HashSet<ulong> allGuilds = await cache.GetAsync<HashSet<ulong>>(UserInGuilds(member.User.Id));
+
+			if(allGuilds == null)
+			{
+				allGuilds = new HashSet<ulong>();
+			}
+
+			allGuilds.Add(member.GuildId);
+
+			await cache.UpsertAsync(UserInGuilds(member.User.Id), allGuilds);
 		}
 
 		private async Task OnGuildDelete(DiscordGuildUnavailablePacket unavailableGuild, ICacheClient cache)
@@ -188,7 +218,7 @@ namespace Miki.Discord.Caching.Stages
 		{
 			if(channel.GuildId.HasValue)
 			{
-				DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(ChannelCacheKey(channel.Id));
+				DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(channel.GuildId.Value));
 
 				if (guild != null)
 				{

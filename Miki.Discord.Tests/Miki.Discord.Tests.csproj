@@ -13,4 +13,12 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Cache\Miki.Cache.InMemory\Miki.Cache.InMemory.csproj" />
+    <ProjectReference Include="..\..\Miki.Serialization\Miki.Serialization.Protobuf\Miki.Serialization.Protobuf.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Caching\Miki.Discord.Caching.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Tests.Dummy\Miki.Discord.Tests.Dummy.csproj" />
+    <ProjectReference Include="..\Miki.Discord\Miki.Discord.csproj" />
+  </ItemGroup>
+
 </Project>

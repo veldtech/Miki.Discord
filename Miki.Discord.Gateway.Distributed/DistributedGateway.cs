@@ -4,7 +4,6 @@ using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
-using Miki.Discord.Rest.Entities;
 using Miki.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

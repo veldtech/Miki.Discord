@@ -1,5 +1,5 @@
 ﻿using Miki.Discord.Common;
-using Miki.Discord.Rest.Entities;
+using Miki.Discord.Common.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;

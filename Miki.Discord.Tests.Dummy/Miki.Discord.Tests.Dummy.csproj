@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+  </ItemGroup>
+
 </Project>

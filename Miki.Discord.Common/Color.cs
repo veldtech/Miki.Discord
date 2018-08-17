@@ -10,7 +10,7 @@ namespace Miki.Discord.Rest
 		public byte G => (byte)(_value >> 8);
 		public byte B => (byte)(_value);
 
-		private uint _value;
+		private readonly uint _value;
 
 		public Color(uint baseValue)
 		{

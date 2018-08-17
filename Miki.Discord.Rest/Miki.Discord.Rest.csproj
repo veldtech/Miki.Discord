@@ -11,8 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Cache" Version="0.3.0" />
-    <PackageReference Include="Miki.Discord.Common" Version="1.0.3" />
+    <PackageReference Include="Miki.Cache" Version="0.4.1" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
     <PackageReference Include="Miki.Rest" Version="1.5.1" />
   </ItemGroup>

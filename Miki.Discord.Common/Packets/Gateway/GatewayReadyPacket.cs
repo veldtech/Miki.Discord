@@ -1,5 +1,4 @@
 ﻿using Miki.Discord.Common.Packets;
-using Miki.Discord.Rest.Entities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

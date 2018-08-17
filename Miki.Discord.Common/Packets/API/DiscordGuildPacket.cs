@@ -1,5 +1,4 @@
-﻿using Miki.Discord.Rest.Entities;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -126,7 +125,7 @@ namespace Miki.Discord.Common.Packets
 
 		[JsonProperty("voice_states")]
 		[ProtoMember(26)]
-		public List<DiscordVoiceState> VoiceStates;
+		public List<DiscordVoiceStatePacket> VoiceStates;
 		
 		[JsonProperty("members")]
 		[ProtoMember(27)]

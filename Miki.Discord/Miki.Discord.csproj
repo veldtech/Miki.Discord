@@ -19,10 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Cache" Version="0.3.0" />
-    <PackageReference Include="Miki.Discord.Common" Version="1.1.0" />
+    <PackageReference Include="Miki.Cache" Version="0.4.1" />
     <PackageReference Include="Miki.Discord.Messaging" Version="1.1.0" />
-    <PackageReference Include="Miki.Discord.Rest" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 

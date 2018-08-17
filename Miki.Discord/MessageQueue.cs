@@ -1,5 +1,4 @@
-﻿using Miki.Discord.Rest.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -11,6 +10,6 @@ namespace Miki.Discord.Rest
 	/// </summary>
 	internal class MessageQueue
 	{
-		SemaphoreSlim semaphore = new SemaphoreSlim(1);
+		readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using Miki.Discord.Common.Packets;
-using Miki.Discord.Rest.Entities;
 using Newtonsoft.Json;
 using ProtoBuf;
 using System;
@@ -35,7 +34,7 @@ namespace Miki.Discord.Common
 
 	public static class Utils
 	{
-		public static T ParseEnum<T>(string enumValue, bool ignoreCase = true) where T : Enum
+		public static T ParseEnum<T>(string enumValue, bool ignoreCase = true) where T : struct
 		{
 			return (T)Enum.Parse(typeof(T), enumValue, ignoreCase);
 		}
