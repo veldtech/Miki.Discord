@@ -63,11 +63,11 @@ namespace Miki.Discord.Common.Packets
 
 		[JsonProperty("roles")]
 		[ProtoMember(14)]
-		public List<DiscordRolePacket> Roles;
+		public List<DiscordRolePacket> Roles = new List<DiscordRolePacket>();
 
 		[JsonProperty("emojis")]
 		[ProtoMember(15)]
-		public List<DiscordEmojiPacket> Emojis;
+		public List<DiscordEmojiPacket> Emojis = new List<DiscordEmojiPacket>();
 
 		[JsonProperty("features")]
 		[ProtoMember(16)]
@@ -129,15 +129,15 @@ namespace Miki.Discord.Common.Packets
 		
 		[JsonProperty("members")]
 		[ProtoMember(27)]
-		public List<DiscordGuildMemberPacket> Members;
+		public List<DiscordGuildMemberPacket> Members = new List<DiscordGuildMemberPacket>();
 
 		[JsonProperty("channels")]
 		[ProtoMember(28)]
-		public List<DiscordChannelPacket> Channels;
+		public List<DiscordChannelPacket> Channels = new List<DiscordChannelPacket>();
 
 		[JsonProperty("presences")]
 		[ProtoMember(29)]
-		public List<DiscordPresencePacket> Presences;
+		public List<DiscordPresencePacket> Presences = new List<DiscordPresencePacket>();
 
 		[JsonProperty("owner")]
 		[ProtoMember(30)]

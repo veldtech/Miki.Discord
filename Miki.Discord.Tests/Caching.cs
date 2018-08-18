@@ -8,6 +8,7 @@ using Miki.Discord.Tests.Dummy;
 using Miki.Serialization.Protobuf;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -124,7 +125,7 @@ namespace Miki.Discord.Tests
 		}
 
 		[Fact]
-		public async Task GuildMemberAddAsync()
+		public async Task GuildMemberAsync()
 		{
 			ResetObjects();
 
@@ -134,16 +135,42 @@ namespace Miki.Discord.Tests
 
 			DiscordGuildPacket g = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
 
+			Assert.Equal(g.Members.Count, g.MemberCount);
 			Assert.NotEmpty(g.Members);
 
 			HashSet<ulong> guildsJoined = await pool.Get.GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
 
 			Assert.NotEmpty(guildsJoined);
 			Assert.Collection(guildsJoined, x => Assert.Equal(guild.Id, x));
+
+			await gateway.OnGuildMemberUpdate(new Common.Events.GuildMemberUpdateEventArgs
+			{
+				GuildId = guild.Id,
+				Nickname = "new nick",
+				RoleIds = new ulong[] { },
+				User = user
+			});
+
+			g = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.NotEmpty(g.Members);
+			Assert.Equal(g.Members.Count, g.MemberCount);
+			Assert.Equal("new nick", g.Members[0].Nickname);
+
+			await gateway.OnGuildMemberRemove(guild.Id, user);
+
+			g = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.Empty(g.Members);
+			Assert.Equal(g.Members.Count, g.MemberCount);
+
+			guildsJoined = await pool.Get.GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
+
+			Assert.Empty(guildsJoined);
 		}
 
 		[Fact]
-        public async Task ChannelUpdateAsync()
+        public async Task ChannelAsync()
         {
 			ResetObjects();
 
@@ -166,6 +193,60 @@ namespace Miki.Discord.Tests
 
 			Assert.Equal("new test channel", newChannel.Name);
 			Assert.Equal("new test channel", newGuild.Channels[0].Name);
+
+
+			DiscordChannelPacket otherChannel = new DiscordChannelPacket
+			{
+				GuildId = guild.Id,
+				Id = 451,
+				Name = "another channel",
+				Type = ChannelType.GUILDTEXT,
+				IsNsfw = false,
+				Topic = "lol this is a channel",
+			};
+
+			await gateway.OnChannelCreate(otherChannel);
+
+			DiscordChannelPacket otherAddedChannel = await pool.Get.GetAsync<DiscordChannelPacket>($"discord:channel:{otherChannel.Id}");
+			newGuild = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.False(newGuild.Channels.First(x => x.Id == 451).IsNsfw);
+
+			Assert.Equal("another channel", otherAddedChannel.Name);
+			Assert.Equal("another channel", newGuild.Channels.First(x => x.Id == 451).Name);
+
+			Assert.NotNull(otherAddedChannel);
+			Assert.Equal("another channel", otherAddedChannel.Name);
+			Assert.Equal(ChannelType.GUILDTEXT, otherAddedChannel.Type);
+			Assert.False(otherChannel.IsNsfw);
+			Assert.Equal("lol this is a channel", otherAddedChannel.Topic);
+
+			await gateway.OnChannelDelete(otherChannel);
+			otherAddedChannel = await pool.Get.GetAsync<DiscordChannelPacket>($"discord:channel:{otherChannel.Id}");
+
+			Assert.Null(otherAddedChannel);
+		}
+
+		[Fact]
+		public async Task GuildAsync()
+		{
+			ResetObjects();
+
+			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
+			{
+				GuildId = guild.Id,
+				IsUnavailable = true
+			});
+
+			var deletedGuild = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.Null(deletedGuild);
+
+			await gateway.OnGuildCreate(guild);
+
+			deletedGuild = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.NotNull(deletedGuild);
 		}
 	}
 }

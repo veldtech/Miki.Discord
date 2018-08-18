@@ -228,6 +228,10 @@ namespace Miki.Discord.Caching.Stages
 					{
 						guild.Channels[index] = channel;
 					}
+					else
+					{
+						guild.Channels.Add(channel);
+					}
 
 					await cache.UpsertAsync(GuildCacheKey(channel.GuildId.Value), guild);
 				}
