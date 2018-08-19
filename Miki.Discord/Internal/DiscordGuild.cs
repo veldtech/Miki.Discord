@@ -66,11 +66,16 @@ namespace Miki.Discord.Internal
 			return await _client.GetChannelAsync(_packet.SystemChannelId.Value);
 		}
 
-		public async Task<IDiscordGuildUser> GetMemberAsync(ulong id)
+		public IDiscordGuildUser GetMember(ulong id)
 		{
-			DiscordGuildMemberPacket packet = _packet.Members.FirstOrDefault(x => x.User.Id == id);
-			packet.User = (await _client._apiClient.GetUserAsync(id));
-			return new DiscordGuildUser(packet, _client);
+			DiscordGuildMemberPacket guildMemberPacket = _packet.Members.FirstOrDefault(x => x.User.Id == id);
+
+			if (guildMemberPacket == null)
+			{
+				return null;
+			}
+
+			return new DiscordGuildUser(guildMemberPacket, _client);
 		}
 
 		public IDiscordGuildUser GetOwner()

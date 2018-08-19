@@ -3,7 +3,6 @@ using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Messaging;
 using Miki.Discord.Rest;
 using Miki.Logging;
 using System;

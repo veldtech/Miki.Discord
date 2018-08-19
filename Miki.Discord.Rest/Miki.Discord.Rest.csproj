@@ -7,17 +7,14 @@
     <Company>Velddev</Company>
     <Product>Miki.Discord.Rest</Product>
     <Authors>Velddev</Authors>
-    <Version>2.0.4</Version>
+    <Version>2.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Miki.Cache" Version="0.4.1" />
+    <PackageReference Include="Miki.Discord.Common" Version="1.3.1" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
-    <PackageReference Include="Miki.Rest" Version="1.5.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+    <PackageReference Include="Miki.Rest" Version="1.6.0" />
   </ItemGroup>
 
 </Project>

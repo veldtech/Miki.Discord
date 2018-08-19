@@ -38,7 +38,7 @@ namespace Miki.Discord.Common
 		/// </summary>
 		/// <param name="id">specified guildmember id</param>
 		/// <returns></returns>
-		Task<IDiscordGuildUser> GetMemberAsync(ulong id);
+		IDiscordGuildUser GetMember(ulong id);
 
 		Task<IDiscordGuildUser> GetSelfAsync();
 
