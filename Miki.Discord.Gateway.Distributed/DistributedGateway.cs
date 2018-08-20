@@ -43,7 +43,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 		public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
 
-		public Func<Task> OnReady { get; set; }
+		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
 
 		public Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
 
@@ -372,7 +372,9 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if(OnReady != null)
 						{
-							await OnReady();
+							await OnReady(
+								body.Data.ToObject<GatewayReadyPacket>()
+							);
 						}
 					}
 					break;

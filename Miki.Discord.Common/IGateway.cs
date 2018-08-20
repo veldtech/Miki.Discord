@@ -37,7 +37,7 @@ namespace Miki.Discord.Common
 
 		Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
 
-		Func<Task> OnReady { get; set; }
+		Func<GatewayReadyPacket, Task> OnReady { get; set; }
 
 		Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
 

@@ -2,6 +2,7 @@
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway;
+using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
 using Miki.Discord.Rest;
@@ -182,7 +183,11 @@ namespace Miki.Discord
 		public event Func<IDiscordMessage, Task> MessageUpdate;
 
 		public event Func<IDiscordGuild, Task> GuildJoin;
+		public event Func<IDiscordGuild, Task> GuildAvailable;
+
 		public event Func<ulong, Task> GuildLeave;
+
+		public event Func<GatewayReadyPacket, Task> Ready;
 
 		public event Func<IDiscordUser, IDiscordUser, Task> UserUpdate;
 
@@ -204,9 +209,22 @@ namespace Miki.Discord
 
 		private async Task OnGuildJoin(DiscordGuildPacket guild)
 		{
-			if(GuildJoin != null)
+			ICacheClient cache = _cachePool.Get;
+			DiscordGuild g = new DiscordGuild(guild, this);
+
+			if (!await cache.ExistsAsync($"discord:guild:{guild.Id}"))
 			{
-				await GuildJoin(new DiscordGuild(guild, this));
+				if (GuildJoin != null)
+				{
+					await GuildJoin(g);
+				}
+			}
+			else
+			{
+				if(GuildAvailable != null)
+				{
+					await GuildAvailable(g);
+				}
 			}
 		}
 
@@ -226,6 +244,14 @@ namespace Miki.Discord
 					await GetUserAsync(user.Id),
 					new DiscordUser(user, this)
 				);
+			}
+		}
+
+		private async Task OnReady(GatewayReadyPacket readyPacket)
+		{
+			if(Ready != null)
+			{
+				await Ready(readyPacket);
 			}
 		}
 	}

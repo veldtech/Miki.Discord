@@ -27,6 +27,7 @@ namespace Miki.Discord.Mocking
 
 		public async Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args)
 		{
+			await Task.Yield();
 			return new DiscordRolePacket
 			{
 				Color = args.Color ?? 0,

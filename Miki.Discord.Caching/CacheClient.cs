@@ -2,6 +2,7 @@
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
 using Miki.Logging;
@@ -33,6 +34,8 @@ namespace Miki.Discord.Caching
 		public Func<ulong, DiscordRolePacket, ICacheClient, Task> OnGuildRoleCreate;
 		public Func<ulong, DiscordRolePacket, ICacheClient, Task> OnGuildRoleUpdate;
 		public Func<ulong, ulong, ICacheClient, Task> OnGuildRoleDelete;
+
+		public Func<GatewayReadyPacket, ICacheClient, Task> OnReady;
 
 		public Func<DiscordUserPacket, ICacheClient, Task> OnUserUpdate;
 

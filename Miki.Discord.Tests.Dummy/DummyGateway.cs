@@ -31,7 +31,7 @@ namespace Miki.Discord.Tests.Dummy
 		public Func<MessageDeleteArgs, Task> OnMessageDelete { get; set; }
 		public Func<DiscordMessagePacket, Task> OnMessageDeleteBulk { get; set; }
 		public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
-		public Func<Task> OnReady { get; set; }
+		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
 		public Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
 		public Func<GatewayMessage, Task> OnPacketSent { get; set; }
 		public Func<GatewayMessage, Task> OnPacketReceived { get; set; }

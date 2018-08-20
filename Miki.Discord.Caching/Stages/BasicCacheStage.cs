@@ -1,6 +1,7 @@
 ﻿using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,16 @@ namespace Miki.Discord.Caching.Stages
 			client.OnGuildMemberUpdate += OnGuildMemberUpdate;
 
 			client.OnUserUpdate += OnUserUpdate;
+
+			client.OnReady += OnReady;
+		}
+
+		private async Task OnReady(GatewayReadyPacket ready, ICacheClient cache)
+		{
+			foreach(var guildPacket in ready.Guilds)
+			{
+				await cache.UpsertAsync(GuildCacheKey(guildPacket.Id), guildPacket);
+			}
 		}
 
 		private async Task OnUserUpdate(DiscordUserPacket user, ICacheClient cache)
