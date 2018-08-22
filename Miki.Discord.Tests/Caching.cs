@@ -1,6 +1,7 @@
 using Miki.Cache;
 using Miki.Cache.InMemory;
 using Miki.Discord.Caching;
+using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Mocking;
@@ -27,6 +28,7 @@ namespace Miki.Discord.Tests
 		DiscordGuildPacket guild;
 		DiscordGuildMemberPacket member;
 		DiscordUserPacket user;
+		DiscordRolePacket role;
 
 		public Caching()
 		{
@@ -44,6 +46,20 @@ namespace Miki.Discord.Tests
 				pool,
 				new DummyApiClient()
 			);
+
+			new BasicCacheStage().Initialize(cache);
+
+			role = new DiscordRolePacket
+			{
+				Color = 2342,
+				Id = 999,
+				IsHoisted = true,
+				Managed = false,
+				Mentionable = true,
+				Name = "test role",
+				Permissions = 34234,
+				Position = 0
+			};
 
 			channel = new DiscordChannelPacket
 			{
@@ -247,6 +263,44 @@ namespace Miki.Discord.Tests
 			deletedGuild = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
 
 			Assert.NotNull(deletedGuild);
+		}
+
+		[Fact]
+		public async Task RoleAsync()
+		{
+			ResetObjects();
+
+			await gateway.OnGuildRoleCreate(guild.Id, role);
+
+			var updatedGuild = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.NotEmpty(updatedGuild.Roles); 
+			Assert.Contains(updatedGuild.Roles, x => x.Id == role.Id);
+
+			DiscordRolePacket updatedRole = updatedGuild.Roles.First();
+
+			Assert.Equal(role.Name, updatedRole.Name);
+
+			updatedRole.Name = "new role";
+			updatedRole.Permissions = 123429;
+
+			await gateway.OnGuildRoleUpdate(guild.Id, updatedRole);
+
+			updatedGuild = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.NotEmpty(updatedGuild.Roles);
+			Assert.Contains(updatedGuild.Roles, x => x.Id == role.Id);
+
+			updatedRole = updatedGuild.Roles.First();
+
+			Assert.Equal(123429, updatedRole.Permissions);
+			Assert.Equal("new role", updatedRole.Name);
+
+			await gateway.OnGuildRoleDelete(guild.Id, updatedRole.Id);
+
+			updatedGuild = await pool.Get.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+
+			Assert.Empty(updatedGuild.Roles);
 		}
 	}
 }

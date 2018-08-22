@@ -70,7 +70,13 @@ namespace Miki.Discord.Internal
 			=> await _client.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 
 		public string GetAvatarUrl()
-			=>	_client.GetUserAvatarUrl(_packet.User.Id, _packet.User.Avatar);
+		{
+			if(string.IsNullOrEmpty(_packet.User.Avatar))
+			{
+				return _client.GetUserAvatarUrl(ushort.Parse(_packet.User.Discriminator));
+			}
+			return _client.GetUserAvatarUrl(_packet.User.Id, _packet.User.Avatar);
+		}
 
 		public async Task<IDiscordChannel> GetDMChannelAsync()
 			=> await _client.CreateDMAsync(_packet.User.Id);

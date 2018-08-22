@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Caching
 {
-    public class CacheClient
-    {
+	public class CacheClient
+	{
 		IGateway _gateway;
 		ICachePool _cacheClient;
 		public readonly IApiClient ApiClient;
@@ -155,8 +155,6 @@ namespace Miki.Discord.Caching
 					await OnGuildRoleUpdate(guildId, role, _cacheClient.Get);
 				}
 			};
-
-			new BasicCacheStage().Initialize(this);
 
 			// TODO (Veld): reimplement
 			//_gateway.OnPresenceUpdate += OnPresenceUpdate;

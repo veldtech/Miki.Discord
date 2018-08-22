@@ -39,7 +39,13 @@ namespace Miki.Discord.Internal
 			=> _user.Avatar;
 
 		public string GetAvatarUrl()
-			=> _client.GetUserAvatarUrl(Id, AvatarId);
+		{
+			if (string.IsNullOrWhiteSpace(AvatarId))
+			{
+				return _client.GetUserAvatarUrl(ushort.Parse(Discriminator));
+			}
+			return _client.GetUserAvatarUrl(Id, AvatarId);
+		}
 
 		public string Mention
 			=> $"<@{Id}>";

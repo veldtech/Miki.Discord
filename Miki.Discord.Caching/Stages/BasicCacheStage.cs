@@ -3,6 +3,7 @@ using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
+using Miki.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,9 +44,63 @@ namespace Miki.Discord.Caching.Stages
 			client.OnGuildMemberRemove += OnGuildMemberRemove;
 			client.OnGuildMemberUpdate += OnGuildMemberUpdate;
 
+			client.OnGuildRoleCreate += OnRoleCreate;
+			client.OnGuildRoleUpdate += OnRoleCreate;
+
+			client.OnGuildRoleDelete += OnRoleDelete;
+
 			client.OnUserUpdate += OnUserUpdate;
 
 			client.OnReady += OnReady;
+		}
+
+		private async Task OnRoleDelete(ulong guildId, ulong roleId, ICacheClient cache)
+		{
+			DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(guildId));
+
+			if (guild == null)
+			{
+				Log.Debug("Tried to Update/Create role, but guild is not in cache.");
+				return;
+			}
+
+			if (guild.Roles == null)
+			{
+				guild.Roles = new List<DiscordRolePacket>();
+			}
+
+			int index = guild.Roles.RemoveAll(x => x.Id == roleId);
+
+			await cache.UpsertAsync(GuildCacheKey(guildId), guild);
+		}
+
+		private async Task OnRoleCreate(ulong guildId, DiscordRolePacket role, ICacheClient cache)
+		{
+			DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(guildId));
+
+			if(guild == null)
+			{
+				Log.Debug("Tried to Update/Create role, but guild is not in cache.");
+				return;
+			}
+
+			if (guild.Roles == null)
+			{
+				guild.Roles = new List<DiscordRolePacket>();
+			}
+
+			int index = guild.Roles.FindIndex(x => x.Id == role.Id);
+
+			if (index != -1)
+			{
+				guild.Roles[index] = role;
+			}
+			else
+			{
+				guild.Roles.Add(role);
+			}
+
+			await cache.UpsertAsync(GuildCacheKey(guildId), guild);
 		}
 
 		private async Task OnReady(GatewayReadyPacket ready, ICacheClient cache)

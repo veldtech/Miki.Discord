@@ -13,5 +13,7 @@ namespace Miki.Discord.Common
 		public static string GetAvatarUrl(ulong id, string hash)
 			=> $"{CdnUrl}/avatars/{id}/{hash}.png";
 
+		public static string GetAvatarUrl(ushort discriminator)
+			=> $"{CdnUrl}/avatars/{discriminator}.png";
 	}
 }

@@ -85,6 +85,9 @@ namespace Miki.Discord
 		public string GetUserAvatarUrl(ulong id, string hash)
 			=> DiscordHelper.GetAvatarUrl(id, hash);
 
+		public string GetUserAvatarUrl(ushort discriminator)
+			=> DiscordHelper.GetAvatarUrl(discriminator);
+
 		public async Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
 			=> (await _apiClient.GetChannelsAsync(guildId))
 				.Select(x => new DiscordGuildChannel(x, this))
