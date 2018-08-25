@@ -109,7 +109,7 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task RemoveGuildMemberAsync(ulong guildId, ulong userId)
+		public Task RemoveGuildMemberAsync(ulong guildId, ulong userId, string reason = null)
 		{
 			throw new NotImplementedException();
 		}

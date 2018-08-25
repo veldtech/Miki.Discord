@@ -375,13 +375,20 @@ namespace Miki.Discord.Rest
 			}
 		}
 
-		public async Task RemoveGuildMemberAsync(ulong guildId, ulong userId)
+		public async Task RemoveGuildMemberAsync(ulong guildId, ulong userId, string reason = null)
 		{
 			var cacheClient = cache.Get;
 			{
+				QueryString qs = new QueryString();
+
+				if (!string.IsNullOrWhiteSpace(reason))
+				{
+					qs.Add("reason", reason);
+				}
+
 				await RatelimitHelper.ProcessRateLimitedAsync(
 					$"guilds:{guildId}", cacheClient,
-					async () => await _restClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoute(guildId, userId))
+					async () => await _restClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoute(guildId, userId) + qs.Query)
 				);
 			}
 		}

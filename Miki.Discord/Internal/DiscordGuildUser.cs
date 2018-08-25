@@ -83,8 +83,8 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordGuild> GetGuildAsync()
 			=> await _client.GetGuildAsync(_packet.GuildId);
 
-		public async Task KickAsync(string reason = "")
-			=> await _client.RemoveGuildMemberAsync(GuildId, Id);
+		public async Task KickAsync(string reason = null)
+			=> await _client.RemoveGuildMemberAsync(GuildId, Id, reason);
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
 			=> await _client.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);

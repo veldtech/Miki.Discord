@@ -45,7 +45,7 @@ namespace Miki.Discord.Internal
 
 		public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{
-			await _client.AddBanAsync(Id, user.Id);
+			await _client.AddBanAsync(Id, user.Id, pruneDays, reason);
 		}
 
 		public async Task<IDiscordRole> CreateRoleAsync(CreateRoleArgs roleParams = null)

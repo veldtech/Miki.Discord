@@ -79,8 +79,8 @@ namespace Miki.Discord
 				.Select(x => new DiscordRole(x, this))
 				.ToList();
 
-		public async Task RemoveGuildMemberAsync(ulong guildId, ulong id)
-			=> await _apiClient.RemoveGuildMemberAsync(guildId, id);
+		public async Task RemoveGuildMemberAsync(ulong guildId, ulong id, string reason = null)
+			=> await _apiClient.RemoveGuildMemberAsync(guildId, id, reason);
 
 		public string GetUserAvatarUrl(ulong id, string hash)
 			=> DiscordHelper.GetAvatarUrl(id, hash);

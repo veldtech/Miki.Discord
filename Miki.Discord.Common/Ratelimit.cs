@@ -1,4 +1,5 @@
 ﻿using ProtoBuf;
+using System;
 
 namespace Miki.Discord.Rest
 {
@@ -16,5 +17,17 @@ namespace Miki.Discord.Rest
 
 		[ProtoMember(4)]
 		public int? Global { get; set; }
+
+		public bool IsRatelimited()
+		{
+			return IsRatelimited(this);
+		}
+
+		public static bool IsRatelimited(Ratelimit rl)
+		{
+			return ((rl?.Global ?? 1) <= 0 
+					|| (rl?.Remaining ?? 1) <= 0) 
+				&& DateTime.UtcNow <= DateTimeOffset.FromUnixTimeSeconds(rl?.Reset ?? 0);
+		}
 	}
 }

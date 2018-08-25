@@ -20,7 +20,7 @@ namespace Miki.Discord.Rest
 				await cache.UpsertAsync(key, rateLimit);
 			}
 
-			if (!IsRatelimited(rateLimit))
+			if (!Ratelimit.IsRatelimited(rateLimit))
 			{
 				var response = await t();
 				await HandleRateLimit(cache, response, rateLimit, key);
@@ -36,7 +36,7 @@ namespace Miki.Discord.Rest
 				await cache.UpsertAsync(key, rateLimit);
 			}
 
-			if(!IsRatelimited(rateLimit))
+			if(!Ratelimit.IsRatelimited(rateLimit))
 			{
 				var response = await t();
 				await HandleRateLimit(cache, response, rateLimit, key);
@@ -47,7 +47,7 @@ namespace Miki.Discord.Rest
 
 		private static async Task HandleRateLimit(ICacheClient cache, RestResponse rc, Ratelimit ratelimit, string key)
 		{
-			if (!IsRatelimited(ratelimit))
+			if (!Ratelimit.IsRatelimited(ratelimit))
 			{
 				if (rc.HttpResponseMessage.Headers.Contains("X-RateLimit-Limit"))
 				{
@@ -62,11 +62,6 @@ namespace Miki.Discord.Rest
 					await cache.UpsertAsync(key, ratelimit);
 				}
 			}
-		}
-
-		private static bool IsRatelimited(Ratelimit rl)
-		{
-			return (rl?.Remaining ?? 1) <= 0 && DateTime.UtcNow <= DateTimeOffset.FromUnixTimeSeconds(rl?.Reset ?? 0);
 		}
 	}
 }

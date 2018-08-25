@@ -46,7 +46,7 @@ namespace Miki.Discord.Common
 
 		Task RemoveGuildBanAsync(ulong guildId, ulong userId);
 
-		Task RemoveGuildMemberAsync(ulong guildId, ulong userId);
+		Task RemoveGuildMemberAsync(ulong guildId, ulong userId, string reason = null);
 
 		Task RemoveGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId);
 
