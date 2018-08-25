@@ -12,11 +12,13 @@ namespace Miki.Discord.Internal
     {
 		DiscordGuildMemberPacket _packet;
 		DiscordClient _client;
+		IDiscordGuild _guild;
 
-		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client)
+		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client, IDiscordGuild guild)
 		{
 			_packet = packet;
 			_client = client;
+			_guild = guild;
 		}
 
 		public ulong Id
@@ -53,10 +55,10 @@ namespace Miki.Discord.Internal
 		{
 			get
 			{
-				if (RoleIds != null && RoleIds.Count > 0)
+				if (RoleIds.Count > 0)
 				{
-					return _client.GetRolesAsync(GuildId).Result
-					  .Where(x => RoleIds?.Contains(x.Id) ?? false)
+					return _guild.Roles
+					  .Where(x => RoleIds.Contains(x.Id))
 					  .Max(x => x.Position);
 				}
 				return 0;
@@ -69,14 +71,8 @@ namespace Miki.Discord.Internal
 		public async Task AddRoleAsync(IDiscordRole role)
 			=> await _client.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 
-		public string GetAvatarUrl()
-		{
-			if(string.IsNullOrEmpty(_packet.User.Avatar))
-			{
-				return _client.GetUserAvatarUrl(ushort.Parse(_packet.User.Discriminator));
-			}
-			return _client.GetUserAvatarUrl(_packet.User.Id, _packet.User.Avatar);
-		}
+		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
+			=> DiscordHelper.GetAvatarUrl(_packet.User, type, size);
 
 		public async Task<IDiscordChannel> GetDMChannelAsync()
 			=> await _client.CreateDMAsync(_packet.User.Id);

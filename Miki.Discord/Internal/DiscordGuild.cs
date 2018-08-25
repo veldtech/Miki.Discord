@@ -38,7 +38,7 @@ namespace Miki.Discord.Internal
 			=> _packet.Channels.Select(x => new DiscordGuildChannel(x, _client)).ToList();
 
 		public IReadOnlyCollection<IDiscordGuildUser> Members 
-			=> _packet.Members.Select(x => new DiscordGuildUser(x, _client)).ToList();
+			=> _packet.Members.Select(x => new DiscordGuildUser(x, _client, this)).ToList();
 
 		public IReadOnlyCollection<IDiscordRole> Roles 
 			=> _packet.Roles.Select(x => new DiscordRole(x, _client)).ToList();
@@ -75,7 +75,7 @@ namespace Miki.Discord.Internal
 				return null;
 			}
 
-			return new DiscordGuildUser(guildMemberPacket, _client);
+			return new DiscordGuildUser(guildMemberPacket, _client, this);
 		}
 
 		public IDiscordGuildUser GetOwner()

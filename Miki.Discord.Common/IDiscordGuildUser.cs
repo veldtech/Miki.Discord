@@ -12,6 +12,7 @@ namespace Miki.Discord.Common
 		IReadOnlyCollection<ulong> RoleIds { get; }
 
 		ulong GuildId { get; }
+
 		DateTimeOffset JoinedAt { get; }
 
 		int Hierarchy { get; }

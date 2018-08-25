@@ -25,7 +25,7 @@ namespace Miki.Discord.Common.Packets
 
 		[ProtoMember(4)]
 		[JsonProperty("roles")]
-		public List<ulong> Roles { get; set; }
+		public List<ulong> Roles { get; set; } = new List<ulong>();
 
 		[ProtoMember(5)]
 		public long JoinedAt { get; set; }

@@ -38,14 +38,8 @@ namespace Miki.Discord.Internal
 		public string AvatarId 
 			=> _user.Avatar;
 
-		public string GetAvatarUrl()
-		{
-			if (string.IsNullOrWhiteSpace(AvatarId))
-			{
-				return _client.GetUserAvatarUrl(ushort.Parse(Discriminator));
-			}
-			return _client.GetUserAvatarUrl(Id, AvatarId);
-		}
+		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
+			=> DiscordHelper.GetAvatarUrl(_user, type, size);
 
 		public string Mention
 			=> $"<@{Id}>";

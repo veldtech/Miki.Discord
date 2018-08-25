@@ -10,8 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="Miki.Cache" Version="0.4.1" />
-    <PackageReference Include="Miki.Discord.Rest" Version="2.1.2" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
   </ItemGroup>
 
 </Project>

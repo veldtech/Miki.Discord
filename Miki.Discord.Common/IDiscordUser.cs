@@ -23,6 +23,6 @@ namespace Miki.Discord.Common
 
 		Task<IDiscordChannel> GetDMChannelAsync();
 
-		string GetAvatarUrl();
+		string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256);
     }
 }

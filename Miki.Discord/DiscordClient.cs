@@ -141,10 +141,7 @@ namespace Miki.Discord
 			);
 
 		public async Task<IDiscordGuildUser> GetGuildUserAsync(ulong id, ulong guildId)
-			=> new DiscordGuildUser(
-				await _apiClient.GetGuildUserAsync(id, guildId), 
-				this
-			);
+			=> (await GetGuildAsync(guildId)).GetMember(id);
 
 		public async Task DeleteMessageAsync(ulong channelId, ulong messageId)
 			=> await _apiClient.DeleteMessageAsync(channelId, messageId);
