@@ -105,10 +105,14 @@ namespace Miki.Discord.Caching.Stages
 
 		private async Task OnReady(GatewayReadyPacket ready, ICacheClient cache)
 		{
-			foreach(var guildPacket in ready.Guilds)
+			KeyValuePair<string, DiscordGuildPacket>[] readyPackets = new KeyValuePair<string, DiscordGuildPacket>[ready.Guilds.Count()];
+
+			for(int i = 0, max = readyPackets.Count(); i < max; i++)
 			{
-				await cache.UpsertAsync(GuildCacheKey(guildPacket.Id), guildPacket);
+				readyPackets[i] = new KeyValuePair<string, DiscordGuildPacket>(GuildCacheKey(ready.Guilds[i].Id), ready.Guilds[i]);
 			}
+
+			await cache.UpsertAsync(readyPackets);
 		}
 
 		private async Task OnUserUpdate(DiscordUserPacket user, ICacheClient cache)
