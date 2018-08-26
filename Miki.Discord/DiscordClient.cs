@@ -197,26 +197,26 @@ namespace Miki.Discord
 
 		public event Func<IDiscordUser, IDiscordUser, Task> UserUpdate;
 
-		private async Task OnGuildMemberDelete(ulong arg1, DiscordUserPacket arg2)
+		private async Task OnGuildMemberDelete(ulong guildId, DiscordUserPacket packet)
 		{
 			if (GuildMemberDelete != null)
 			{
-				IDiscordGuild guild = await GetGuildAsync(arg1);
+				IDiscordGuild guild = await GetGuildAsync(guildId);
 
-				await GuildMemberCreate(
-					guild.GetMember(arg2.Id)
+				await GuildMemberDelete(
+					guild.GetMember(packet.Id)
 				);
 			}
 		}
 
-		private async Task OnGuildMemberCreate(DiscordGuildMemberPacket arg)
+		private async Task OnGuildMemberCreate(DiscordGuildMemberPacket packet)
 		{
 			if (GuildMemberCreate != null)
 			{
-				IDiscordGuild guild = await GetGuildAsync(arg.GuildId);
+				IDiscordGuild guild = await GetGuildAsync(packet.GuildId);
 
 				await GuildMemberCreate(
-					new DiscordGuildUser(arg, this, guild)
+					new DiscordGuildUser(packet, this, guild)
 				);
 			}
 		}
