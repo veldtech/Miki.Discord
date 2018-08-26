@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -115,11 +116,12 @@ namespace Miki.Discord.Gateway.Distributed
 
 		private async Task OnMessageAsync(object ch, BasicDeliverEventArgs ea)
 		{
+			var payload = Encoding.UTF8.GetString(ea.Body);
+			var sw = Stopwatch.StartNew();
+			GatewayMessage body = JsonConvert.DeserializeObject<GatewayMessage>(payload);
+
 			try
 			{
-				var payload = Encoding.UTF8.GetString(ea.Body);
-				GatewayMessage body = JsonConvert.DeserializeObject<GatewayMessage>(payload);
-
 				Log.Trace("packet with the op-code '" + body.EventName + "' received.");
 
 				switch (Enum.Parse(typeof(GatewayEventType), body.EventName.Replace("_", ""), true))
@@ -304,7 +306,7 @@ namespace Miki.Discord.Gateway.Distributed
 					}
 					break;
 
-					case GatewayEventType.GuildEmojiUpdate:
+					case GatewayEventType.GuildEmojisUpdate:
 					{
 					}
 					break;
@@ -359,7 +361,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 					case GatewayEventType.PresenceUpdate:
 					{
-						if(OnPresenceUpdate != null)
+						if (OnPresenceUpdate != null)
 						{
 							await OnPresenceUpdate(
 								body.Data.ToObject<DiscordPresencePacket>()
@@ -370,7 +372,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 					case GatewayEventType.Ready:
 					{
-						if(OnReady != null)
+						if (OnReady != null)
 						{
 							await OnReady(
 								body.Data.ToObject<GatewayReadyPacket>()
@@ -410,11 +412,22 @@ namespace Miki.Discord.Gateway.Distributed
 					}
 					break;
 				}
+
+				if (!_config.ConsumerAutoAck)
+				{
+					_channel.BasicAck(ea.DeliveryTag, false);
+				}
 			}
 			catch (Exception e)
 			{
 				Log.Error(e);
+
+				if (!_config.ConsumerAutoAck)
+				{
+					_channel.BasicNack(ea.DeliveryTag, false, false);
+				}
 			}
+			Log.Debug($"{body.EventName}: {sw.ElapsedMilliseconds}ms");
 		}
 
 		public Task SendAsync(int shardId, GatewayOpcode opcode, object payload)

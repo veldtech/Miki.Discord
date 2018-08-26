@@ -122,24 +122,34 @@ namespace Miki.Discord.Caching.Stages
 				guildsFromUser = new HashSet<ulong>();
 			}
 
-			foreach(ulong u in guildsFromUser)
+			if (guildsFromUser.Count > 0)
 			{
-				DiscordGuildPacket p = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(u));
+				KeyValuePair<string, DiscordGuildPacket>[] allPackets = new KeyValuePair<string, DiscordGuildPacket>[guildsFromUser.Count];
 
-				if(p == null)
+				for (int i = 0; i < guildsFromUser.Count; i++)
 				{
-					continue;
+					var u = guildsFromUser.ElementAt(i);
+
+					DiscordGuildPacket p = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(u));
+
+					if (p == null)
+					{
+						continue;
+					}
+
+					int index = p.Members.FindIndex(x => x.User.Id == user.Id);
+
+					if (index != -1)
+					{
+						p.Members[index].User = user;
+					}
+
+					allPackets[i] = new KeyValuePair<string, DiscordGuildPacket>(GuildCacheKey(u), p);
 				}
 
-				int index = p.Members.FindIndex(x => x.User.Id == user.Id);
-
-				if(index != -1)
-				{
-					p.Members[index].User = user;
-				}
-
-				await cache.UpsertAsync(GuildCacheKey(u), p);
+				await cache.UpsertAsync(allPackets);
 			}
+
 			await cache.UpsertAsync(UserCacheKey(user.Id), user);
 		}
 
@@ -235,18 +245,32 @@ namespace Miki.Discord.Caching.Stages
 		{
 			DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(unavailableGuild.GuildId));
 
-			if(guild != null)
+			if (guild != null)
 			{
-				foreach(var user in guild.Members)
-				{
-					HashSet<ulong> userInGuild = await cache.GetAsync<HashSet<ulong>>(UserInGuilds(user.User.Id));
+				KeyValuePair<string, HashSet<ulong>>[] allUsersInGuild = new KeyValuePair<string, HashSet<ulong>>[guild.Members.Count];
+				string[] allUserCacheKeys = new string[guild.Members.Count];
 
-					if (userInGuild != null)
-					{
-						userInGuild.Remove(guild.Id);
-						await cache.UpsertAsync(UserInGuilds(user.User.Id), userInGuild);
-					}
+				for (int i = 0; i < guild.Members.Count; i++)
+				{
+					allUserCacheKeys[i] = UserInGuilds(guild.Members[i].User.Id);
 				}
+
+				HashSet<ulong>[] userInGuild = await cache.GetAsync<HashSet<ulong>>(allUserCacheKeys);
+
+				for (int i = 0, max = guild.Members.Count; i < max; i++)
+				{
+					DiscordGuildMemberPacket user = guild.Members[i];
+
+					if (userInGuild[i] == null)
+					{
+						userInGuild[i] = new HashSet<ulong>();
+					}
+
+					userInGuild[i].Remove(guild.Id);
+					allUsersInGuild[i] = new KeyValuePair<string, HashSet<ulong>>(UserInGuilds(user.User.Id), userInGuild[i]);
+				}
+
+				await cache.UpsertAsync(allUsersInGuild);
 			}
 
 			await cache.RemoveAsync(GuildCacheKey(unavailableGuild.GuildId));
@@ -271,17 +295,34 @@ namespace Miki.Discord.Caching.Stages
 		{
 			await cache.UpsertAsync(GuildCacheKey(guild.Id), guild);
 
-			foreach (var user in guild.Members)
+			if (guild.Members.Count > 0)
 			{
-				HashSet<ulong> userInGuild = await cache.GetAsync<HashSet<ulong>>(UserInGuilds(user.User.Id));
+				KeyValuePair<string, HashSet<ulong>>[] allUsersInGuild = new KeyValuePair<string, HashSet<ulong>>[guild.Members.Count];
 
-				if(userInGuild == null)
+				string[] allUserCacheKeys = new string[guild.Members.Count];
+
+				for (int i = 0; i < guild.Members.Count; i++)
 				{
-					userInGuild = new HashSet<ulong>();
+					allUserCacheKeys[i] = UserInGuilds(guild.Members[i].User.Id);
 				}
 
-				userInGuild.Add(guild.Id);
-				await cache.UpsertAsync(UserInGuilds(user.User.Id), userInGuild);
+				HashSet<ulong>[] userInGuild = await cache.GetAsync<HashSet<ulong>>(allUserCacheKeys);
+
+				for (int i = 0, max = guild.Members.Count; i < max; i++)
+				{
+					DiscordGuildMemberPacket user = guild.Members[i];
+
+
+					if (userInGuild[i] == null)
+					{
+						userInGuild[i] = new HashSet<ulong>();
+					}
+
+					userInGuild[i].Add(guild.Id);
+					allUsersInGuild[i] = new KeyValuePair<string, HashSet<ulong>>(UserInGuilds(user.User.Id), userInGuild[i]);
+				}
+
+				await cache.UpsertAsync(allUsersInGuild);
 			}
 		}
 

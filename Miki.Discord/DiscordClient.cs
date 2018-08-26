@@ -26,13 +26,15 @@ namespace Miki.Discord
 		public IGateway _gateway;
 
 		private ICachePool _cachePool;
+		private ICacheClient _cacheClient;
 
 		public DiscordClient(DiscordClientConfigurations config)
 		{
 			_cachePool = config.Pool;
+			_cacheClient = _cachePool.GetAsync().Result;
 
 			_apiClient = new DiscordApiClient(
-				config.Token, config.Pool
+				config.Token, _cachePool.GetAsync().Result
 			);
 
 			_gateway = config.Gateway;
@@ -71,7 +73,7 @@ namespace Miki.Discord
 			=> new DiscordRole(await _apiClient.EditRoleAsync(guildId, role), this);
 
 		public async Task<IDiscordPresence> GetUserPresence(ulong userId)
-			=> await _cachePool.Get.GetAsync<DiscordPresence>($"discord:user:presence:{userId}");
+			=> await _cacheClient.GetAsync<DiscordPresence>($"discord:user:presence:{userId}");
 
 		public async Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId)
 			=> (await GetRolesAsync(guildId))
@@ -239,7 +241,7 @@ namespace Miki.Discord
 
 		private async Task OnGuildJoin(DiscordGuildPacket guild)
 		{
-			ICacheClient cache = _cachePool.Get;
+			ICacheClient cache = await _cachePool.GetAsync();
 			DiscordGuild g = new DiscordGuild(guild, this);
 
 			if (!await cache.ExistsAsync($"discord:guild:{guild.Id}"))

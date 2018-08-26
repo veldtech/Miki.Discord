@@ -4,17 +4,17 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Caching module for Miki.Discord</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.5</Version>
+    <Version>2.3.2</Version>
     <Authors>Velddev</Authors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Cache" Version="0.4.1" />
+    <PackageReference Include="Miki.Cache" Version="1.0.1" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
   </ItemGroup>
 
 </Project>
