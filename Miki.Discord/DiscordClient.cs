@@ -42,6 +42,9 @@ namespace Miki.Discord
 					 
 			_gateway.OnGuildCreate += OnGuildJoin;
 			_gateway.OnGuildDelete += OnGuildLeave;
+
+			_gateway.OnGuildMemberAdd += OnGuildMemberCreate;
+			_gateway.OnGuildMemberRemove += OnGuildMemberDelete;
 					 
 			_gateway.OnUserUpdate += OnUserUpdate;
 		}
@@ -185,11 +188,38 @@ namespace Miki.Discord
 		public event Func<IDiscordGuild, Task> GuildJoin;
 		public event Func<IDiscordGuild, Task> GuildAvailable;
 
+		public event Func<IDiscordGuildUser, Task> GuildMemberCreate;
+		public event Func<IDiscordGuildUser, Task> GuildMemberDelete;
+
 		public event Func<ulong, Task> GuildLeave;
 
 		public event Func<GatewayReadyPacket, Task> Ready;
 
 		public event Func<IDiscordUser, IDiscordUser, Task> UserUpdate;
+
+		private async Task OnGuildMemberDelete(ulong arg1, DiscordUserPacket arg2)
+		{
+			if (GuildMemberDelete != null)
+			{
+				IDiscordGuild guild = await GetGuildAsync(arg1);
+
+				await GuildMemberCreate(
+					guild.GetMember(arg2.Id)
+				);
+			}
+		}
+
+		private async Task OnGuildMemberCreate(DiscordGuildMemberPacket arg)
+		{
+			if (GuildMemberCreate != null)
+			{
+				IDiscordGuild guild = await GetGuildAsync(arg.GuildId);
+
+				await GuildMemberCreate(
+					new DiscordGuildUser(arg, this, guild)
+				);
+			}
+		}
 
 		private async Task OnMessageCreate(DiscordMessagePacket packet)
 		{
