@@ -117,6 +117,11 @@ namespace Miki.Discord.Caching.Stages
 
 			HashSet<ulong> guildsFromUser = await cache.GetAsync<HashSet<ulong>>(UserInGuilds(user.Id));
 
+			if(guildsFromUser == null)
+			{
+				guildsFromUser = new HashSet<ulong>();
+			}
+
 			foreach(ulong u in guildsFromUser)
 			{
 				DiscordGuildPacket p = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(u));
@@ -135,7 +140,7 @@ namespace Miki.Discord.Caching.Stages
 
 				await cache.UpsertAsync(GuildCacheKey(u), p);
 			}
-
+			await cache.UpsertAsync(UserCacheKey(user.Id), user);
 		}
 
 		private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs member, ICacheClient cache)

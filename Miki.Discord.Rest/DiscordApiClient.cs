@@ -190,33 +190,8 @@ namespace Miki.Discord.Rest
 
 		public async Task<List<DiscordChannelPacket>> GetChannelsAsync(ulong guildId)
 		{
-			string key = $"discord:guilds:{guildId}:channels";
-			List<DiscordChannelPacket> packet = null;
-			var cacheClient = cache.Get;
-			if (await cacheClient.ExistsAsync(key))
-				{
-					packet = await cacheClient.GetAsync<List<DiscordChannelPacket>>(key);
-
-					if (packet == null)
-					{
-						Log.Debug($"cache hit on '{key}', but object was invalid");
-						await cacheClient.RemoveAsync(key);
-						return await GetChannelsAsync(guildId);
-					}
-				}
-				else
-				{
-					var data = await RatelimitHelper.ProcessRateLimitedAsync(
-						$"guilds:{guildId}", cacheClient,
-						async () =>
-						{
-							return await _restClient.GetAsync<List<DiscordChannelPacket>>(DiscordApiRoutes.GuildChannelsRoute(guildId));
-						});
-
-					await cacheClient.UpsertAsync(key, data.Data);
-					packet = data.Data;
-				}
-			return packet;
+			DiscordGuildPacket guild = await GetGuildAsync(guildId);
+			return guild.Channels;
 		}
 
 		public async Task<DiscordGuildPacket> GetGuildAsync(ulong guildId)
@@ -253,39 +228,7 @@ namespace Miki.Discord.Rest
 
 		public async Task<DiscordGuildMemberPacket> GetGuildUserAsync(ulong userId, ulong guildId)
 		{
-			string key = $"discord:guild:{guildId}:user:{userId}";
-
-			DiscordGuildMemberPacket packet = null;
-			var cacheClient = cache.Get;
-			{
-				if (await cacheClient.ExistsAsync(key))
-				{
-					packet = await cacheClient.GetAsync<DiscordGuildMemberPacket>(key);
-
-					if (packet == null)
-					{
-						Log.Debug($"cache hit on '{key}', but object was invalid");
-						await cacheClient.RemoveAsync(key);
-						return await GetGuildUserAsync(userId, guildId);
-					}
-				}
-				else
-				{
-					var rc = await RatelimitHelper.ProcessRateLimitedAsync(
-						$"guilds:{guildId}", cacheClient,
-						async () =>
-						{
-							return await _restClient.GetAsync<DiscordGuildMemberPacket>(DiscordApiRoutes.GuildMemberRoute(guildId, userId));
-						});
-
-					packet = rc.Data;
-					await cacheClient.UpsertAsync(key, rc.Data);
-				}
-
-				packet.User = await GetUserAsync(userId);
-				packet.GuildId = guildId;
-			}
-			return packet;
+			return (await GetGuildAsync(guildId)).Members.FirstOrDefault(x => x.User.Id == userId);
 		}
 
 		public async Task<DiscordMessagePacket> GetMessageAsync(ulong channelId, ulong messageId)
