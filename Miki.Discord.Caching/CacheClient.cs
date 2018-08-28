@@ -17,7 +17,6 @@ namespace Miki.Discord.Caching
 	{
 		IGateway _gateway;
 		ICachePool _cachePool;
-		ICacheClient _cacheClient;
 		public readonly IApiClient ApiClient;
 
 		public Func<DiscordChannelPacket, ICacheClient, Task> OnChannelCreate;
@@ -47,14 +46,13 @@ namespace Miki.Discord.Caching
 		{
 			_gateway = messenger;
 			_cachePool = cachePool;
-			_cacheClient = cachePool.GetAsync().Result;
 			ApiClient = discordClient;
 
 			_gateway.OnChannelCreate += async (p) =>
 			{
 				if (OnChannelCreate != null)
 				{
-					await OnChannelCreate(p, _cacheClient);
+					await OnChannelCreate(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -62,7 +60,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnChannelDelete != null)
 				{
-					await OnChannelDelete(p, _cacheClient);
+					await OnChannelDelete(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -70,7 +68,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnChannelUpdate != null)
 				{
-					await OnChannelUpdate(p, _cacheClient);
+					await OnChannelUpdate(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -82,7 +80,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildCreate != null)
 				{
-					await OnGuildCreate(p, _cacheClient);
+					await OnGuildCreate(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -90,7 +88,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildDelete != null)
 				{
-					await OnGuildDelete(p, _cacheClient);
+					await OnGuildDelete(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -98,7 +96,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildUpdate != null)
 				{
-					await OnGuildUpdate(p, _cacheClient);
+					await OnGuildUpdate(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -106,7 +104,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildMemberAdd != null)
 				{
-					await OnGuildMemberAdd(p, _cacheClient);
+					await OnGuildMemberAdd(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -114,7 +112,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildMemberRemove != null)
 				{
-					await OnGuildMemberRemove(id, user, _cacheClient);
+					await OnGuildMemberRemove(id, user, await _cachePool.GetAsync());
 				}
 			};
 
@@ -122,7 +120,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildMemberUpdate != null)
 				{
-					await OnGuildMemberUpdate(p, _cacheClient);
+					await OnGuildMemberUpdate(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -130,7 +128,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnUserUpdate != null)
 				{
-					await OnUserUpdate(p, _cacheClient);
+					await OnUserUpdate(p, await _cachePool.GetAsync());
 				}
 			};
 
@@ -138,7 +136,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildRoleCreate != null)
 				{
-					await OnGuildRoleCreate(guildId, role, _cacheClient);
+					await OnGuildRoleCreate(guildId, role, await _cachePool.GetAsync());
 				}
 			};
 
@@ -146,7 +144,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildRoleDelete != null)
 				{
-					await OnGuildRoleDelete(guildId, roleId, _cacheClient);
+					await OnGuildRoleDelete(guildId, roleId, await _cachePool.GetAsync());
 				}
 			};
 
@@ -154,7 +152,7 @@ namespace Miki.Discord.Caching
 			{
 				if (OnGuildRoleUpdate != null)
 				{
-					await OnGuildRoleUpdate(guildId, role, _cacheClient);
+					await OnGuildRoleUpdate(guildId, role, await _cachePool.GetAsync());
 				}
 			};
 

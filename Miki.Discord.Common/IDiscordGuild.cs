@@ -13,11 +13,11 @@ namespace Miki.Discord.Common
 
 		ulong OwnerId { get; }
 
+		int MemberCount { get; }
+
 		GuildPermission Permissions { get; }
 
 		IReadOnlyCollection<IDiscordGuildChannel> Channels { get; }
-
-		IReadOnlyCollection<IDiscordGuildUser> Members { get; }
 
 		IReadOnlyCollection<IDiscordRole> Roles { get; }
 
@@ -29,16 +29,18 @@ namespace Miki.Discord.Common
 
 		GuildPermission GetPermissions(IDiscordGuildUser user);
 
-		IDiscordGuildUser GetOwner();
+		Task<IDiscordGuildUser> GetOwnerAsync();
 
 		IDiscordRole GetRole(ulong id);
-		
+
+		Task<IDiscordGuildUser[]> GetMembersAsync();
+
 		/// <summary>
 		/// Updates the guild member from the current updated cache and returns it
 		/// </summary>
 		/// <param name="id">specified guildmember id</param>
 		/// <returns></returns>
-		IDiscordGuildUser GetMember(ulong id);
+		Task<IDiscordGuildUser> GetMemberAsync(ulong id);
 
 		Task<IDiscordGuildUser> GetSelfAsync();
 

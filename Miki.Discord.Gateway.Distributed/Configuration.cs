@@ -37,5 +37,8 @@ namespace Miki.Discord.Gateway.Distributed
 		public bool QueueDurable { get; set; } = true;
 		public bool QueueExclusive { get; set; } = false;
 		public string QueueName { get; set; }
+
+		public ushort PrefetchCount { get; set; } = 100;
+		public uint PrefetchSize { get; set; } = 0;
 	}
 }

@@ -158,9 +158,6 @@ namespace Miki.Discord.Tests
 			Assert.Empty(g.Members);
 			Assert.Equal(g.Members.Count, g.MemberCount);
 
-			HashSet<ulong>  guildsJoined = await (await pool.GetAsync()).GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
-
-			Assert.Empty(guildsJoined);
 
 			await gateway.OnGuildMemberAdd(member);
 
@@ -168,11 +165,6 @@ namespace Miki.Discord.Tests
 
 			Assert.Equal(g.Members.Count, g.MemberCount);
 			Assert.NotEmpty(g.Members);
-
-			guildsJoined = await (await pool.GetAsync()).GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
-
-			Assert.NotEmpty(guildsJoined);
-			Assert.Collection(guildsJoined, x => Assert.Equal(guild.Id, x));
 
 			await gateway.OnGuildMemberUpdate(new Common.Events.GuildMemberUpdateEventArgs
 			{
@@ -258,17 +250,11 @@ namespace Miki.Discord.Tests
 			});
 
 			var deletedGuild = await (await pool.GetAsync()).GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
-			HashSet<ulong> guildsJoined = await (await pool.GetAsync()).GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
-
-			Assert.Empty(guildsJoined);
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
 			deletedGuild = await (await pool.GetAsync()).GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
-			guildsJoined = await (await pool.GetAsync()).GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
-
-			Assert.NotEmpty(guildsJoined);
 			Assert.NotNull(deletedGuild);
 
 			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
@@ -278,17 +264,11 @@ namespace Miki.Discord.Tests
 			});
 
 			deletedGuild = await (await pool.GetAsync()).GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
-			guildsJoined = await (await pool.GetAsync()).GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
-
-			Assert.Empty(guildsJoined);
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
 			deletedGuild = await (await pool.GetAsync()).GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
-			guildsJoined = await (await pool.GetAsync()).GetAsync<HashSet<ulong>>($"discord:user:{user.Id}:guilds");
-
-			Assert.NotEmpty(guildsJoined);
 			Assert.NotNull(deletedGuild);
 		}
 

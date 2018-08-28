@@ -56,7 +56,7 @@ namespace Miki.Discord.Gateway.Distributed
 		private IModel _channel;
 		private IModel _commandChannel;
 
-		private AsyncEventingBasicConsumer _consumer;
+		private EventingBasicConsumer _consumer;
 
 		private MessageClientConfiguration _config;
 
@@ -66,7 +66,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 			ConnectionFactory connectionFactory = new ConnectionFactory();
 			connectionFactory.Uri = config.ConnectionString;
-			connectionFactory.DispatchConsumersAsync = true;
+			connectionFactory.DispatchConsumersAsync = false;
 
 			_connection = connectionFactory.CreateConnection();
 
@@ -86,6 +86,7 @@ namespace Miki.Discord.Gateway.Distributed
 			};
 
 			_channel = _connection.CreateModel();
+			_channel.BasicQos(config.PrefetchSize, config.PrefetchCount, false);
 			_channel.ExchangeDeclare(config.ExchangeName, ExchangeType.Direct);
 			_channel.QueueDeclare(config.QueueName, config.QueueDurable, config.QueueExclusive, config.QueueAutoDelete, null);
 			_channel.QueueBind(config.QueueName, config.ExchangeName, config.ExchangeRoutingKey, null);
@@ -98,10 +99,8 @@ namespace Miki.Discord.Gateway.Distributed
 
 		public Task StartAsync()
 		{
-			_consumer = new AsyncEventingBasicConsumer(_channel);
-			_consumer.Received += OnMessageAsync;
-
-
+			_consumer = new EventingBasicConsumer(_channel);
+			_consumer.Received += async (ch, ea) => await OnMessageAsync(ch, ea);
 
 			string consumerTag = _channel.BasicConsume(_config.QueueName, _config.ConsumerAutoAck, _consumer);
 			return Task.CompletedTask;
@@ -109,7 +108,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 		public Task StopAsync()
 		{
-			_consumer.Received -= OnMessageAsync;
+			_consumer.Received -= async (ch, ea) => await OnMessageAsync(ch, ea);
 			_consumer = null;
 			return Task.CompletedTask;
 		}

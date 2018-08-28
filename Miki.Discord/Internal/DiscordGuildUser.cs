@@ -14,9 +14,15 @@ namespace Miki.Discord.Internal
 		DiscordClient _client;
 		IDiscordGuild _guild;
 
-		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client, IDiscordGuild guild)
+		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordUserPacket user, DiscordClient client, IDiscordGuild guild)
 		{
 			_packet = packet;
+
+			if (user != null)
+			{
+				_packet.User = user;
+			}
+
 			_client = client;
 			_guild = guild;
 		}
