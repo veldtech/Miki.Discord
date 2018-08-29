@@ -15,11 +15,17 @@ namespace Miki.Discord.Caching.Stages
 	public class BasicCacheStage : ICacheStage
 	{
 		#region constants
-		string ChannelCacheKey(ulong id)
-			=> $"discord:channel:{id}";
+		string DmChannelCacheKey()
+			=> $"discord:dmchannels";
 
 		string GuildCacheKey(ulong id)
 			=> $"discord:guild:{id}";
+
+		string GuildMembersCacheKey(ulong id)
+			=> GuildCacheKey(id) + ":members";
+
+		string GuildChannelsCacheKey(ulong id)
+			=> GuildCacheKey(id) + ":channels";
 
 		string UserCacheKey(ulong id)
 			=> $"discord:user:{id}";
@@ -51,7 +57,7 @@ namespace Miki.Discord.Caching.Stages
 			client.OnReady += OnReady;
 		}
 
-		private async Task OnRoleDelete(ulong guildId, ulong roleId, ICacheClient cache)
+		private async Task OnRoleDelete(ulong guildId, ulong roleId, IExtendedCacheClient cache)
 		{
 			DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(guildId));
 
@@ -71,7 +77,7 @@ namespace Miki.Discord.Caching.Stages
 			await cache.UpsertAsync(GuildCacheKey(guildId), guild);
 		}
 
-		private async Task OnRoleCreate(ulong guildId, DiscordRolePacket role, ICacheClient cache)
+		private async Task OnRoleCreate(ulong guildId, DiscordRolePacket role, IExtendedCacheClient cache)
 		{
 			DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(guildId));
 
@@ -100,7 +106,7 @@ namespace Miki.Discord.Caching.Stages
 			await cache.UpsertAsync(GuildCacheKey(guildId), guild);
 		}
 
-		private Task OnReady(GatewayReadyPacket ready, ICacheClient cache)
+		private async Task OnReady(GatewayReadyPacket ready, IExtendedCacheClient cache)
 		{
 			KeyValuePair<string, DiscordGuildPacket>[] readyPackets = new KeyValuePair<string, DiscordGuildPacket>[ready.Guilds.Count()];
 
@@ -109,154 +115,97 @@ namespace Miki.Discord.Caching.Stages
 				readyPackets[i] = new KeyValuePair<string, DiscordGuildPacket>(GuildCacheKey(ready.Guilds[i].Id), ready.Guilds[i]);
 			}
 
-			cache.UpsertAsync(readyPackets).Wait();
-			return Task.CompletedTask;
+			await cache.UpsertAsync(readyPackets);
 		}
 
-		private async Task OnUserUpdate(DiscordUserPacket user, ICacheClient cache)
+		private async Task OnUserUpdate(DiscordUserPacket user, IExtendedCacheClient cache)
 		{
 			await cache.UpsertAsync(UserCacheKey(user.Id), user);
 		}
 
-		private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs member, ICacheClient cache)
+		private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs member, IExtendedCacheClient cache)
 		{
-			DiscordGuildPacket p = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(member.GuildId));
+			DiscordGuildMemberPacket m = await cache.HashGetAsync<DiscordGuildMemberPacket>(GuildMembersCacheKey(member.GuildId), member.User.Id.ToString());
 
-			if (p == null)
+			if(m == null)
 			{
-				return;
+				m = new DiscordGuildMemberPacket();
 			}
 
-			int index = p.Members.FindIndex(x => x.User.Id == member.User.Id);
-
-			if (index != -1)
-			{
-				p.Members[index].User = member.User;
-				p.Members[index].Roles = member.RoleIds.ToList();
-				p.Members[index].Nickname = member.Nickname;
-			}
-
-			await cache.UpsertAsync(GuildCacheKey(member.GuildId), p);
+			m.User = member.User;
+			m.Roles = member.RoleIds.ToList();
+			m.Nickname = member.Nickname;
+		
+			await cache.HashUpsertAsync(GuildCacheKey(member.GuildId), member.User.Id.ToString(), m);
 		}
 
-		private async Task OnGuildMemberRemove(ulong guildId, DiscordUserPacket user, ICacheClient cache)
+		private async Task OnGuildMemberRemove(ulong guildId, DiscordUserPacket user, IExtendedCacheClient cache)
 		{
-			DiscordGuildPacket p = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(guildId));
-
-			if (p == null)
-			{
-				return;
-			}
-
-			p.Members.RemoveAll(x => x.User.Id == user.Id);
-			p.MemberCount = p.Members.Count;
-
-			await cache.UpsertAsync(GuildCacheKey(guildId), p);
+			await cache.HashDeleteAsync(GuildMembersCacheKey(guildId), user.Id.ToString());
 		}
 
-		private async Task OnGuildMemberAdd(DiscordGuildMemberPacket member, ICacheClient cache)
+		private async Task OnGuildMemberAdd(DiscordGuildMemberPacket member, IExtendedCacheClient cache)
 		{
-			DiscordGuildPacket p = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(member.GuildId));
-
-			if (p == null)
-			{
-				return;
-			}
-
-			if(p.Members == null)
-			{
-				p.Members = new List<DiscordGuildMemberPacket>();
-			}
-
-			int index = p.Members.FindIndex(x => x.User.Id == member.User.Id);
-
-			if (index == -1)
-			{
-				p.Members.Add(member);
-			}
-			else
-			{
-				p.Members[index] = member;
-			}
-
-			p.MemberCount = p.Members.Count;
-
-			await cache.UpsertAsync(GuildCacheKey(member.GuildId), p);
+			await cache.HashUpsertAsync(GuildMembersCacheKey(member.GuildId), member.User.Id.ToString(), member);
 		}
 
-		private async Task OnGuildDelete(DiscordGuildUnavailablePacket unavailableGuild, ICacheClient cache)
+		private async Task OnGuildDelete(DiscordGuildUnavailablePacket unavailableGuild, IExtendedCacheClient cache)
 		{
 			await cache.RemoveAsync(GuildCacheKey(unavailableGuild.GuildId));
 		}
 
-		private async Task OnGuildUpdate(DiscordGuildPacket arg1, ICacheClient cache)
+		private async Task OnGuildUpdate(DiscordGuildPacket arg1, IExtendedCacheClient cache)
 		{
 			DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(arg1.Id));
 
-			if(guild == null)
+			if (guild == null)
 			{
-				// TODO (Veld): Consider logging this.
-				return;
+				guild = arg1;
 			}
-
-			guild.OverwriteContext(arg1);
+			else
+			{
+				guild.OverwriteContext(arg1);
+			}
 
 			await cache.UpsertAsync(GuildCacheKey(arg1.Id), guild);
 		}
 
-		private async Task OnGuildCreate(DiscordGuildPacket guild, ICacheClient cache)
+		private async Task OnGuildCreate(DiscordGuildPacket guild, IExtendedCacheClient cache)
 		{
 			await cache.UpsertAsync(GuildCacheKey(guild.Id), guild);
-			await cache.UpsertAsync(guild.Channels.Select(x => {
-				x.GuildId = guild.Id;
-				return new KeyValuePair<string, DiscordChannelPacket>(ChannelCacheKey(x.Id), x);
-			}).ToArray());
-			await cache.UpsertAsync(guild.Members.Select(x =>
-			{
-				x.GuildId = guild.Id;
-				return new KeyValuePair<string, DiscordUserPacket>(UserCacheKey(x.User.Id), x.User);
-			}).ToArray());
+
+			await cache.HashUpsertAsync(GuildChannelsCacheKey(guild.Id),
+				guild.Channels.Select(x =>
+				{
+					x.GuildId = guild.Id;
+					return new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x);
+				}).ToArray()
+			);
+
+			await cache.HashUpsertAsync(GuildMembersCacheKey(guild.Id), guild.Members.Select(x =>
+				{
+					x.GuildId = guild.Id;
+					return new KeyValuePair<string, DiscordUserPacket>(UserCacheKey(x.User.Id), x.User);
+				}).ToArray()
+			);
 		}
 
-		private async Task OnChannelCreate(DiscordChannelPacket channel, ICacheClient cache)
+		private async Task OnChannelCreate(DiscordChannelPacket channel, IExtendedCacheClient cache)
 		{
-			if(channel.GuildId.HasValue)
-			{
-				DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(channel.GuildId.Value));
+			string key = channel.GuildId.HasValue 
+				? GuildCacheKey(channel.GuildId.Value) 
+				: DmChannelCacheKey();
 
-				if (guild != null)
-				{
-					int index = guild.Channels.FindIndex(x => x.Id == channel.Id);
-
-					if (index != -1)
-					{
-						guild.Channels[index] = channel;
-					}
-					else
-					{
-						guild.Channels.Add(channel);
-					}
-
-					await cache.UpsertAsync(GuildCacheKey(channel.GuildId.Value), guild);
-				}
-			}
-
-			await cache.UpsertAsync(ChannelCacheKey(channel.Id), channel);
+			await cache.HashUpsertAsync(key, channel.Id.ToString(), channel);
 		}
 
-		private async Task OnChannelDelete(DiscordChannelPacket arg, ICacheClient cache)
+		private async Task OnChannelDelete(DiscordChannelPacket channel, IExtendedCacheClient cache)
 		{
-			if (arg.GuildId.HasValue)
-			{
-				DiscordGuildPacket guild = await cache.GetAsync<DiscordGuildPacket>(GuildCacheKey(arg.GuildId.Value));
+			string key = channel.GuildId.HasValue 
+				? GuildCacheKey(channel.GuildId.Value) 
+				: DmChannelCacheKey();
 
-				if (guild != null)
-				{
-					guild.Channels.RemoveAll(x => x.Id == arg.Id);
-					await cache.UpsertAsync(GuildCacheKey(arg.GuildId.Value), guild);
-				}
-			}
-			await cache.RemoveAsync(ChannelCacheKey(arg.Id));
+			await cache.HashDeleteAsync(key, channel.Id.ToString());
 		}
 	}
 }

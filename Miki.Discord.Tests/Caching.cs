@@ -43,7 +43,7 @@ namespace Miki.Discord.Tests
 
 			cache = new CacheClient(
 				gateway,
-				pool,
+				pool.GetAsync().Result as IExtendedCacheClient,
 				new DummyApiClient()
 			);
 

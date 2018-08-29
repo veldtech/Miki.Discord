@@ -1,36 +1,30 @@
 ﻿using Miki.Cache;
 using Miki.Discord.Common;
-using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
 using Miki.Discord.Rest;
-using Miki.Rest;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord
 {
-    public partial class DiscordClient
+	public partial class DiscordClient
     {
 		public IApiClient ApiClient { get; private set; }
 		public IGateway Gateway { get; private set; }
 
 		public ICachePool CachePool { get; private set; }
-		private ICacheClient _cacheClient;
+		private IExtendedCacheClient _cacheClient;
 
 		public DiscordClient(DiscordClientConfigurations config)
 		{
 			CachePool = config.Pool;
-			_cacheClient = CachePool.GetAsync().Result;
+			_cacheClient = CachePool.GetAsync().Result as IExtendedCacheClient;
 
 			ApiClient = new DiscordApiClient(
 				config.Token, CachePool.GetAsync().Result
@@ -97,15 +91,17 @@ namespace Miki.Discord
 				.Select(x => new DiscordGuildChannel(x, this))
 				.ToList();
 
-		public async Task<IDiscordChannel> GetChannelAsync(ulong id)
+		public async Task<IDiscordChannel> GetDMChannelAsync(ulong id)
 		{
-			DiscordChannelPacket packet = await GetChannelPacketAsync(id);
+			DiscordChannelPacket packet = await GetDMChannelPacketAsync(id);
 
-			if (packet.GuildId != null)
-			{
-				return new DiscordGuildChannel(packet, this);
-			}
 			return new DiscordChannel(packet, this);
+		}
+
+		public async Task<IDiscordGuildChannel> GetGuildChannelAsync(ulong id, ulong guildId)
+		{
+			DiscordChannelPacket packet = await GetGuildChannelPacketAsync(id, guildId);
+			return new DiscordGuildChannel(packet, this);
 		}
 
 		public async Task<IDiscordUser> GetCurrentUserAsync()
@@ -195,13 +191,35 @@ namespace Miki.Discord
 			}, toChannel);
 
 
-		internal async Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id)
+		internal async Task<DiscordChannelPacket> GetDMChannelPacketAsync(ulong id)
 		{
-			DiscordChannelPacket packet = await _cacheClient.GetAsync<DiscordChannelPacket>($"discord:channel:{id}");
+			DiscordChannelPacket packet = await _cacheClient.HashGetAsync<DiscordChannelPacket>($"discord:channels", id.ToString());
 
 			if (packet == null)
 			{
 				packet = await ApiClient.GetChannelAsync(id);
+
+				if (packet != null)
+				{
+					await _cacheClient.HashUpsertAsync($"discord:channels", id.ToString(), packet);
+				}
+			}
+
+			return packet;
+		}
+
+		internal async Task<DiscordChannelPacket> GetGuildChannelPacketAsync(ulong id, ulong guildId)
+		{
+			DiscordChannelPacket packet = await _cacheClient.HashGetAsync<DiscordChannelPacket>($"discord:channels:{guildId}", id.ToString());
+
+			if (packet == null)
+			{
+				packet = await ApiClient.GetChannelAsync(id);
+
+				if (packet != null)
+				{
+					await _cacheClient.HashUpsertAsync($"discord:channels:{guildId}", id.ToString(), packet);
+				}
 			}
 
 			return packet;
@@ -209,16 +227,15 @@ namespace Miki.Discord
 
 		internal async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId)
 		{
-			DiscordGuildPacket packet = await _cacheClient.GetAsync<DiscordGuildPacket>($"discord:guild:{guildId}");
-			DiscordGuildMemberPacket memberPacket = packet.Members.FirstOrDefault(x => x.User.Id == userId);
+			DiscordGuildMemberPacket packet = await _cacheClient.HashGetAsync<DiscordGuildMemberPacket>($"discord:users:{guildId}", userId.ToString());
 
-			if (memberPacket == null)
+			if (packet == null)
 			{
-				memberPacket = await ApiClient.GetGuildUserAsync(userId, guildId);
-				await _cacheClient.UpsertAsync($"discord:guild:{guildId}", packet);
+				packet = await ApiClient.GetGuildUserAsync(userId, guildId);
+				await _cacheClient.UpsertAsync($"discord:users:{guildId}", packet);
 			}
 
-			return memberPacket;
+			return packet;
 		}
 
 		internal async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)

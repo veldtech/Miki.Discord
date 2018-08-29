@@ -64,7 +64,7 @@ namespace Miki.Discord.Internal
 				return null;
 			}
 
-			return await _client.GetChannelAsync(_packet.SystemChannelId.Value);
+			return await _client.GetDMChannelAsync(_packet.SystemChannelId.Value);
 		}
 
 		public async Task<IDiscordGuildUser> GetMemberAsync(ulong id)

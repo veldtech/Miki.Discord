@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Cache" Version="1.0.1" />
+    <PackageReference Include="Miki.Cache" Version="1.1.0" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
   </ItemGroup>
 
