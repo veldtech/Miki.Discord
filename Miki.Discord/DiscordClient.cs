@@ -138,6 +138,16 @@ namespace Miki.Discord
 			);
 		}
 
+		public async Task<IDiscordGuildUser> GetGuildUserAsync(ulong id, ulong guildId)
+		{
+			return new DiscordGuildUser(
+				await GetGuildMemberPacketAsync(id, guildId),
+				await GetUserPacketAsync(id),
+				this,
+				await GetGuildAsync(guildId)
+			);
+		}
+
 		public async Task<IDiscordUser> GetUserAsync(ulong id)
 		{
 			var packet = await GetUserPacketAsync(id);
@@ -148,15 +158,6 @@ namespace Miki.Discord
 			);
 		}
 
-		public async Task<IDiscordGuildUser> GetGuildUserAsync(ulong id, ulong guildId)
-		{
-			return new DiscordGuildUser(
-				await GetGuildMemberPacketAsync(id, guildId),
-				await GetUserPacketAsync(id),
-				this,
-				await GetGuildAsync(guildId)
-			);
-		}
 		public async Task DeleteMessageAsync(ulong channelId, ulong messageId)
 			=> await ApiClient.DeleteMessageAsync(channelId, messageId);
 

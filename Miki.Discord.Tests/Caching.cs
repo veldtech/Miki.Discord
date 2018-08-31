@@ -118,8 +118,8 @@ namespace Miki.Discord.Tests
 				Roles = new List<DiscordRolePacket>(),
 			};
 
-			(pool.GetAsync().Result).UpsertAsync($"discord:channel:{channel.Id}", channel).GetAwaiter().GetResult();
-			(pool.GetAsync().Result).UpsertAsync($"discord:guild:{guild.Id}", guild).GetAwaiter().GetResult();
+			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
+			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString(), guild).GetAwaiter().GetResult();
 		}
 
 		[Fact]
@@ -129,10 +129,8 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnGuildMemberRemove(guild.Id, member.User);
 
-			DiscordGuildPacket newGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
-
-			Assert.Empty(newGuild.Members);
-
+			var member = await client.HashGetAsync(CacheUtils.GuildChannelsKey(guild.Id), member.Id.ToString());
+			
 			await gateway.OnGuildMemberAdd(member);
 
 			user.Avatar = "new avi";
@@ -199,17 +197,17 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelUpdate(channel);
 
-			DiscordChannelPacket[] channels = await client.HashValuesAsync<DiscordChannelPacket>($"discord:channels:{channel.Id}");
+			DiscordChannelPacket[] channels = await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.GuildChannelsKey(guild.Id));
+		
+			Assert.NotEmpty(channels);
+
+			var newChannel = channels.First();
+
 			Assert.NotNull(newChannel);
-
-			DiscordGuildPacket newGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
-			Assert.NotNull(newGuild);
-
+			
 			Assert.False(newChannel.IsNsfw);
-			Assert.False(newGuild.Channels[0].IsNsfw);
-
+			
 			Assert.Equal("new test channel", newChannel.Name);
-			Assert.Equal("new test channel", newGuild.Channels[0].Name);
 
 			DiscordChannelPacket otherChannel = new DiscordChannelPacket
 			{
@@ -223,13 +221,10 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelCreate(otherChannel);
 
-			DiscordChannelPacket otherAddedChannel = await client.GetAsync<DiscordChannelPacket>($"discord:channel:{otherChannel.Id}");
-			newGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
-
-			Assert.False(newGuild.Channels.First(x => x.Id == 451).IsNsfw);
+			DiscordChannelPacket otherAddedChannel = await client.HashGetAsync<DiscordChannelPacket>(
+				CacheUtils.GuildChannelsKey(guild.Id), otherChannel.Id.ToString());
 
 			Assert.Equal("another channel", otherAddedChannel.Name);
-			Assert.Equal("another channel", newGuild.Channels.First(x => x.Id == 451).Name);
 
 			Assert.NotNull(otherAddedChannel);
 			Assert.Equal("another channel", otherAddedChannel.Name);
@@ -238,7 +233,9 @@ namespace Miki.Discord.Tests
 			Assert.Equal("lol this is a channel", otherAddedChannel.Topic);
 
 			await gateway.OnChannelDelete(otherChannel);
-			otherAddedChannel = await client.GetAsync<DiscordChannelPacket>($"discord:channel:{otherChannel.Id}");
+			otherAddedChannel = await client.HashGetAsync<DiscordChannelPacket>(
+				CacheUtils.GuildChannelsKey(guild.Id), otherAddedChannel.Id.ToString()
+				);
 
 			Assert.Null(otherAddedChannel);
 		}
@@ -254,12 +251,15 @@ namespace Miki.Discord.Tests
 				IsUnavailable = true
 			});
 
-			var deletedGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			var deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey(), guild.Id.ToString());
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
-			deletedGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
+				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+			);
+
 			Assert.NotNull(deletedGuild);
 
 			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
@@ -268,12 +268,16 @@ namespace Miki.Discord.Tests
 				IsUnavailable = true
 			});
 
-			deletedGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
+				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+			);
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
-			deletedGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
+				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+			);
 			Assert.NotNull(deletedGuild);
 		}
 

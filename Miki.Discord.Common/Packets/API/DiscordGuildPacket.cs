@@ -15,7 +15,7 @@ namespace Miki.Discord.Common.Packets
 
 		[JsonProperty("name")]
 		[ProtoMember(2)]
-		public string Name;
+		public string Name;	
 
 		[JsonProperty("icon")]
 		[ProtoMember(3)]
@@ -124,7 +124,7 @@ namespace Miki.Discord.Common.Packets
 		public int? MemberCount;
 
 		[JsonProperty("voice_states")]
-		[ProtoMember(26)]
+		//[ProtoMember(26)]
 		public List<DiscordVoiceStatePacket> VoiceStates;
 		
 		[JsonProperty("members")]
@@ -134,15 +134,15 @@ namespace Miki.Discord.Common.Packets
 		public List<DiscordChannelPacket> Channels = new List<DiscordChannelPacket>();
 
 		[JsonProperty("presences")]
-		[ProtoMember(27)]
+		//[ProtoMember(27)]
 		public List<DiscordPresencePacket> Presences = new List<DiscordPresencePacket>();
 
 		[JsonProperty("owner")]
-		[ProtoMember(28)]
+		[ProtoMember(26)]
 		public bool? IsOwner;
 
 		[JsonProperty("permissions")]
-		[ProtoMember(29)]
+		[ProtoMember(27)]
 		public int? Permissions;
 
 		public void OverwriteContext(DiscordGuildPacket guild)
