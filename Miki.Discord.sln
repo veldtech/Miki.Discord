@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests", "Miki.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Dummy", "Miki.Discord.Tests.Dummy\Miki.Discord.Tests.Dummy.csproj", "{46ADCC96-0860-41B8-8794-74D76DC0BB3B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "TestProject\TestProject.csproj", "{35D8FC5F-E108-423A-A277-43B2F0775163}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Cache.StackExchange.Redis", "..\Miki.Cache\Miki.Cache.StackExchange.Redis\Miki.Cache.StackExchange.Redis.csproj", "{7DD8B9F1-8321-4090-A8C8-F0B6B3387FB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{46ADCC96-0860-41B8-8794-74D76DC0BB3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46ADCC96-0860-41B8-8794-74D76DC0BB3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46ADCC96-0860-41B8-8794-74D76DC0BB3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{35D8FC5F-E108-423A-A277-43B2F0775163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35D8FC5F-E108-423A-A277-43B2F0775163}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35D8FC5F-E108-423A-A277-43B2F0775163}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35D8FC5F-E108-423A-A277-43B2F0775163}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DD8B9F1-8321-4090-A8C8-F0B6B3387FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD8B9F1-8321-4090-A8C8-F0B6B3387FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DD8B9F1-8321-4090-A8C8-F0B6B3387FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DD8B9F1-8321-4090-A8C8-F0B6B3387FB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
