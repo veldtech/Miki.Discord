@@ -10,6 +10,6 @@ namespace Miki.Discord
     {
 		public string Token;
 		public IGateway Gateway;
-		public ICachePool Pool;
+		public IExtendedCacheClient CacheClient;
 	}
 }

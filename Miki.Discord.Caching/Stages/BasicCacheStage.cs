@@ -105,21 +105,31 @@ namespace Miki.Discord.Caching.Stages
 
 		private async Task OnGuildCreate(DiscordGuildPacket guild, IExtendedCacheClient cache)
 		{
-			await cache.HashUpsertAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString(), guild);
-
-			await cache.HashUpsertAsync(CacheUtils.GuildChannelsKey(guild.Id),
-				guild.Channels.Select(x =>
-				{
-					x.GuildId = guild.Id;
-					return new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x);
-				}).ToArray()
-			);
-
-			await cache.HashUpsertAsync(CacheUtils.GuildMembersKey(guild.Id), guild.Members.Select(x =>
-				{
-					x.GuildId = guild.Id;
-					return new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x);
-				}).ToArray()
+			await Task.WhenAll(
+				cache.HashUpsertAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString(), guild),
+				cache.HashUpsertAsync(CacheUtils.GuildChannelsKey(guild.Id),
+					guild.Channels.Select(x =>
+					{
+						x.GuildId = guild.Id;
+						return new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x);
+					}).ToArray()
+				),
+					cache.HashUpsertAsync(CacheUtils.GuildMembersKey(guild.Id), guild.Members.Select(x =>
+					{
+						x.GuildId = guild.Id;
+						return new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x);
+					}).ToArray()
+				),
+					cache.HashUpsertAsync(CacheUtils.GuildRolesKey(guild.Id), guild.Roles.Select(x =>
+					{
+						return new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x);
+					}).ToArray()
+				),
+					cache.HashUpsertAsync(CacheUtils.UsersCacheKey(), guild.Members.Select(x =>
+					{
+						return new KeyValuePair<string, DiscordUserPacket>(x.User.Id.ToString(), x.User);
+					}).ToArray()
+				)
 			);
 		}
 

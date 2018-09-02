@@ -15,11 +15,13 @@ namespace Miki.Discord.Common
 
 		DateTimeOffset JoinedAt { get; }
 
-		int Hierarchy { get; }
-
 		Task AddRoleAsync(IDiscordRole role);
 
 		Task<IDiscordGuild> GetGuildAsync();
+
+		Task<int> GetHierarchyAsync();
+
+		Task<bool> HasPermissionsAsync(GuildPermission permissions);
 
 		Task KickAsync(string reason = "");
 

@@ -1,5 +1,6 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,25 +58,13 @@ namespace Miki.Discord.Internal
 		public DateTimeOffset JoinedAt
 			=> new DateTimeOffset();
 
-		public int Hierarchy
-		{
-			get
-			{
-				if (RoleIds.Count > 0)
-				{
-					return _guild.Roles
-					  .Where(x => RoleIds.Contains(x.Id))
-					  .Max(x => x.Position);
-				}
-				return 0;
-			}
-		}
-
 		public DateTimeOffset CreatedAt 
 			=> new DateTimeOffset((long)Id >> 22, TimeSpan.FromTicks(1420070400000));
 
 		public async Task AddRoleAsync(IDiscordRole role)
-			=> await _client.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
+		{
+			await _client.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
+		}
 
 		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
 			=> DiscordHelper.GetAvatarUrl(_packet.User, type, size);
@@ -87,12 +76,29 @@ namespace Miki.Discord.Internal
 			=> await _client.GetUserPresence(_packet.User.Id);
 
 		public async Task<IDiscordGuild> GetGuildAsync()
-			=> await _client.GetGuildAsync(_packet.GuildId);
+			=> _guild ?? await _client.GetGuildAsync(_packet.GuildId);
 
 		public async Task KickAsync(string reason = null)
-			=> await _client.RemoveGuildMemberAsync(GuildId, Id, reason);
+		{
+			await _client.RemoveGuildMemberAsync(GuildId, Id, reason);
+		}
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
-			=> await _client.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
+		{
+			await _client.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
+		}
+
+		public async Task<bool> HasPermissionsAsync(GuildPermission permissions)
+		{
+			GuildPermission p = await _guild.GetPermissionsAsync(this);
+			return p.HasFlag(permissions);
+		}
+
+		public async Task<int> GetHierarchyAsync()
+		{
+			return (await _guild.GetRolesAsync())
+				.Where(x => RoleIds.Contains(x.Id))
+				.Max(x => x.Position);
+		}
 	}
 }

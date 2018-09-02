@@ -38,6 +38,8 @@ namespace Miki.Discord.Common
 
 		Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId);
 
+		Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId);
+
 		Task<List<DiscordRolePacket>> GetRolesAsync(ulong guildId);
 
 		Task<DiscordUserPacket> GetUserAsync(ulong userId);

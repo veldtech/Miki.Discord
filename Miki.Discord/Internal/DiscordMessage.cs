@@ -44,6 +44,6 @@ namespace Miki.Discord.Internal
 			=> await _client.DeleteMessageAsync(_packet.ChannelId, _packet.Id);
 
 		public async Task<IDiscordChannel> GetChannelAsync()
-			=> await _client.GetDMChannelAsync(_packet.ChannelId);
+			=> await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId);
 	}
 }

@@ -18,16 +18,14 @@ namespace Miki.Discord
 		public IApiClient ApiClient { get; private set; }
 		public IGateway Gateway { get; private set; }
 
-		public ICachePool CachePool { get; private set; }
-		private IExtendedCacheClient _cacheClient;
+		public IExtendedCacheClient CacheClient { get; private set; }
 
 		public DiscordClient(DiscordClientConfigurations config)
 		{
-			CachePool = config.Pool;
-			_cacheClient = CachePool.GetAsync().Result as IExtendedCacheClient;
+			CacheClient = config.CacheClient;
 
 			ApiClient = new DiscordApiClient(
-				config.Token, CachePool.GetAsync().Result
+				config.Token, CacheClient
 			);
 
 			Gateway = config.Gateway;
@@ -66,13 +64,12 @@ namespace Miki.Discord
 			=> new DiscordRole(await ApiClient.EditRoleAsync(guildId, role), this);
 
 		public async Task<IDiscordPresence> GetUserPresence(ulong userId)
-			=> await _cacheClient.GetAsync<DiscordPresence>($"discord:user:presence:{userId}");
+			=> await CacheClient.HashGetAsync<DiscordPresence>(CacheUtils.GuildPresencesKey(), userId.ToString());
 
 		public async Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId)
-			=> (await GetRolesAsync(guildId))
-				.FirstOrDefault(x => x.Id == roleId);
+			=> new DiscordRole(await GetRolePacketAsync(roleId, guildId), this);
 
-		public async Task<IReadOnlyCollection<IDiscordRole>> GetRolesAsync(ulong guildId)
+		public async Task<IReadOnlyList<IDiscordRole>> GetRolesAsync(ulong guildId)
 			=> (await ApiClient.GetRolesAsync(guildId))
 				.Select(x => new DiscordRole(x, this))
 				.ToList();
@@ -86,30 +83,27 @@ namespace Miki.Discord
 		public string GetUserAvatarUrl(ushort discriminator)
 			=> DiscordHelper.GetAvatarUrl(discriminator);
 
-		public async Task<IReadOnlyCollection<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
+		public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
 			=> (await ApiClient.GetChannelsAsync(guildId))
 				.Select(x => new DiscordGuildChannel(x, this))
 				.ToList();
 
-		public async Task<IDiscordChannel> GetDMChannelAsync(ulong id)
-		{
-			DiscordChannelPacket packet = await GetDMChannelPacketAsync(id);
-
-			return new DiscordChannel(packet, this);
-		}
-
-		public async Task<IDiscordGuildChannel> GetGuildChannelAsync(ulong id, ulong guildId)
-		{
-			DiscordChannelPacket packet = await GetGuildChannelPacketAsync(id, guildId);
-			return new DiscordGuildChannel(packet, this);
+		public async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
+		{		
+			if(guildId.HasValue)
+			{
+				return new DiscordGuildChannel(await GetGuildChannelPacketAsync(id, guildId.Value), this);
+			}
+			else
+			{
+				return new DiscordChannel(await GetDMChannelPacketAsync(id), this);
+			}
 		}
 
 		public async Task<IDiscordUser> GetCurrentUserAsync()
 		{
-			var me = await ApiClient.GetCurrentUserAsync();
-
 			return new DiscordUser(
-				me,
+				await ApiClient.GetCurrentUserAsync(),
 				this
 			);
 		}
@@ -194,7 +188,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordChannelPacket> GetDMChannelPacketAsync(ulong id)
 		{
-			DiscordChannelPacket packet = await _cacheClient.HashGetAsync<DiscordChannelPacket>($"discord:channels", id.ToString());
+			DiscordChannelPacket packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(CacheUtils.DirectChannelsKey(), id.ToString());
 
 			if (packet == null)
 			{
@@ -202,7 +196,7 @@ namespace Miki.Discord
 
 				if (packet != null)
 				{
-					await _cacheClient.HashUpsertAsync($"discord:channels", id.ToString(), packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.DirectChannelsKey(), id.ToString(), packet);
 				}
 			}
 
@@ -211,7 +205,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordChannelPacket> GetGuildChannelPacketAsync(ulong id, ulong guildId)
 		{
-			DiscordChannelPacket packet = await _cacheClient.HashGetAsync<DiscordChannelPacket>($"discord:channels:{guildId}", id.ToString());
+			DiscordChannelPacket packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(CacheUtils.GuildChannelsKey(guildId), id.ToString());
 
 			if (packet == null)
 			{
@@ -219,7 +213,7 @@ namespace Miki.Discord
 
 				if (packet != null)
 				{
-					await _cacheClient.HashUpsertAsync($"discord:channels:{guildId}", id.ToString(), packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.GuildChannelsKey(guildId), id.ToString(), packet);
 				}
 			}
 
@@ -228,38 +222,73 @@ namespace Miki.Discord
 
 		internal async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId)
 		{
-			DiscordGuildMemberPacket packet = await _cacheClient.HashGetAsync<DiscordGuildMemberPacket>($"discord:users:{guildId}", userId.ToString());
+			DiscordGuildMemberPacket packet = await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId), userId.ToString());
 
 			if (packet == null)
 			{
 				packet = await ApiClient.GetGuildUserAsync(userId, guildId);
-				await _cacheClient.UpsertAsync($"discord:users:{guildId}", packet);
+
+				if (packet != null)
+				{
+					packet.GuildId = guildId;
+
+					await CacheClient.UpsertAsync(CacheUtils.GuildMembersKey(guildId), packet);
+				}
 			}
 
 			return packet;
 		}
 
+		internal async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
+		{
+			DiscordRolePacket packet = await CacheClient.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
+			if (packet == null)
+			{
+				packet = await ApiClient.GetRoleAsync(roleId, guildId);
+
+				if (packet != null)
+				{
+					await CacheClient.UpsertAsync(CacheUtils.GuildRolesKey(guildId), packet);
+				}
+			}
+
+			return packet;
+		}
+
+		internal async Task<DiscordGuildMemberPacket[]> GetGuildMemberPacketsAsync(ulong guildId)
+		{
+			return await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId));
+		}
+
 		internal async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
 		{
-			DiscordGuildPacket packet = await _cacheClient.GetAsync<DiscordGuildPacket>($"discord:guild:{id}");
+			DiscordGuildPacket packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey(), id.ToString());
 
 			if (packet == null)
 			{
 				packet = await ApiClient.GetGuildAsync(id);
-				await _cacheClient.UpsertAsync($"discord:guild:{id}", packet);
-			}
+
+				if (packet != null)
+				{
+					await CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey(), id.ToString(), packet);
+				}
+			}	
 
 			return packet;
 		}
 
 		internal async Task<DiscordUserPacket> GetUserPacketAsync(ulong id)
 		{
-			DiscordUserPacket packet = await _cacheClient.GetAsync<DiscordUserPacket>($"discord:user:{id}");
+			DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey(), id.ToString());
 
 			if (packet == null)
 			{
 				packet = await ApiClient.GetUserAsync(id);
-				await _cacheClient.UpsertAsync($"discord:user:{id}", packet);
+
+				if (packet != null)
+				{
+					await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey(), id.ToString(), packet);
+				}
 			}
 
 			return packet;
@@ -288,9 +317,10 @@ namespace Miki.Discord
 			if (GuildMemberDelete != null)
 			{
 				IDiscordGuild guild = await GetGuildAsync(guildId);
+				DiscordGuildMemberPacket member = await GetGuildMemberPacketAsync(packet.Id, guildId);
 
 				await GuildMemberDelete(
-					await guild.GetMemberAsync(packet.Id)
+					new DiscordGuildUser(member, packet, this, guild)
 				);
 			}
 		}
@@ -300,7 +330,7 @@ namespace Miki.Discord
 			if (GuildMemberCreate != null)
 			{
 				IDiscordGuild guild = await GetGuildAsync(packet.GuildId);
-				DiscordUserPacket p = await ApiClient.GetUserAsync(packet.User.Id);
+				DiscordUserPacket p = await GetUserPacketAsync(packet.User.Id);
 
 				await GuildMemberCreate(
 					new DiscordGuildUser(packet, p, this, guild)
@@ -326,10 +356,9 @@ namespace Miki.Discord
 
 		private async Task OnGuildJoin(DiscordGuildPacket guild)
 		{
-			ICacheClient cache = await CachePool.GetAsync();
 			DiscordGuild g = new DiscordGuild(guild, this);
 
-			if (!await cache.ExistsAsync($"discord:guild:{guild.Id}"))
+			if (!await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString()))
 			{
 				if (GuildJoin != null)
 				{

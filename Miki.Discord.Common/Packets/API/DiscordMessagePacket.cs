@@ -33,6 +33,9 @@ namespace Miki.Discord.Common.Packets
 
 		[JsonProperty("mentions")]
 		public List<DiscordUserPacket> Mentions { get; set; }
+
+		[JsonProperty("guild_id")]
+		public ulong? GuildId { get; set; }
 	}
 
 	public enum MessageType

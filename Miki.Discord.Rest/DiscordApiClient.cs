@@ -20,7 +20,7 @@ namespace Miki.Discord.Rest
 	{
 		public RestClient HttpClient { get; private set; }
 
-		ICacheClient _cache;
+		readonly ICacheClient _cache;
 
 		readonly JsonSerializerSettings serializer;
 		
@@ -186,6 +186,18 @@ namespace Miki.Discord.Rest
 			)).Data;
 		}
 
+		public async Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId)
+		{
+			return (await RatelimitHelper.ProcessRateLimitedAsync(
+				$"guilds:{guildId}", _cache,
+				async () =>
+				{
+					return await HttpClient.GetAsync<DiscordRolePacket>(DiscordApiRoutes.GuildRoleRoute(guildId, roleId));
+				}
+			)).Data;
+		}
+
+
 		public async Task<List<DiscordRolePacket>> GetRolesAsync(ulong guildId)
 		{
 			return (await RatelimitHelper.ProcessRateLimitedAsync(
@@ -305,7 +317,7 @@ namespace Miki.Discord.Rest
 
 		public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true)
 		{
-			string json = JsonConvert.SerializeObject(args, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+			string json = JsonConvert.SerializeObject(args, serializer);
 			{
 				return (await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}",

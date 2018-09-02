@@ -129,7 +129,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnGuildMemberRemove(guild.Id, member.User);
 
-			var member = await client.HashGetAsync(CacheUtils.GuildChannelsKey(guild.Id), member.Id.ToString());
+			var m = await client.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id), member.User.Id.ToString());
 			
 			await gateway.OnGuildMemberAdd(member);
 
@@ -137,17 +137,16 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnUserUpdate(user);
 
-			var x = await client.HashValuesAsync<DiscordGuildMemberPacket>($"discord:guild:{guild.Id}:members");
+			var x = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 
-			newGuild.Members.AddRange(x);
-			DiscordUserPacket currentUser = await client.GetAsync<DiscordUserPacket>($"discord:user:{user.Id}");
+			DiscordUserPacket currentUser = await client.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey(), user.Id.ToString());
 
-			Assert.NotEmpty(newGuild.Members);
+			Assert.NotEmpty(x);
 
-			DiscordGuildMemberPacket newUser = newGuild.Members[0];
+			DiscordGuildMemberPacket newUser = x[0];
 
 			Assert.Equal("new avi", currentUser.Avatar);
-		}
+		}	
 
 		[Fact]
 		public async Task GuildMemberAsync()
@@ -156,18 +155,15 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnGuildMemberRemove(guild.Id, user);
 
-			DiscordGuildPacket g = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			DiscordGuildMemberPacket[] g = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 
-			Assert.Empty(g.Members);
-			Assert.Equal(g.Members.Count, g.MemberCount);
-
+			Assert.Empty(g);
 
 			await gateway.OnGuildMemberAdd(member);
 
-			 g = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			 g = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 
-			Assert.Equal(g.Members.Count, g.MemberCount);
-			Assert.NotEmpty(g.Members);
+			Assert.NotEmpty(g);
 
 			await gateway.OnGuildMemberUpdate(new Common.Events.GuildMemberUpdateEventArgs
 			{
@@ -177,11 +173,10 @@ namespace Miki.Discord.Tests
 				User = user
 			});
 
-			//g = await client.GetAsync<DiscordGuildMemberPacket>($"discord:members:{guild.Id}");
+			g = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 
-			Assert.NotEmpty(g.Members);
-			Assert.Equal(g.Members.Count, g.MemberCount);
-			Assert.Equal("new nick", g.Members[0].Nickname);
+			Assert.NotEmpty(g);
+			Assert.Equal("new nick", g[0].Nickname);
 		}
 
 		[Fact]
@@ -288,12 +283,9 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnGuildRoleCreate(guild.Id, role);
 
-			var updatedGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			var updatedRole = await client.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guild.Id), role.Id.ToString());
 
-			Assert.NotEmpty(updatedGuild.Roles); 
-			Assert.Contains(updatedGuild.Roles, x => x.Id == role.Id);
-
-			DiscordRolePacket updatedRole = updatedGuild.Roles.First();
+			Assert.NotNull(updatedRole); 
 
 			Assert.Equal(role.Name, updatedRole.Name);
 
@@ -302,21 +294,18 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnGuildRoleUpdate(guild.Id, updatedRole);
 
-			updatedGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			updatedRole = await client.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guild.Id), role.Id.ToString());
 
-			Assert.NotEmpty(updatedGuild.Roles);
-			Assert.Contains(updatedGuild.Roles, x => x.Id == role.Id);
-
-			updatedRole = updatedGuild.Roles.First();
+			Assert.NotNull(updatedRole);
 
 			Assert.Equal(123429, updatedRole.Permissions);
 			Assert.Equal("new role", updatedRole.Name);
 
 			await gateway.OnGuildRoleDelete(guild.Id, updatedRole.Id);
 
-			updatedGuild = await client.GetAsync<DiscordGuildPacket>($"discord:guild:{guild.Id}");
+			updatedRole = await client.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guild.Id), role.Id.ToString());
 
-			Assert.Empty(updatedGuild.Roles);
+			Assert.Null(updatedRole);
 		}
 	}
 }

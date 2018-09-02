@@ -28,7 +28,7 @@ namespace Miki.Discord.Internal
 		{
 			IDiscordGuild guild = await GetGuildAsync();
 
-			GuildPermission permissions = guild.GetPermissions(user);
+			GuildPermission permissions = await guild.GetPermissionsAsync(user);
 			
 			if(permissions.HasFlag(GuildPermission.Administrator))
 			{

@@ -31,5 +31,8 @@ namespace Miki.Discord.Common
 
 		public static string GuildRolesKey(ulong guildId)
 			=> $"{GuildsCacheKey()}:roles:{guildId}";
+
+		public static string GuildPresencesKey()
+			=> $"{UsersCacheKey()}:presences";
 	}
 }
