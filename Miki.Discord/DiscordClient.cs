@@ -251,7 +251,7 @@ namespace Miki.Discord
 				{
 					packet.GuildId = guildId;
 
-					await CacheClient.UpsertAsync(CacheUtils.GuildMembersKey(guildId), packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.GuildMembersKey(guildId), userId.ToString(), packet);
 				}
 			}
 
@@ -267,7 +267,7 @@ namespace Miki.Discord
 
 				if (packet != null)
 				{
-					await CacheClient.UpsertAsync(CacheUtils.GuildRolesKey(guildId), packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.GuildRolesKey(guildId), roleId.ToString(), packet);
 				}
 			}
 
