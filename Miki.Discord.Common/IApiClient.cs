@@ -18,6 +18,8 @@ namespace Miki.Discord.Common
 
 		Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args);
 
+		Task DeleteGuildAsync(ulong guildId);
+
 		Task DeleteMessageAsync(ulong channelId, ulong messageId);
 
 		Task<DiscordMessagePacket> EditMessageAsync(ulong channelId, ulong messageId, EditMessageArgs args);
@@ -37,6 +39,8 @@ namespace Miki.Discord.Common
 		Task<DiscordMessagePacket> GetMessageAsync(ulong channelId, ulong messageId);
 
 		Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId);
+
+		Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId);
 
 		Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId);
 

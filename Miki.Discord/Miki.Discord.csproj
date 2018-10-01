@@ -4,8 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Miki.Discord</AssemblyName>
     <RootNamespace>Miki.Discord</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.5.5</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>2.5.7</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Miki Discord Client</Description>

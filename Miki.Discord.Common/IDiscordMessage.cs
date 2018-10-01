@@ -19,6 +19,8 @@ namespace Miki.Discord.Common
 
 		Task<IDiscordChannel> GetChannelAsync();
 
+		Task<IDiscordUser[]> GetReactionsAsync(IDiscordEmoji emoji);
+
 		IReadOnlyList<ulong> MentionedUserIds { get; }
 
 		DateTimeOffset Timestamp { get; }

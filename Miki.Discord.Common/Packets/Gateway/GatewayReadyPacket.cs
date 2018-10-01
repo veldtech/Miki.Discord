@@ -25,5 +25,14 @@ namespace Miki.Discord.Common.Gateway.Packets
 
 		[JsonProperty("_trace")]
 		public string[] TraceGuilds;
-    }
+
+		[JsonProperty("shard")]
+		public int[] Shard;
+
+		public int CurrentShard 
+			=> Shard[0];
+
+		public int TotalShards 
+			=> Shard[1];
+	}
 }

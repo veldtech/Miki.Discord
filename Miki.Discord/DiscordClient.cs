@@ -60,6 +60,20 @@ namespace Miki.Discord
 		public async Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
 			=> await ApiClient.AddGuildMemberRoleAsync(guildId, userId, roleId);
 
+		public async Task<IDiscordChannel> CreateDMAsync(ulong userid)
+		{
+			return new DiscordChannel(
+				await ApiClient.CreateDMChannelAsync(userid),
+				this
+			);
+		}
+
+		public async Task<IDiscordRole> CreateRoleAsync(ulong guildId, CreateRoleArgs args = null)
+			=> new DiscordRole(
+				await ApiClient.CreateGuildRoleAsync(guildId, args),
+				this
+			);
+
 		public async Task<IDiscordRole> EditRoleAsync(ulong guildId, DiscordRolePacket role)
 			=> new DiscordRole(await ApiClient.EditRoleAsync(guildId, role), this);
 
@@ -108,20 +122,6 @@ namespace Miki.Discord
 			);
 		}
 
-		public async Task<IDiscordChannel> CreateDMAsync(ulong userid)
-		{
-			return new DiscordChannel(
-				await ApiClient.CreateDMChannelAsync(userid), 
-				this
-			);
-		}
-
-		public async Task<IDiscordRole> CreateRoleAsync(ulong guildId, CreateRoleArgs args = null)
-			=> new DiscordRole(
-				await ApiClient.CreateGuildRoleAsync(guildId, args),
-				this
-			);
-
 		public async Task<IDiscordGuild> GetGuildAsync(ulong id)
 		{
 			var packet = await GetGuildPacketAsync(id);
@@ -142,6 +142,11 @@ namespace Miki.Discord
 			);
 		}
 
+		public async Task<IDiscordUser[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+			=> (await ApiClient.GetReactionsAsync(channelId, messageId, emojiId))
+			.Select(x => new DiscordUser(x, this))
+			.ToArray();
+
 		public async Task<IDiscordUser> GetUserAsync(ulong id)
 		{
 			var packet = await GetUserPacketAsync(id);
@@ -154,6 +159,9 @@ namespace Miki.Discord
 
 		public async Task DeleteMessageAsync(ulong channelId, ulong messageId)
 			=> await ApiClient.DeleteMessageAsync(channelId, messageId);
+
+		public async Task DeleteGuildAsync(ulong guildId)
+			=> await ApiClient.DeleteGuildAsync(guildId);
 
 		public async Task RemoveBanAsync(ulong guildId, ulong userId)
 			=> await ApiClient.RemoveGuildBanAsync(guildId, userId);
@@ -184,7 +192,6 @@ namespace Miki.Discord
 				content = text,
 				embed  = embed
 			}, toChannel);
-
 
 		internal async Task<DiscordChannelPacket> GetDMChannelPacketAsync(ulong id)
 		{
@@ -293,7 +300,6 @@ namespace Miki.Discord
 
 			return packets;
 		}
-
 
 		internal async Task<DiscordGuildMemberPacket[]> GetGuildMemberPacketsAsync(ulong guildId)
 		{

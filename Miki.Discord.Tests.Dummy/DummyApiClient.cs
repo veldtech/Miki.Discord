@@ -39,6 +39,11 @@ namespace Miki.Discord.Mocking
 			};
 		}
 
+		public Task DeleteGuildAsync(ulong guildId)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task DeleteMessageAsync(ulong channelId, ulong messageId)
 		{
 			throw new NotImplementedException();
@@ -85,6 +90,16 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId)
 		{
 			throw new NotImplementedException();
 		}

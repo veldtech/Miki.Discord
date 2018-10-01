@@ -28,6 +28,14 @@ namespace Miki.Discord.Rest
 			=> $"{GuildRoute(guildId)}/channels";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string GuildEmojiRoute(ulong guildId)
+			=> $"{GuildRoute(guildId)}/emojis";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string GuildEmojiRoute(ulong guildId, ulong emojiId)
+			=> $"{GuildEmojiRoute(guildId)}/{emojiId}";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string GuildMemberRoute(ulong guildId, ulong userId)
 			=> $"{GuildRoute(guildId)}/members/{userId}";
 
@@ -45,6 +53,22 @@ namespace Miki.Discord.Rest
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string GuildRoute(ulong guildId)
 			=> $"/guilds/{guildId}";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string MessageReactionsRoute(ulong channelId, ulong messageId)
+			=> $"{ChannelMessageRoute(channelId, messageId)}/reactions";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string MessageReactionRoute(ulong channelId, ulong messageId, ulong emojiId)
+			=> $"{MessageReactionsRoute(channelId, messageId)}/{emojiId}";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string MessageReactionRoute(ulong channelId, ulong messageId, ulong emojiId, ulong userId)
+			=> $"{MessageReactionRoute(channelId, messageId, emojiId)}/{userId}";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string MessageReactionMeRoute(ulong channelId, ulong messageId, ulong emojiId)
+			=> $"{MessageReactionRoute(channelId, messageId, emojiId)}/@me";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string UserMeRoute()
