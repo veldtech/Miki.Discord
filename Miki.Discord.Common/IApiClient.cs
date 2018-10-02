@@ -18,6 +18,8 @@ namespace Miki.Discord.Common
 
 		Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args);
 
+		Task DeleteChannelAsync(ulong channelId);
+
 		Task DeleteGuildAsync(ulong guildId);
 
 		Task DeleteMessageAsync(ulong channelId, ulong messageId);
@@ -58,6 +60,6 @@ namespace Miki.Discord.Common
 
 		Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true);
 
-		Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true);
+		Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args);
 	}
 }

@@ -41,10 +41,10 @@ namespace Miki.Discord.Internal
 			=> await _client.EditMessageAsync(ChannelId, Id, args.content, args.embed);
 
 		public async Task DeleteAsync()
-			=> await _client.DeleteMessageAsync(_packet.ChannelId, _packet.Id);
+			=> await _client.ApiClient.DeleteMessageAsync(_packet.ChannelId, _packet.Id);
 
-		public async Task<IDiscordChannel> GetChannelAsync()
-			=> await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId);
+		public async Task<IDiscordTextChannel> GetChannelAsync()
+			=> (await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId)) as IDiscordTextChannel;
 
 		public async Task<IDiscordUser[]> GetReactionsAsync(IDiscordEmoji emoji)
 			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji.Id);

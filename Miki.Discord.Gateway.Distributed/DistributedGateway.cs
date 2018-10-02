@@ -48,7 +48,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
 
-		public Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
+		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
 
 		public Func<GatewayMessage, Task> OnPacketSent { get; set; }
 		public Func<GatewayMessage, Task> OnPacketReceived { get; set; }
@@ -397,7 +397,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnUserUpdate != null)
 						{
 							await OnUserUpdate(
-								body.Data.ToObject<DiscordUserPacket>()
+								body.Data.ToObject<DiscordPresencePacket>()
 							);
 						}
 					}

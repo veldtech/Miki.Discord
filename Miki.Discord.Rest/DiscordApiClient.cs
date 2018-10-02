@@ -26,7 +26,6 @@ namespace Miki.Discord.Rest
 		
 		public DiscordApiClient(string token, ICacheClient cache)
 		{
-
 			HttpClient = new RestClient(DiscordHelper.DiscordUrl + DiscordHelper.BaseUrl)
 				.SetAuthorization("Bot", token);
 			_cache = cache;
@@ -98,12 +97,22 @@ namespace Miki.Discord.Rest
 		public async Task CreateReactionAsync(ulong channelId, ulong messageId, ulong emojiId)
 		{
 			await RatelimitHelper.ProcessRateLimitedAsync(
-				$"channel:{channelId}", _cache,
+				$"channels:{channelId}", _cache,
 				async () =>
 				{
 					return await HttpClient.PostAsync(
 						DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emojiId)
 					);
+				});
+		}
+
+		public async Task DeleteChannelAsync (ulong channelId)
+		{
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"channels:{channelId}:delete", _cache,
+				async () =>
+				{
+					return await HttpClient.DeleteAsync(DiscordApiRoutes.ChannelRoute(channelId));
 				});
 		}
 
@@ -425,7 +434,7 @@ namespace Miki.Discord.Rest
 			)).Data;
 		}
 
-		public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true)
+		public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
 		{
 			string json = JsonConvert.SerializeObject(args, serializer);
 			{

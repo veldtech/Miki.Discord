@@ -47,9 +47,10 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordPresence> GetPresenceAsync()
 			=> await _client.GetUserPresence(Id);
 
-		public DateTimeOffset CreatedAt => throw new Exception("fucc");
+		public DateTimeOffset CreatedAt 
+			=> this.GetCreationTime();
 
-		public async Task<IDiscordChannel> GetDMChannelAsync()
+		public async Task<IDiscordTextChannel> GetDMChannelAsync()
 			=> await _client.CreateDMAsync(Id);
 	}
 }

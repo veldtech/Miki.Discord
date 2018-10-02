@@ -12,6 +12,10 @@ namespace Miki.Discord.Internal
 		protected DiscordChannelPacket _packet;
 		protected DiscordClient _client;
 
+		public DiscordChannel()
+		{
+		}
+
 		public DiscordChannel(DiscordChannelPacket packet, DiscordClient client)
 		{
 			_packet = packet;
@@ -27,22 +31,14 @@ namespace Miki.Discord.Internal
 		public bool IsNsfw
 			=> _packet.IsNsfw.Value;
 
-		public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
-			=> await _client.SendFileAsync(Id, file, fileName, new MessageArgs
-			{
-				content = content,
-				tts = isTTS,
-				embed = embed
-			});
-
-		public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
+		public async Task DeleteAsync()
 		{
-			return await _client.SendMessageAsync(Id, new MessageArgs()
-			{
-				content = content,
-				tts = isTTS,
-				embed = embed
-			}, true);
+			await _client.ApiClient.DeleteChannelAsync(Id);
+		}
+
+		public Task ModifyAsync(object todo)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

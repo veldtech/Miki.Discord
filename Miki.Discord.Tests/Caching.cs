@@ -118,7 +118,7 @@ namespace Miki.Discord.Tests
 				Roles = new List<DiscordRolePacket>(),
 			};
 
-			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
+			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
 			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString(), guild).GetAwaiter().GetResult();
 		}
 
@@ -135,7 +135,11 @@ namespace Miki.Discord.Tests
 
 			user.Avatar = "new avi";
 
-			await gateway.OnUserUpdate(user);
+			await gateway.OnUserUpdate(new DiscordPresencePacket()
+			{
+				User = user,
+				GuildId = guild.Id
+			});
 
 			var x = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 
@@ -192,7 +196,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelUpdate(channel);
 
-			DiscordChannelPacket[] channels = await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.GuildChannelsKey(guild.Id));
+			DiscordChannelPacket[] channels = await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guild.Id));
 		
 			Assert.NotEmpty(channels);
 
@@ -217,7 +221,7 @@ namespace Miki.Discord.Tests
 			await gateway.OnChannelCreate(otherChannel);
 
 			DiscordChannelPacket otherAddedChannel = await client.HashGetAsync<DiscordChannelPacket>(
-				CacheUtils.GuildChannelsKey(guild.Id), otherChannel.Id.ToString());
+				CacheUtils.ChannelsKey(guild.Id), otherChannel.Id.ToString());
 
 			Assert.Equal("another channel", otherAddedChannel.Name);
 
@@ -229,7 +233,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelDelete(otherChannel);
 			otherAddedChannel = await client.HashGetAsync<DiscordChannelPacket>(
-				CacheUtils.GuildChannelsKey(guild.Id), otherAddedChannel.Id.ToString()
+				CacheUtils.ChannelsKey(guild.Id), otherAddedChannel.Id.ToString()
 				);
 
 			Assert.Null(otherAddedChannel);

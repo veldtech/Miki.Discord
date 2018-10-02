@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Miki.Discord
 {
 	public partial class DiscordClient
-    {
+	{
 		public IApiClient ApiClient { get; private set; }
 		public IGateway Gateway { get; private set; }
 
@@ -32,18 +32,15 @@ namespace Miki.Discord
 
 			Gateway.OnMessageCreate += OnMessageCreate;
 			Gateway.OnMessageUpdate += OnMessageUpdate;
-					 
+
 			Gateway.OnGuildCreate += OnGuildJoin;
 			Gateway.OnGuildDelete += OnGuildLeave;
 
 			Gateway.OnGuildMemberAdd += OnGuildMemberCreate;
 			Gateway.OnGuildMemberRemove += OnGuildMemberDelete;
-					 
+
 			Gateway.OnUserUpdate += OnUserUpdate;
 		}
-
-		public async Task AddBanAsync(ulong guildId, ulong userId, int pruneDays = 7, string reason = null)
-			=> await ApiClient.AddGuildBanAsync(guildId, userId, pruneDays, reason);
 
 		public async Task<IDiscordMessage> EditMessageAsync(
 			ulong channelId, ulong messageId, string text, DiscordEmbed embed = null
@@ -57,15 +54,11 @@ namespace Miki.Discord
 				this
 			);
 
-		public async Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
-			=> await ApiClient.AddGuildMemberRoleAsync(guildId, userId, roleId);
-
-		public async Task<IDiscordChannel> CreateDMAsync(ulong userid)
+		public async Task<IDiscordTextChannel> CreateDMAsync(ulong userid)
 		{
-			return new DiscordChannel(
-				await ApiClient.CreateDMChannelAsync(userid),
-				this
-			);
+			var channel = await ApiClient.CreateDMChannelAsync(userid);
+
+			return ResolveChannel(channel) as IDiscordTextChannel;
 		}
 
 		public async Task<IDiscordRole> CreateRoleAsync(ulong guildId, CreateRoleArgs args = null)
@@ -88,30 +81,16 @@ namespace Miki.Discord
 				.Select(x => new DiscordRole(x, this))
 				.ToList();
 
-		public async Task RemoveGuildMemberAsync(ulong guildId, ulong id, string reason = null)
-			=> await ApiClient.RemoveGuildMemberAsync(guildId, id, reason);
-
-		public string GetUserAvatarUrl(ulong id, string hash)
-			=> DiscordHelper.GetAvatarUrl(id, hash);
-
-		public string GetUserAvatarUrl(ushort discriminator)
-			=> DiscordHelper.GetAvatarUrl(discriminator);
-
 		public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
 			=> (await GetGuildChannelPacketsAsync(guildId))
 				.Select(x => new DiscordGuildChannel(x, this))
 				.ToList();
 
 		public async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
-		{		
-			if(guildId.HasValue)
-			{
-				return new DiscordGuildChannel(await GetGuildChannelPacketAsync(id, guildId.Value), this);
-			}
-			else
-			{
-				return new DiscordChannel(await GetDMChannelPacketAsync(id), this);
-			}
+		{
+			var channel = await GetChannelPacketAsync(id, guildId);
+
+			return ResolveChannel(channel);
 		}
 
 		public async Task<IDiscordUser> GetCurrentUserAsync()
@@ -136,7 +115,6 @@ namespace Miki.Discord
 		{
 			return new DiscordGuildUser(
 				await GetGuildMemberPacketAsync(id, guildId),
-				await GetUserPacketAsync(id),
 				this,
 				await GetGuildAsync(guildId)
 			);
@@ -157,18 +135,6 @@ namespace Miki.Discord
 			);
 		}
 
-		public async Task DeleteMessageAsync(ulong channelId, ulong messageId)
-			=> await ApiClient.DeleteMessageAsync(channelId, messageId);
-
-		public async Task DeleteGuildAsync(ulong guildId)
-			=> await ApiClient.DeleteGuildAsync(guildId);
-
-		public async Task RemoveBanAsync(ulong guildId, ulong userId)
-			=> await ApiClient.RemoveGuildBanAsync(guildId, userId);
-
-		public async Task RemoveGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
-			=> await ApiClient.RemoveGuildMemberRoleAsync(guildId, userId, roleId);
-
 		public async Task SetGameAsync(int shardId, DiscordStatus status)
 		{
 			await Gateway.SendAsync(shardId, GatewayOpcode.StatusUpdate, status);
@@ -180,22 +146,22 @@ namespace Miki.Discord
 				this
 			);
 
-		public async Task<IDiscordMessage> SendMessageAsync(ulong channelId, MessageArgs message, bool toChannel)
+		public async Task<IDiscordMessage> SendMessageAsync(ulong channelId, MessageArgs message)
 			=> new DiscordMessage(
-				await ApiClient.SendMessageAsync(channelId, message, toChannel),
+				await ApiClient.SendMessageAsync(channelId, message),
 				this
 			);
 
-		public async Task<IDiscordMessage> SendMessageAsync(ulong channelId, string text, DiscordEmbed embed = null, bool toChannel = true)
+		public async Task<IDiscordMessage> SendMessageAsync(ulong channelId, string text, DiscordEmbed embed = null)
 			=> await SendMessageAsync(channelId, new MessageArgs
 			{
 				content = text,
 				embed  = embed
-			}, toChannel);
+			});
 
-		internal async Task<DiscordChannelPacket> GetDMChannelPacketAsync(ulong id)
+		internal async Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id, ulong? guildId)
 		{
-			DiscordChannelPacket packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(CacheUtils.DirectChannelsKey(), id.ToString());
+			DiscordChannelPacket packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId), id.ToString());
 
 			if (packet == null)
 			{
@@ -203,24 +169,7 @@ namespace Miki.Discord
 
 				if (packet != null)
 				{
-					await CacheClient.HashUpsertAsync(CacheUtils.DirectChannelsKey(), id.ToString(), packet);
-				}
-			}
-
-			return packet;
-		}
-
-		internal async Task<DiscordChannelPacket> GetGuildChannelPacketAsync(ulong id, ulong guildId)
-		{
-			DiscordChannelPacket packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(CacheUtils.GuildChannelsKey(guildId), id.ToString());
-
-			if (packet == null)
-			{
-				packet = await ApiClient.GetChannelAsync(id);
-
-				if (packet != null)
-				{
-					await CacheClient.HashUpsertAsync(CacheUtils.GuildChannelsKey(guildId), id.ToString(), packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.ChannelsKey(guildId), id.ToString(), packet);
 				}
 			}
 			return packet;
@@ -228,7 +177,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordChannelPacket[]> GetGuildChannelPacketsAsync(ulong guildId)
 		{
-			DiscordChannelPacket[] packets = await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.GuildChannelsKey(guildId)); 
+			DiscordChannelPacket[] packets = await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId)); 
 
 			if((packets?.Length ?? 0) == 0)
 			{
@@ -237,7 +186,7 @@ namespace Miki.Discord
 				if(packets?.Length > 0)
 				{
 					await CacheClient.HashUpsertAsync(
-						CacheUtils.GuildChannelsKey(guildId), 
+						CacheUtils.ChannelsKey(guildId), 
 						packets.Select(x => new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x)
 					).ToArray());
 				}
@@ -292,7 +241,7 @@ namespace Miki.Discord
 				if (packets?.Length > 0)
 				{
 					await CacheClient.HashUpsertAsync(
-						CacheUtils.GuildChannelsKey(guildId),
+						CacheUtils.ChannelsKey(guildId),
 						packets.Select(x => new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x)
 					).ToArray());
 				}
@@ -356,6 +305,25 @@ namespace Miki.Discord
 
 			return packet;
 		}
+
+		private IDiscordChannel ResolveChannel(DiscordChannelPacket packet)
+		{
+			if (packet.GuildId.HasValue)
+			{
+				switch (packet.Type)
+				{
+					case ChannelType.GUILDTEXT:
+						return new DiscordGuildTextChannel(packet, this);
+
+					default:
+						return new DiscordGuildChannel(packet, this);
+				}
+			}
+			else
+			{
+				return new DiscordChannel(packet, this);
+			}
+		}
 	}
 
 	public partial class DiscordClient
@@ -383,7 +351,7 @@ namespace Miki.Discord
 				DiscordGuildMemberPacket member = await GetGuildMemberPacketAsync(packet.Id, guildId);
 
 				await GuildMemberDelete(
-					new DiscordGuildUser(member, packet, this, guild)
+					new DiscordGuildUser(member, this, guild)
 				);
 			}
 		}
@@ -393,10 +361,9 @@ namespace Miki.Discord
 			if (GuildMemberCreate != null)
 			{
 				IDiscordGuild guild = await GetGuildAsync(packet.GuildId);
-				DiscordUserPacket p = await GetUserPacketAsync(packet.User.Id);
 
 				await GuildMemberCreate(
-					new DiscordGuildUser(packet, p, this, guild)
+					new DiscordGuildUser(packet, this, guild)
 				);
 			}
 		}
@@ -445,13 +412,13 @@ namespace Miki.Discord
 			}
 		}
 
-		private async Task OnUserUpdate(DiscordUserPacket user)
+		private async Task OnUserUpdate(DiscordPresencePacket user)
 		{
 			if(UserUpdate != null)
 			{
 				await UserUpdate(
-					await GetUserAsync(user.Id),
-					new DiscordUser(user, this)
+					await GetUserAsync(user.User.Id),
+					new DiscordUser(user.User, this)
 				);
 			}
 		}

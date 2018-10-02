@@ -59,8 +59,18 @@ namespace Miki.Discord.Caching.Stages
 			await cache.HashUpsertAsync(CacheUtils.GuildsCacheKey(), readyPackets);
 		}
 
-		private async Task OnUserUpdate(DiscordUserPacket user, IExtendedCacheClient cache)
-			=> await cache.HashUpsertAsync(CacheUtils.UsersCacheKey(), user.Id.ToString(), user);
+		private async Task OnUserUpdate(DiscordPresencePacket user, IExtendedCacheClient cache)
+		{
+			await cache.HashUpsertAsync(CacheUtils.UsersCacheKey(), user.User.Id.ToString(), user.User);
+
+			var guildMember = await cache.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(user.User.Id), user.User.Id.ToString());
+
+			if (guildMember != null)
+			{
+				guildMember.User = user.User;
+				await cache.HashUpsertAsync(CacheUtils.GuildMembersKey(user.GuildId), user.User.Id.ToString(), guildMember);
+			}
+		}
 
 		private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs member, IExtendedCacheClient cache)
 		{
@@ -107,7 +117,7 @@ namespace Miki.Discord.Caching.Stages
 		{
 			await Task.WhenAll(
 				cache.HashUpsertAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString(), guild),
-				cache.HashUpsertAsync(CacheUtils.GuildChannelsKey(guild.Id),
+				cache.HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id),
 					guild.Channels.Select(x =>
 					{
 						x.GuildId = guild.Id;
@@ -135,20 +145,12 @@ namespace Miki.Discord.Caching.Stages
 
 		private async Task OnChannelCreate(DiscordChannelPacket channel, IExtendedCacheClient cache)
 		{
-			string key = channel.GuildId.HasValue 
-				? CacheUtils.GuildChannelsKey(channel.GuildId.Value) 
-				: CacheUtils.DirectChannelsKey();
-
-			await cache.HashUpsertAsync(key, channel.Id.ToString(), channel);
+			await cache.HashUpsertAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString(), channel);
 		}
 
 		private async Task OnChannelDelete(DiscordChannelPacket channel, IExtendedCacheClient cache)
 		{
-			string key = channel.GuildId.HasValue 
-				? CacheUtils.GuildChannelsKey(channel.GuildId.Value) 
-				: CacheUtils.DirectChannelsKey();
-
-			await cache.HashDeleteAsync(key, channel.Id.ToString());
+			await cache.HashDeleteAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString());
 		}
 	}
 }

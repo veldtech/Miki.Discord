@@ -10,8 +10,17 @@ namespace Miki.Discord.Common
 		/// Returns a DM channel cache key collection
 		/// </summary>
 		/// <returns></returns>
-		public static string DirectChannelsKey()
-			=> $"discord:dmchannels";
+		public static string ChannelsKey(ulong? guildId = null)
+		{
+			if (guildId.HasValue)
+			{
+				return $"{GuildsCacheKey()}:channels:{guildId}";
+			}
+			else
+			{
+				return $"discord:dmchannels";
+			}
+		}
 
 		/// <summary>
 		/// Returns a user collection cache key
@@ -22,9 +31,6 @@ namespace Miki.Discord.Common
 
 		public static string GuildsCacheKey()
 			=> $"discord:guilds";
-
-		public static string GuildChannelsKey(ulong guildId)
-			=> $"{GuildsCacheKey()}:channels:{guildId}";
 
 		public static string GuildMembersKey(ulong guildId)
 			=> $"{GuildsCacheKey()}:members:{guildId}";

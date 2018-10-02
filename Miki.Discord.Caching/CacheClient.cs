@@ -37,7 +37,7 @@ namespace Miki.Discord.Caching
 
 		public Func<GatewayReadyPacket, IExtendedCacheClient, Task> OnReady;
 
-		public Func<DiscordUserPacket, IExtendedCacheClient, Task> OnUserUpdate;
+		public Func<DiscordPresencePacket, IExtendedCacheClient, Task> OnUserUpdate;
 
 		public CacheClient(
 			IGateway messenger,

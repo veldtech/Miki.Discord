@@ -164,7 +164,10 @@ namespace Miki.Discord.Tests
 			await gateway.OnGuildRoleCreate(packet.Id, role);
 			await gateway.OnGuildRoleUpdate(packet.Id, role);
 			await gateway.OnGuildRoleDelete(packet.Id, role.Id);
-			await gateway.OnUserUpdate(user);
+			await gateway.OnUserUpdate(new DiscordPresencePacket(){
+				User = user,
+				GuildId = packet.Id
+			});
 			await gateway.OnGuildUpdate(packet);
 			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket { GuildId = packet.Id, IsUnavailable = true });
 		}

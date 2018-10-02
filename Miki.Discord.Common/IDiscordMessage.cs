@@ -17,7 +17,7 @@ namespace Miki.Discord.Common
 
 		Task DeleteAsync();
 
-		Task<IDiscordChannel> GetChannelAsync();
+		Task<IDiscordTextChannel> GetChannelAsync();
 
 		Task<IDiscordUser[]> GetReactionsAsync(IDiscordEmoji emoji);
 

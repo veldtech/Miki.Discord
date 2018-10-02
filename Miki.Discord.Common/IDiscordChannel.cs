@@ -12,8 +12,8 @@ namespace Miki.Discord.Common
 
 		string Name { get; }
 
-		Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null);
-		Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content = null, bool isTTs = false, DiscordEmbed embed = null);
+		Task DeleteAsync();
+		Task ModifyAsync(object todo);
 	}
 
 	public interface IDiscordGuildChannel : IDiscordChannel

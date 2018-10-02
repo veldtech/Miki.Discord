@@ -39,6 +39,11 @@ namespace Miki.Discord.Mocking
 			};
 		}
 
+		public Task DeleteChannelAsync(ulong channelId)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task DeleteGuildAsync(ulong guildId)
 		{
 			throw new NotImplementedException();
@@ -140,6 +145,11 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
 		{
 			throw new NotImplementedException();
 		}
