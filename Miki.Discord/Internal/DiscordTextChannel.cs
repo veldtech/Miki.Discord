@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,23 +17,37 @@ namespace Miki.Discord.Internal
 
 		public async Task DeleteMessagesAsync(params ulong[] id)
 		{
-			if(id.Length == 1)
+			if(id.Length == 0)
+			{
+				throw new ArgumentNullException();
+			}
+
+			if(id.Length < 2)
 			{
 				await _client.ApiClient.DeleteMessageAsync(Id, id[0]);
 			}
 			
+			if(id.Length > 100)
+			{
+				id = id.Take(100).ToArray();
+			}
 
-			throw new NotImplementedException();
+			await _client.ApiClient.DeleteMessagesAsync(Id, id);
+		}
+		public async Task DeleteMessagesAsync(params IDiscordMessage[] messages)
+		{
+			await DeleteMessagesAsync(messages.Select(x => x.Id).ToArray());
 		}
 
-		public Task<IDiscordMessage> GetMessageAsync(ulong id)
+		public async Task<IDiscordMessage> GetMessageAsync(ulong id)
 		{
-			throw new NotImplementedException();
+			return new DiscordMessage(await _client.ApiClient.GetMessageAsync(Id, id), _client);
 		}
 
-		public Task<IDiscordMessage[]> GetMessagesAsync(ulong id, int amount = 100, GetMessageType type = GetMessageType.Before)
+		public async Task<IEnumerable<IDiscordMessage>> GetMessagesAsync(int amount = 100)
 		{
-			throw new NotImplementedException();
+			return (await _client.ApiClient.GetMessagesAsync(Id, amount))
+				.Select(x => new DiscordMessage(x, _client));
 		}
 
 		public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
@@ -53,9 +68,9 @@ namespace Miki.Discord.Internal
 			});
 		}
 
-		public Task TriggerTypingAsync()
+		public async Task TriggerTypingAsync()
 		{
-			throw new NotImplementedException();
+			await _client.ApiClient.TriggerTypingAsync(Id);
 		}
 	}
 }

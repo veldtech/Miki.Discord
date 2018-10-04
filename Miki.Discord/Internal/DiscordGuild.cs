@@ -56,7 +56,7 @@ namespace Miki.Discord.Internal
 			return await _client.GetChannelAsync(id, Id) as IDiscordGuildChannel;
 		}
 
-		public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync()
+		public async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync()
 		{
 			return await _client.GetChannelsAsync(Id);
 		}
@@ -131,7 +131,7 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordRole> GetRoleAsync(ulong id)
 			=> await _client.GetRoleAsync(Id, id);
 
-		public async Task<IReadOnlyList<IDiscordRole>> GetRolesAsync()
+		public async Task<IEnumerable<IDiscordRole>> GetRolesAsync()
 			=> await _client.GetRolesAsync(Id);
 
 		public async Task<IDiscordGuildUser> GetSelfAsync()

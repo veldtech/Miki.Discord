@@ -24,6 +24,8 @@ namespace Miki.Discord.Common
 
 		Task DeleteMessageAsync(ulong channelId, ulong messageId);
 
+		Task DeleteMessagesAsync(ulong channelId, ulong[] messages);
+
 		Task<DiscordMessagePacket> EditMessageAsync(ulong channelId, ulong messageId, EditMessageArgs args);
 
 		Task<DiscordRolePacket> EditRoleAsync(ulong guildId, DiscordRolePacket role);
@@ -40,7 +42,7 @@ namespace Miki.Discord.Common
 
 		Task<DiscordMessagePacket> GetMessageAsync(ulong channelId, ulong messageId);
 
-		Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId);
+		Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100);
 
 		Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId);
 
@@ -61,5 +63,7 @@ namespace Miki.Discord.Common
 		Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true);
 
 		Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args);
+
+		Task TriggerTypingAsync(ulong channelId);
 	}
 }

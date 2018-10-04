@@ -76,15 +76,13 @@ namespace Miki.Discord
 		public async Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId)
 			=> new DiscordRole(await GetRolePacketAsync(roleId, guildId), this);
 
-		public async Task<IReadOnlyList<IDiscordRole>> GetRolesAsync(ulong guildId)
+		public async Task<IEnumerable<IDiscordRole>> GetRolesAsync(ulong guildId)
 			=> (await GetRolePacketsAsync(guildId))
-				.Select(x => new DiscordRole(x, this))
-				.ToList();
+				.Select(x => new DiscordRole(x, this));
 
-		public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
+		public async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
 			=> (await GetGuildChannelPacketsAsync(guildId))
-				.Select(x => new DiscordGuildChannel(x, this))
-				.ToList();
+				.Select(x => ResolveChannel(x) as IDiscordGuildChannel);
 
 		public async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
 		{

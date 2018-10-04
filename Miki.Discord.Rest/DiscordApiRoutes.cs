@@ -12,6 +12,14 @@ namespace Miki.Discord.Rest
 			=> $"{ChannelMessagesRoute(channelId)}/{messageId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string ChannelTypingRoute(ulong channelId)
+			=> $"{ChannelRoute(channelId)}/typing";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string ChannelBulkDeleteMessages(ulong channelId)
+			=> $"{ChannelRoute(channelId)}/messages/bulk-delete";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string ChannelMessagesRoute(ulong channelId)
 			=> $"{ChannelRoute(channelId)}/messages";
 

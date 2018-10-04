@@ -3,6 +3,7 @@ using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
+using Miki.Discord.Rest.Arguments;
 using Miki.Logging;
 using Miki.Rest;
 using Newtonsoft.Json;
@@ -119,7 +120,7 @@ namespace Miki.Discord.Rest
 		public async Task DeleteGuildAsync(ulong guildId)
 		{
 			await RatelimitHelper.ProcessRateLimitedAsync(
-				$"guilds:{guildId}:delete", _cache,
+				$"guilds:{guildId}", _cache,
 				async () =>
 				{
 					return await HttpClient.DeleteAsync(DiscordApiRoutes.GuildRoute(guildId));
@@ -129,7 +130,7 @@ namespace Miki.Discord.Rest
 		public async Task DeleteEmojiAsync(ulong guildId, ulong emojiId)
 		{
 			await RatelimitHelper.ProcessRateLimitedAsync(
-				$"guilds:{guildId}:delete", _cache,
+				$"guilds:{guildId}", _cache,
 				async () =>
 				{
 					return await HttpClient.DeleteAsync(DiscordApiRoutes.GuildEmojiRoute(guildId, emojiId));
@@ -143,6 +144,16 @@ namespace Miki.Discord.Rest
 				async () =>
 				{
 					return await HttpClient.DeleteAsync(DiscordApiRoutes.ChannelMessageRoute(channelId, messageId));
+				});
+		}
+
+		public async Task DeleteMessagesAsync(ulong channelId, ulong[] messageId)
+		{
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"channels:{channelId}:delete", _cache,
+				async () =>
+				{
+					return await HttpClient.PostAsync(DiscordApiRoutes.ChannelBulkDeleteMessages(channelId), JsonConvert.SerializeObject(new ChannelBulkDeleteArgs(messageId)));
 				});
 		}
 
@@ -284,13 +295,17 @@ namespace Miki.Discord.Rest
 			)).Data;
 		}
 
-		public async Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId)
+		public async Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100)
 		{
 			return (await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}", _cache,
 				async () =>
 				{
-					return await HttpClient.GetAsync<List<DiscordMessagePacket>>(DiscordApiRoutes.ChannelMessagesRoute(channelId));
+					QueryString qs = new QueryString();
+
+					qs.Add("limit", amount);
+
+					return await HttpClient.GetAsync<List<DiscordMessagePacket>>(DiscordApiRoutes.ChannelMessagesRoute(channelId) + qs.Query);
 				}
 			)).Data;
 		}
@@ -445,6 +460,14 @@ namespace Miki.Discord.Rest
 					return await HttpClient.PostAsync<DiscordMessagePacket>(DiscordApiRoutes.ChannelMessagesRoute(channelId), json);
 				})).Data;
 			}
+		}
+
+		public async Task TriggerTypingAsync(ulong channelId)
+		{
+			await RatelimitHelper.ProcessRateLimitedAsync(
+				$"channels:{channelId}", _cache,
+				async () => await HttpClient.PostAsync(DiscordApiRoutes.ChannelTypingRoute(channelId))
+			);
 		}
 	}
 }
