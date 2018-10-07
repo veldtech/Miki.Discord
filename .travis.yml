@@ -2,6 +2,8 @@ language: csharp
 solution: Miki.Discord.sln
 mono: none
 dotnet: 2.1.302
+services:
+ - redis
 script:
  - dotnet restore 
  - dotnet build
