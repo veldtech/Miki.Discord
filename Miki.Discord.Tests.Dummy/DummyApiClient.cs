@@ -54,6 +54,11 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
+		public Task DeleteMessagesAsync(ulong channelId, ulong[] messages)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<DiscordMessagePacket> EditMessageAsync(ulong channelId, ulong messageId, EditMessageArgs args)
 		{
 			throw new NotImplementedException();
@@ -95,6 +100,11 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100)
 		{
 			throw new NotImplementedException();
 		}
@@ -150,6 +160,11 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task TriggerTypingAsync(ulong channelId)
 		{
 			throw new NotImplementedException();
 		}
