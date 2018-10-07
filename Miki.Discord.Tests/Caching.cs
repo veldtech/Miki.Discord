@@ -1,5 +1,5 @@
 using Miki.Cache;
-using Miki.Cache.StackExchange;
+using Miki.Cache.InMemory;
 using Miki.Discord.Caching;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
@@ -7,7 +7,6 @@ using Miki.Discord.Common.Packets;
 using Miki.Discord.Mocking;
 using Miki.Discord.Tests.Dummy;
 using Miki.Serialization.Protobuf;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +40,7 @@ namespace Miki.Discord.Tests
 
 		void ResetObjects()
 		{
-			pool = new StackExchangeCachePool(new ProtobufSerializer(), "localhost");
+			pool = new InMemoryCachePool(new ProtobufSerializer());
 
 			cache = new CacheClient(
 				gateway,

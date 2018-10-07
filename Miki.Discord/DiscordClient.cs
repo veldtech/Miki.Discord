@@ -311,10 +311,14 @@ namespace Miki.Discord
 				switch (packet.Type)
 				{
 					case ChannelType.GUILDTEXT:
+					{
 						return new DiscordGuildTextChannel(packet, this);
+					}
 
 					default:
+					{
 						return new DiscordGuildChannel(packet, this);
+					}
 				}
 			}
 			else
