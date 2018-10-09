@@ -2,6 +2,7 @@
 using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Common.Packets.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,11 +34,13 @@ namespace Miki.Discord.Common
 		Func<DiscordMessagePacket, Task> OnMessageCreate { get; set; }
 		Func<DiscordMessagePacket, Task> OnMessageUpdate { get; set; }
 		Func<MessageDeleteArgs, Task> OnMessageDelete { get; set; }
-		Func<DiscordMessagePacket, Task> OnMessageDeleteBulk { get; set; }
+		Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
 
 		Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
 
 		Func<GatewayReadyPacket, Task> OnReady { get; set; }
+
+		Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
 
 		Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
 

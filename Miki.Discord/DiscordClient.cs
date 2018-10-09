@@ -118,10 +118,20 @@ namespace Miki.Discord
 			);
 		}
 
-		public async Task<IDiscordUser[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
-			=> (await ApiClient.GetReactionsAsync(channelId, messageId, emojiId))
-			.Select(x => new DiscordUser(x, this))
-			.ToArray();
+		public async Task<IDiscordReaction[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+		{
+			var users = await ApiClient.GetReactionsAsync(channelId, messageId, emojiId);
+			var currentuser = await GetCurrentUserPacketAsync();
+			var emoji = await GetEmojiPacketAsync(emojiId);
+
+			var reacted = users.Any(x => x.Id == currentuser.Id);
+
+			return users.Select(
+					x => new DiscordReaction(emoji, x, this)
+				).ToArray();
+		}
+
+
 
 		public async Task<IDiscordUser> GetUserAsync(ulong id)
 		{
@@ -212,6 +222,11 @@ namespace Miki.Discord
 			return packet;
 		}
 
+		internal async Task<DiscordEmojiPacket> GetEmojiPacketAsync(ulong emojiId)
+		{
+			return await CacheClient.HashGetAsync<DiscordEmojiPacket>(CacheUtils.EmojiCacheKey, emojiId.ToString());
+		}
+
 		internal async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
 		{
 			DiscordRolePacket packet = await CacheClient.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
@@ -255,7 +270,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
 		{
-			DiscordGuildPacket packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey(), id.ToString());
+			DiscordGuildPacket packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey, id.ToString());
 
 			if (packet == null)
 			{
@@ -263,7 +278,7 @@ namespace Miki.Discord
 
 				if (packet != null)
 				{
-					await CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey(), id.ToString(), packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey, id.ToString(), packet);
 				}
 			}	
 
@@ -272,7 +287,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordUserPacket> GetUserPacketAsync(ulong id)
 		{
-			DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey(), id.ToString());
+			DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, id.ToString());
 
 			if (packet == null)
 			{
@@ -280,7 +295,7 @@ namespace Miki.Discord
 
 				if (packet != null)
 				{
-					await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey(), id.ToString(), packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, id.ToString(), packet);
 				}
 			}
 
@@ -289,7 +304,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordUserPacket> GetCurrentUserPacketAsync()
 		{
-			DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey(), "me");
+			DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, "me");
 
 			if (packet == null)
 			{
@@ -297,7 +312,7 @@ namespace Miki.Discord
 
 				if (packet != null)
 				{
-					await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey(), "me", packet);
+					await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, "me", packet);
 				}
 			}
 
@@ -390,7 +405,7 @@ namespace Miki.Discord
 		{
 			DiscordGuild g = new DiscordGuild(guild, this);
 
-			if (!await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString()))
+			if (!await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString()))
 			{
 				if (GuildJoin != null)
 				{

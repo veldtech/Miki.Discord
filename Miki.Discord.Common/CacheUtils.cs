@@ -14,7 +14,7 @@ namespace Miki.Discord.Common
 		{
 			if (guildId.HasValue)
 			{
-				return $"{GuildsCacheKey()}:channels:{guildId}";
+				return $"{GuildsCacheKey}:channels:{guildId}";
 			}
 			else
 			{
@@ -26,19 +26,19 @@ namespace Miki.Discord.Common
 		/// Returns a user collection cache key
 		/// </summary>
 		/// <returns></returns>
-		public static string UsersCacheKey()
-			=> $"discord:users";
+		public const string UsersCacheKey = "discord:users";
 
-		public static string GuildsCacheKey()
-			=> $"discord:guilds";
+		public const string GuildsCacheKey ="discord:guilds";
 
 		public static string GuildMembersKey(ulong guildId)
-			=> $"{GuildsCacheKey()}:members:{guildId}";
+			=> $"{GuildsCacheKey}:members:{guildId}";
 
 		public static string GuildRolesKey(ulong guildId)
-			=> $"{GuildsCacheKey()}:roles:{guildId}";
+			=> $"{GuildsCacheKey}:roles:{guildId}";
 
 		public static string GuildPresencesKey()
-			=> $"{UsersCacheKey()}:presences";
+			=> $"{UsersCacheKey}:presences";
+
+		public const string EmojiCacheKey = "discord:emoji";
 	}
 }

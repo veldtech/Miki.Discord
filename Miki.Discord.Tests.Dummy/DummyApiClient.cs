@@ -1,6 +1,7 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Rest;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,11 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DiscordEmojiPacket> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
 		{
 			throw new NotImplementedException();
 		}

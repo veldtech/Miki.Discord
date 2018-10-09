@@ -79,8 +79,6 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordGuildUser> GetMemberAsync(ulong id)
 		{
 			DiscordGuildMemberPacket guildMemberPacket = await _client.GetGuildMemberPacketAsync(id, Id);
-			DiscordUserPacket userPacket = await _client.GetUserPacketAsync(id);
-
 			return new DiscordGuildUser(guildMemberPacket, _client, this);
 		}
 
@@ -92,9 +90,7 @@ namespace Miki.Discord.Internal
 		}
 
 		public async Task<IDiscordGuildUser> GetOwnerAsync()
-		{
-			return await GetMemberAsync(OwnerId);
-		}
+			=> await GetMemberAsync(OwnerId);
 
 		public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user)
 		{
@@ -136,9 +132,8 @@ namespace Miki.Discord.Internal
 
 		public async Task<IDiscordGuildUser> GetSelfAsync()
 		{
-			// TODO: maybe optimize this one.
-			var me = await _client.GetCurrentUserAsync();
-			return await GetMemberAsync(me.Id);
+			IDiscordUser user = await _client.GetCurrentUserAsync();
+			return await GetMemberAsync(user.Id);
 		}
 
 		public async Task RemoveBanAsync(IDiscordGuildUser user)

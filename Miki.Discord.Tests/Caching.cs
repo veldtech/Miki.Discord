@@ -118,7 +118,7 @@ namespace Miki.Discord.Tests
 			};
 
 			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
-			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString(), guild).GetAwaiter().GetResult();
+			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild).GetAwaiter().GetResult();
 		}
 
 		[Fact]
@@ -142,7 +142,7 @@ namespace Miki.Discord.Tests
 
 			var x = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 
-			DiscordUserPacket currentUser = await client.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey(), user.Id.ToString());
+			DiscordUserPacket currentUser = await client.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, user.Id.ToString());
 
 			Assert.NotEmpty(x);
 
@@ -249,13 +249,13 @@ namespace Miki.Discord.Tests
 				IsUnavailable = true
 			});
 
-			var deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey(), guild.Id.ToString());
+			var deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey, guild.Id.ToString());
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
 			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
-				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
 			);
 
 			Assert.NotNull(deletedGuild);
@@ -267,14 +267,14 @@ namespace Miki.Discord.Tests
 			});
 
 			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
-				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
 			);
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
 			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
-				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
 			);
 			Assert.NotNull(deletedGuild);
 		}

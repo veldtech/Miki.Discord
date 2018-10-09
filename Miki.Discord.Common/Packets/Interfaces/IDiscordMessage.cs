@@ -19,7 +19,7 @@ namespace Miki.Discord.Common
 
 		Task<IDiscordTextChannel> GetChannelAsync();
 
-		Task<IDiscordUser[]> GetReactionsAsync(IDiscordEmoji emoji);
+		Task<IDiscordReaction[]> GetReactionsAsync(IDiscordEmoji emoji);
 
 		IReadOnlyList<ulong> MentionedUserIds { get; }
 

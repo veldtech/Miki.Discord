@@ -8,7 +8,7 @@ namespace Miki.Discord.Common
     {
 		string Name { get; }
 
-		ulong[] Roles { get; }
+		IEnumerable<ulong> Roles { get; }
 
 		IDiscordUser Creator { get; }
 

@@ -1,5 +1,6 @@
 ﻿using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Rest;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,8 @@ namespace Miki.Discord.Common
 		Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId);
 
 		Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId);
+
+		Task<DiscordEmojiPacket> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args);
 
 		Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args);
 

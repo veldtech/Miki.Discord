@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Miki.Discord.Rest.Arguments
 {
-    internal class ChannelBulkDeleteArgs
+    public class ChannelBulkDeleteArgs
     {
 		[JsonProperty("messages")]
 		public ulong[] Messages { get; set; }

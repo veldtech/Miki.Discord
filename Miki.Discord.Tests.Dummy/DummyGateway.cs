@@ -3,6 +3,7 @@ using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Common.Packets.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,12 +30,13 @@ namespace Miki.Discord.Tests.Dummy
 		public Func<DiscordMessagePacket, Task> OnMessageCreate { get; set; }
 		public Func<DiscordMessagePacket, Task> OnMessageUpdate { get; set; }
 		public Func<MessageDeleteArgs, Task> OnMessageDelete { get; set; }
-		public Func<DiscordMessagePacket, Task> OnMessageDeleteBulk { get; set; }
 		public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
 		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
 		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
 		public Func<GatewayMessage, Task> OnPacketSent { get; set; }
 		public Func<GatewayMessage, Task> OnPacketReceived { get; set; }
+		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
+		public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
 
 		public Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
 		{

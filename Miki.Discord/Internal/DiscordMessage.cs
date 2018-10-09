@@ -46,7 +46,7 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordTextChannel> GetChannelAsync()
 			=> (await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId)) as IDiscordTextChannel;
 
-		public async Task<IDiscordUser[]> GetReactionsAsync(IDiscordEmoji emoji)
+		public async Task<IDiscordReaction[]> GetReactionsAsync(IDiscordEmoji emoji)
 			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji.Id);
 	}
 }

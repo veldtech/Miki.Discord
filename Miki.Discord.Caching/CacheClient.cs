@@ -123,6 +123,7 @@ namespace Miki.Discord.Caching
 					await OnGuildMemberUpdate(p, _cachePool);
 				}
 			};
+			
 
 			_gateway.OnUserUpdate += async (p) =>
 			{
