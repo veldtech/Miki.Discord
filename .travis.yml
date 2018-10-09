@@ -7,4 +7,3 @@ services:
 script:
  - dotnet restore 
  - dotnet build
- - dotnet test Miki.Discord.Tests
