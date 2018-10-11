@@ -17,7 +17,7 @@ namespace Miki.Discord.Common
 
 		Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId);
 
-		Task<DiscordEmojiPacket> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args);
+		Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args);
 
 		Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args);
 

@@ -35,7 +35,7 @@ namespace Miki.Discord.Gateway.Distributed
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanAdd { get; set; }
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanRemove { get; set; }
 
-		public Func<ulong, DiscordEmojiPacket[], Task> OnGuildEmojiUpdate { get; set; }
+		public Func<ulong, DiscordEmoji[], Task> OnGuildEmojiUpdate { get; set; }
 
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleCreate { get; set; }
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleUpdate { get; set; }

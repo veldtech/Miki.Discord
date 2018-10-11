@@ -6,17 +6,18 @@ using System.Text;
 
 namespace Miki.Discord.Internal
 {
-	internal class DiscordReaction : DiscordEmoji, IDiscordReaction
+	internal class DiscordReaction : DiscordEntity, IDiscordReaction
 	{
-		DiscordUserPacket _user;
+		private readonly DiscordUserPacket _user;
 
-		public DiscordReaction(DiscordEmojiPacket packet, DiscordUserPacket user, DiscordClient client)
-			: base(packet, client)
+		public DiscordReaction(DiscordEmoji packet, DiscordUserPacket user, DiscordClient client)
+			: base(client)
 		{
 			_user = user;
+			Emoji = packet;
 		}
 
-		public IDiscordEmoji Emoji => this;
+		public DiscordEmoji Emoji { get; }
 
 		public IDiscordUser User => new DiscordUser(_user, _client);
 	}

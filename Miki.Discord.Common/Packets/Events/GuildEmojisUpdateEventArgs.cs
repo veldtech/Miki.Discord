@@ -11,6 +11,6 @@ namespace Miki.Discord.Common.Packets.Events
 		public ulong guildId;
 
 		[JsonProperty("emojis")]
-		public DiscordEmojiPacket[] emojis;
+		public DiscordEmoji[] emojis;
 	}
 }

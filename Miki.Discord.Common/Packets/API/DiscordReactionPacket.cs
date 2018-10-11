@@ -15,6 +15,6 @@ namespace Miki.Discord.Common
 		public bool Me;
 
 		[JsonProperty("emoji")]
-		public DiscordEmojiPacket Emoji;
+		public Packets.DiscordEmoji Emoji;
 	}
 }

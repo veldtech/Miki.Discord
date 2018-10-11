@@ -9,7 +9,7 @@ namespace Miki.Discord.Common
 		/// <summary>
 		/// The emoji information.
 		/// </summary>
-		IDiscordEmoji Emoji { get; }
+		DiscordEmoji Emoji { get; }
 
 		/// <summary>
 		/// The user information.

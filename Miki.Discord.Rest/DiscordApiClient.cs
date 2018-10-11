@@ -74,9 +74,9 @@ namespace Miki.Discord.Rest
 			return (await HttpClient.PostAsync<DiscordChannelPacket>(DiscordApiRoutes.UserMeChannelsRoute(), $"{{ \"recipient_id\": {userId} }}")).Data;
 		}
 
-		public async Task<DiscordEmojiPacket> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
+		public async Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
 		{
-			return (await HttpClient.PostAsync<DiscordEmojiPacket>(
+			return (await HttpClient.PostAsync<DiscordEmoji>(
 				DiscordApiRoutes.GuildEmojiRoute(guildId), 
 				JsonConvert.SerializeObject(args, serializer)
 			)).Data;
@@ -187,13 +187,13 @@ namespace Miki.Discord.Rest
 				});
 		}
 
-		public async Task<DiscordEmojiPacket> EditEmojiAsync(ulong guildId, ulong emojiId, EmojiModifyArgs args)
+		public async Task<DiscordEmoji> EditEmojiAsync(ulong guildId, ulong emojiId, EmojiModifyArgs args)
 		{
 			return (await RatelimitHelper.ProcessRateLimitedAsync(
 				$"guilds:{guildId}", _cache,
 				async () =>
 				{
-					return await HttpClient.PatchAsync<DiscordEmojiPacket>(
+					return await HttpClient.PatchAsync<DiscordEmoji>(
 						DiscordApiRoutes.GuildEmojiRoute(guildId, emojiId),
 						JsonConvert.SerializeObject(args, serializer)
 					);
@@ -247,19 +247,19 @@ namespace Miki.Discord.Rest
 				})).Data;
 		}
 
-		public async Task<DiscordEmojiPacket> GetEmojiAsync(ulong guildId, ulong emojiId)
+		public async Task<DiscordEmoji> GetEmojiAsync(ulong guildId, ulong emojiId)
 		{
 			return (await RatelimitHelper.ProcessRateLimitedAsync(
 				$"guilds:{guildId}", _cache,
-				async () => await HttpClient.GetAsync<DiscordEmojiPacket>(DiscordApiRoutes.GuildEmojiRoute(guildId, emojiId))
+				async () => await HttpClient.GetAsync<DiscordEmoji>(DiscordApiRoutes.GuildEmojiRoute(guildId, emojiId))
 				)).Data;
 		}
 
-		public async Task<DiscordEmojiPacket[]> GetEmojisAsync(ulong guildId)
+		public async Task<DiscordEmoji[]> GetEmojisAsync(ulong guildId)
 		{
 			return (await RatelimitHelper.ProcessRateLimitedAsync(
 				$"guilds:{guildId}", _cache,
-				async () => await HttpClient.GetAsync<DiscordEmojiPacket[]>(DiscordApiRoutes.GuildEmojiRoute(guildId))
+				async () => await HttpClient.GetAsync<DiscordEmoji[]>(DiscordApiRoutes.GuildEmojiRoute(guildId))
 				)).Data;
 		}
 
