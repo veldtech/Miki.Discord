@@ -222,9 +222,9 @@ namespace Miki.Discord
 			return packet;
 		}
 
-		internal async Task<Common.Packets.DiscordEmoji> GetEmojiPacketAsync(ulong emojiId)
+		internal async Task<DiscordEmoji> GetEmojiPacketAsync(ulong emojiId)
 		{
-			return await CacheClient.HashGetAsync<Common.Packets.DiscordEmoji>(CacheUtils.EmojiCacheKey, emojiId.ToString());
+			return await CacheClient.HashGetAsync<DiscordEmoji>(CacheUtils.EmojiCacheKey, emojiId.ToString());
 		}
 
 		internal async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
