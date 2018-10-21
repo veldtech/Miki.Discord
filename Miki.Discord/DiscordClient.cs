@@ -118,20 +118,14 @@ namespace Miki.Discord
 			);
 		}
 
-		public async Task<IDiscordReaction[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+		public async Task<IDiscordUser[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
 		{
-			var users = await ApiClient.GetReactionsAsync(channelId, messageId, emojiId);
-			var currentuser = await GetCurrentUserPacketAsync();
-			var emoji = await GetEmojiPacketAsync(emojiId);
-
-			var reacted = users.Any(x => x.Id == currentuser.Id);
+			var users = await ApiClient.GetReactionsAsync(channelId, messageId, emoji);
 
 			return users.Select(
-					x => new DiscordReaction(emoji, x, this)
-				).ToArray();
+				x => new DiscordUser(x, this)
+			).ToArray();
 		}
-
-
 
 		public async Task<IDiscordUser> GetUserAsync(ulong id)
 		{
@@ -220,11 +214,6 @@ namespace Miki.Discord
 			}
 
 			return packet;
-		}
-
-		internal async Task<DiscordEmoji> GetEmojiPacketAsync(ulong emojiId)
-		{
-			return await CacheClient.HashGetAsync<DiscordEmoji>(CacheUtils.EmojiCacheKey, emojiId.ToString());
 		}
 
 		internal async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)

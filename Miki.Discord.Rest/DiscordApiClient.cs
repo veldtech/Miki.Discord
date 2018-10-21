@@ -95,14 +95,14 @@ namespace Miki.Discord.Rest
 				})).Data;
 		}
 
-		public async Task CreateReactionAsync(ulong channelId, ulong messageId, ulong emojiId)
+		public async Task CreateReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
 		{
 			await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}", _cache,
 				async () =>
 				{
-					return await HttpClient.PostAsync(
-						DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emojiId)
+					return await HttpClient.PutAsync(
+						DiscordApiRoutes.MessageReactionMeRoute(channelId, messageId, emoji)
 					);
 				});
 		}
@@ -157,23 +157,23 @@ namespace Miki.Discord.Rest
 				});
 		}
 
-		public async Task DeleteReactionAsync(ulong channelId, ulong messageId, ulong emojiId)
+		public async Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
 		{
 			await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}", _cache,
 				async () =>
 				{
-					return await HttpClient.DeleteAsync(DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emojiId));
+					return await HttpClient.DeleteAsync(DiscordApiRoutes.MessageReactionMeRoute(channelId, messageId, emoji));
 				});
 		}
 
-		public async Task DeleteReactionAsync(ulong channelId, ulong messageId, ulong emojiId, ulong userId)
+		public async Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId)
 		{
 			await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}", _cache,
 				async () =>
 				{
-					return await HttpClient.DeleteAsync(DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emojiId, userId));
+					return await HttpClient.DeleteAsync(DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emoji, userId));
 				});
 		}
 
@@ -310,13 +310,13 @@ namespace Miki.Discord.Rest
 			)).Data;
 		}
 
-		public async Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+		public async Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
 		{
 			return (await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}", _cache,
 				async () =>
 				{
-					return await HttpClient.GetAsync<DiscordUserPacket[]>(DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emojiId));
+					return await HttpClient.GetAsync<DiscordUserPacket[]>(DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emoji));
 				}
 			)).Data;
 		}
@@ -468,6 +468,11 @@ namespace Miki.Discord.Rest
 				$"channels:{channelId}", _cache,
 				async () => await HttpClient.PostAsync(DiscordApiRoutes.ChannelTypingRoute(channelId))
 			);
+		}
+
+		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

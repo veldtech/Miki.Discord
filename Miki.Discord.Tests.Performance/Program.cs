@@ -5,6 +5,7 @@ using Miki.Serialization.MsgPack;
 using Miki.Serialization.Protobuf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Miki.Discord.Tests.Performance
 {
@@ -25,8 +26,9 @@ namespace Miki.Discord.Tests.Performance
 				MFALevel = 1,
 				EmbedChannelId = null,
 				EmbedEnabled = false,
-				Emojis = new List<DiscordEmojiPacket>() { new DiscordEmojiPacket(), new DiscordEmojiPacket(), new DiscordEmojiPacket() },
-				Channels = new List<Common.DiscordChannelPacket>(),
+				Emojis = new DiscordEmoji[]
+					{ new DiscordEmoji(), new DiscordEmoji(), new DiscordEmoji() },
+				Channels = new List<DiscordChannelPacket>(),
 				Members = new List<DiscordGuildMemberPacket>(),
 				ExplicitContentFilter = 2,
 				Icon = "meme",
@@ -62,16 +64,36 @@ namespace Miki.Discord.Tests.Performance
 
 			var pbuf = new ProtobufSerializer();
 
-			var msgp = new LZ4MsgPackSerializer();
+			var msgp = new MsgPackSerializer();
+
+			var sw = Stopwatch.StartNew();
+
+			for (int i = 0; i < 100000; i++)
+			{
+				pbuf.Serialize(p);
+			}
+
+			sw.Stop();
 
 			Console.WriteLine("PBUF " + pbuf.Serialize(p).Length);
+			Console.WriteLine("T 100K: " + ((double)sw.ElapsedTicks / Stopwatch.Frequency));
+
+			sw.Restart();
+
+			for (int i = 0; i < 100000; i++)
+			{
+				msgp.Serialize(p);
+			}
+
+			sw.Stop();
 
 			Console.WriteLine("MSGP " + msgp.Serialize(p).Length);
+			Console.WriteLine("T 100K: " + ((double)sw.ElapsedTicks / Stopwatch.Frequency));
 
 			Console.ReadLine();
 
-			//var summary = BenchmarkRunner.Run<CachePerformance>();
-			//Console.ReadLine();
+			var summary = BenchmarkRunner.Run<CachePerformance>();
+			Console.ReadLine();
 		}
 	}
 }

@@ -19,11 +19,19 @@ namespace Miki.Discord.Common
 
 		Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args);
 
+		Task CreateReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji);
+
 		Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args);
 
 		Task DeleteChannelAsync(ulong channelId);
 
 		Task DeleteGuildAsync(ulong guildId);
+
+		Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji);
+
+		Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId);
+
+		Task DeleteReactionsAsync(ulong channelId, ulong messageId);
 
 		Task DeleteMessageAsync(ulong channelId, ulong messageId);
 
@@ -47,7 +55,7 @@ namespace Miki.Discord.Common
 
 		Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100);
 
-		Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId);
+		Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emojiId);
 
 		Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId);
 

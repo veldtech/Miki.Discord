@@ -394,9 +394,9 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnReady != null)
 						{
-							await OnReady(
+							OnReady(
 								body.Data.ToObject<GatewayReadyPacket>()
-							);
+							).Wait();
 						}
 					}
 					break;

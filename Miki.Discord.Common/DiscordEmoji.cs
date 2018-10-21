@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using MessagePack;
 using System.Text.RegularExpressions;
 using Miki.Discord.Common.Packets;
+using System.Globalization;
+using System.Linq;
 
 namespace Miki.Discord.Common
 {
@@ -16,7 +18,7 @@ namespace Miki.Discord.Common
 		[ProtoMember(1)]
 		[JsonProperty("id")]
 		[Key(0)]
-		public ulong Id { get; set; }
+		public ulong? Id { get; set; }
 
 		[ProtoMember(2)]
 		[JsonProperty("name")]
@@ -36,34 +38,57 @@ namespace Miki.Discord.Common
 		[ProtoMember(5)]
 		[Key(4)]
 		[JsonProperty("require_colons")]
-		public bool RequireColons { get; set; }
+		public bool? RequireColons { get; set; }
 
 		[ProtoMember(6)]
 		[Key(5)]
 		[JsonProperty("managed")]
-		public bool Managed { get; set; }
+		public bool? Managed { get; set; }
 
 		[ProtoMember(7)]
 		[Key(6)]
 		[JsonProperty("animated")]
-		public bool Animated { get; set; }
+		public bool? Animated { get; set; }
 
-		public static DiscordEmoji Parse(string emoji)
+		public static bool TryParse(string text, out DiscordEmoji emoji)
 		{
-			if(emoji.Length == 0)
+			emoji = null;
+			if (text.Length >= 4 && text[0] == '<' && (text[1] == ':' || (text[1] == 'a' && text[2] == ':')) && text[text.Length - 1] == '>')
 			{
-				throw new ArgumentNullException();
+				bool animated = text[1] == 'a';
+				int startIndex = animated ? 3 : 2;
+
+				int splitIndex = text.IndexOf(':', startIndex);
+				if (splitIndex == -1)
+				{
+					return false;
+				}
+
+				if (!ulong.TryParse(text.Substring(splitIndex + 1, text.Length - splitIndex - 2), NumberStyles.None, CultureInfo.InvariantCulture, out ulong id))
+				{
+					return false;
+				}
+
+				string name = text.Substring(startIndex, splitIndex - startIndex);
+
+				emoji = new DiscordEmoji
+				{
+					Name = name,
+					Id = id,
+					Animated = animated
+				};
+				return true;
 			}
-
-			Match matchedString = Regex.Match(emoji, "<(a?):(.*):(\\d+)>");
-
-			if(matchedString.Success)
+			else if(text.Length > 0 && text.All((t) => char.IsSurrogate(t)))
 			{
-				var newEmoji = new DiscordEmoji();
-
-				return newEmoji;
+				emoji = new DiscordEmoji
+				{
+					Id = null,
+					Name = text
+				};
+				return true;
 			}
-			throw new FormatException($"Can not parse emoji '{emoji}'.");
+			return false;
 		}
 	}
 }

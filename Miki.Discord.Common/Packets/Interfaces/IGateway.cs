@@ -26,7 +26,9 @@ namespace Miki.Discord.Common
 		
 		Func<ulong, DiscordUserPacket, Task> OnGuildBanAdd { get; set; }
 		Func<ulong, DiscordUserPacket, Task> OnGuildBanRemove { get; set; }
-		
+
+		Func<ulong, DiscordEmoji[], Task> OnGuildEmojiUpdate { get; set; }
+
 		Func<ulong, DiscordRolePacket, Task> OnGuildRoleCreate { get; set; }
 		Func<ulong, DiscordRolePacket, Task> OnGuildRoleUpdate { get; set; }
 		Func<ulong, ulong, Task> OnGuildRoleDelete { get; set; }

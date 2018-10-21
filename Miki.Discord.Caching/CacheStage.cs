@@ -9,6 +9,6 @@ namespace Miki.Discord.Caching
 {
     public interface ICacheStage
     {
-		void Initialize(CacheClient client);
+		void Initialize(IGateway client, IExtendedCacheClient cache);
 	}
 }

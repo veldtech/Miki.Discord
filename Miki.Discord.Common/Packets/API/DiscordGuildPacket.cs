@@ -84,7 +84,7 @@ namespace Miki.Discord.Common.Packets
 		[JsonProperty("emojis")]
 		[ProtoMember(15)]
 		[Key(14)]
-		public List<DiscordEmoji> Emojis = new List<DiscordEmoji>();
+		public DiscordEmoji[] Emojis;
 
 		[JsonProperty("features")]
 		[ProtoMember(16)]

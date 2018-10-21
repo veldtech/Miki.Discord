@@ -21,7 +21,6 @@ namespace Miki.Discord.Tests
     public class Caching
     {
 		readonly DummyGateway gateway;
-		CacheClient cache;
 		ICachePool pool;
 		IExtendedCacheClient client;
 
@@ -42,15 +41,9 @@ namespace Miki.Discord.Tests
 		{
 			pool = new InMemoryCachePool(new ProtobufSerializer());
 
-			cache = new CacheClient(
-				gateway,
-				pool.GetAsync().Result as IExtendedCacheClient,
-				new DummyApiClient()
-			);
-
 			client = pool.GetAsync().Result as IExtendedCacheClient;
 
-			new BasicCacheStage().Initialize(cache);
+			new BasicCacheStage().Initialize(gateway, client);
 
 			role = new DiscordRolePacket
 			{
@@ -101,7 +94,6 @@ namespace Miki.Discord.Tests
 			{
 				Channels = new List<DiscordChannelPacket> { channel },
 				DefaultMessageNotifications = 1,
-				Emojis = new List<DiscordEmojiPacket>(),
 				ExplicitContentFilter = 1,
 				Features = new List<string>(),
 				Icon = "this-is-a-icon.png",
@@ -259,6 +251,14 @@ namespace Miki.Discord.Tests
 			);
 
 			Assert.NotNull(deletedGuild);
+
+			await gateway.OnGuildEmojiUpdate(deletedGuild.Id, new DiscordEmoji[] { new DiscordEmoji() });
+
+			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
+			);
+
+			Assert.NotEmpty(deletedGuild.Emojis);
 
 			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
 			{

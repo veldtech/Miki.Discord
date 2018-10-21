@@ -46,7 +46,22 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordTextChannel> GetChannelAsync()
 			=> (await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId)) as IDiscordTextChannel;
 
-		public async Task<IDiscordReaction[]> GetReactionsAsync(DiscordEmoji emoji)
-			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji.Id);
+		public async Task<IDiscordUser[]> GetReactionsAsync(DiscordEmoji emoji)
+			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji);
+
+		public async Task CreateReactionAsync(DiscordEmoji emoji)
+			=> await _client.ApiClient.CreateReactionAsync(ChannelId, Id, emoji);
+
+		public async Task DeleteReactionAsync(DiscordEmoji emoji)
+			=> await _client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji);
+
+		public async Task DeleteReactionAsync(DiscordEmoji emoji, IDiscordUser user)
+			=> await DeleteReactionAsync(emoji, user.Id);
+
+		public async Task DeleteReactionAsync(DiscordEmoji emoji, ulong userId)
+			=> await _client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji, userId);
+
+		public async Task DeleteAllReactionsAsync()
+			=> await _client.ApiClient.DeleteReactionsAsync(ChannelId, Id);
 	}
 }

@@ -24,6 +24,7 @@ namespace Miki.Discord.Tests.Dummy
 		public Func<GuildMemberUpdateEventArgs, Task> OnGuildMemberUpdate { get; set; }
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanAdd { get; set; }
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanRemove { get; set; }
+		public Func<ulong, DiscordEmoji[], Task> OnGuildEmojiUpdate { get; set; }
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleCreate { get; set; }
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleUpdate { get; set; }
 		public Func<ulong, ulong, Task> OnGuildRoleDelete { get; set; }

@@ -26,9 +26,9 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task<DiscordEmojiPacket> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
+		public Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
 		{
-			throw new NotImplementedException();
+			return Task.FromResult(new DiscordEmoji());	
 		}
 
 		public async Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args)
@@ -43,6 +43,16 @@ namespace Miki.Discord.Mocking
 				Permissions = (int?)args.Permissions ?? 0,
 				Name = args.Name,
 			};
+		}
+
+		public Task CreateReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteAllReactions(ulong channelId, ulong messageId)
+		{
+			throw new NotImplementedException();
 		}
 
 		public Task DeleteChannelAsync(ulong channelId)
@@ -61,6 +71,26 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task DeleteMessagesAsync(ulong channelId, ulong[] messages)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReaction(ulong channelId, ulong messageId, ulong userId, DiscordEmoji emoji)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReactionsAsync(ulong channelId, ulong messageId)
 		{
 			throw new NotImplementedException();
 		}
@@ -116,6 +146,11 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emojiId)
 		{
 			throw new NotImplementedException();
 		}

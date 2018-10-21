@@ -24,7 +24,6 @@ namespace Miki.Discord.Tests
 		private DiscordGuildPacket packet;
 		private StackExchangeCachePool pool;
 		private DummyGateway gateway;
-		private CacheClient cache;
 		private IExtendedCacheClient client;
 
 		DiscordChannelPacket channel;
@@ -57,7 +56,8 @@ namespace Miki.Discord.Tests
 				MFALevel = 1,
 				EmbedChannelId = null,
 				EmbedEnabled = false,
-				Emojis = new List<DiscordEmojiPacket>() { new DiscordEmojiPacket(), new DiscordEmojiPacket(), new DiscordEmojiPacket() },
+				Emojis = new DiscordEmoji[]
+					{ new DiscordEmoji(), new DiscordEmoji(), new DiscordEmoji() },
 				Channels = new List<Common.DiscordChannelPacket>(),
 				Members = new List<DiscordGuildMemberPacket>(),
 				ExplicitContentFilter = 2,
@@ -90,15 +90,9 @@ namespace Miki.Discord.Tests
 			pool = new StackExchangeCachePool(new LZ4MsgPackSerializer(), "localhost");
 			gateway = new DummyGateway();
 
-			cache = new CacheClient(
-				gateway,
-				pool.GetAsync().Result as IExtendedCacheClient,
-				new DummyApiClient()
-			);
-
 			client = pool.GetAsync().Result as IExtendedCacheClient;
 
-			new BasicCacheStage().Initialize(cache);
+			new BasicCacheStage().Initialize(gateway, client);
 
 			role = new DiscordRolePacket
 			{
