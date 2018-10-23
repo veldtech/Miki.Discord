@@ -29,11 +29,11 @@ namespace Miki.Discord.Common
 
 		Task<IDiscordGuildChannel> GetChannelAsync(ulong id);
 
-		Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync();
+		Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync();
 
 		Task<IDiscordRole> GetRoleAsync(ulong id);
 
-		Task<IReadOnlyList<IDiscordRole>> GetRolesAsync();
+		Task<IEnumerable<IDiscordRole>> GetRolesAsync();
 
 		Task<IDiscordGuildUser[]> GetMembersAsync();
 

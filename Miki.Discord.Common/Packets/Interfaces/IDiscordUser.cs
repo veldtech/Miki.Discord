@@ -21,7 +21,7 @@ namespace Miki.Discord.Common
 
 		Task<IDiscordPresence> GetPresenceAsync();
 
-		Task<IDiscordChannel> GetDMChannelAsync();
+		Task<IDiscordTextChannel> GetDMChannelAsync();
 
 		string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256);
     }

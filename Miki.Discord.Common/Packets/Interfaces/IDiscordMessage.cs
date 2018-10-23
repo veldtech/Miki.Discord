@@ -13,13 +13,21 @@ namespace Miki.Discord.Common
 
 		ulong ChannelId { get; }
 
+		Task CreateReactionAsync(DiscordEmoji emoji);
+
+		Task DeleteReactionAsync(DiscordEmoji emoji);
+		Task DeleteReactionAsync(DiscordEmoji emoji, IDiscordUser user);
+		Task DeleteReactionAsync(DiscordEmoji emoji, ulong userId);
+
+		Task DeleteAllReactionsAsync();
+
 		Task<IDiscordMessage> EditAsync(EditMessageArgs args);
 
 		Task DeleteAsync();
 
-		Task<IDiscordChannel> GetChannelAsync();
+		Task<IDiscordTextChannel> GetChannelAsync();
 
-		Task<IDiscordUser[]> GetReactionsAsync(IDiscordEmoji emoji);
+		Task<IDiscordUser[]> GetReactionsAsync(DiscordEmoji emoji);
 
 		IReadOnlyList<ulong> MentionedUserIds { get; }
 

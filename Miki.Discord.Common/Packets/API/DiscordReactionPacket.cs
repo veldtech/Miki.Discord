@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using Miki.Discord.Common.Packets;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Miki.Discord.Common.Packets.API
+namespace Miki.Discord.Common
 {
-    public class DiscordReactionPacket
-    {
+	public class DiscordReactionPacket
+	{
 		[JsonProperty("count")]
 		public int Count;
 
@@ -14,6 +15,6 @@ namespace Miki.Discord.Common.Packets.API
 		public bool Me;
 
 		[JsonProperty("emoji")]
-		public DiscordEmojiPacket Emoji;
-    }
+		public DiscordEmoji Emoji;
+	}
 }

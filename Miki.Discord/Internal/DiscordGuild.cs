@@ -26,7 +26,7 @@ namespace Miki.Discord.Internal
 			=> _packet.Id;
 
 		public string IconUrl
-			=> _client.GetUserAvatarUrl(Id, _packet.Icon);
+			=> DiscordHelper.GetAvatarUrl(Id, _packet.Icon);
 
 		public ulong OwnerId
 			=> _packet.OwnerId;
@@ -45,7 +45,7 @@ namespace Miki.Discord.Internal
 
 		public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{
-			await _client.AddBanAsync(Id, user.Id, pruneDays, reason);
+			await _client.ApiClient.AddGuildBanAsync(Id, user.Id, pruneDays, reason);
 		}
 
 		public async Task<IDiscordRole> CreateRoleAsync(CreateRoleArgs roleParams = null)
@@ -56,7 +56,7 @@ namespace Miki.Discord.Internal
 			return await _client.GetChannelAsync(id, Id) as IDiscordGuildChannel;
 		}
 
-		public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync()
+		public async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync()
 		{
 			return await _client.GetChannelsAsync(Id);
 		}
@@ -79,22 +79,18 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordGuildUser> GetMemberAsync(ulong id)
 		{
 			DiscordGuildMemberPacket guildMemberPacket = await _client.GetGuildMemberPacketAsync(id, Id);
-			DiscordUserPacket userPacket = await _client.GetUserPacketAsync(id);
-
-			return new DiscordGuildUser(guildMemberPacket, userPacket, _client, this);
+			return new DiscordGuildUser(guildMemberPacket, _client, this);
 		}
 
 		public async Task<IDiscordGuildUser[]> GetMembersAsync()
 		{
 			return (await _client.CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(Id)))
-				.Select(x => new DiscordGuildUser(x, null, _client, this))
+				.Select(x => new DiscordGuildUser(x, _client, this))
 				.ToArray();
 		}
 
 		public async Task<IDiscordGuildUser> GetOwnerAsync()
-		{
-			return await GetMemberAsync(OwnerId);
-		}
+			=> await GetMemberAsync(OwnerId);
 
 		public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user)
 		{
@@ -131,17 +127,16 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordRole> GetRoleAsync(ulong id)
 			=> await _client.GetRoleAsync(Id, id);
 
-		public async Task<IReadOnlyList<IDiscordRole>> GetRolesAsync()
+		public async Task<IEnumerable<IDiscordRole>> GetRolesAsync()
 			=> await _client.GetRolesAsync(Id);
 
 		public async Task<IDiscordGuildUser> GetSelfAsync()
 		{
-			// TODO: maybe optimize this one.
-			var me = await _client.GetCurrentUserAsync();
-			return await GetMemberAsync(me.Id);
+			IDiscordUser user = await _client.GetCurrentUserAsync();
+			return await GetMemberAsync(user.Id);
 		}
 
 		public async Task RemoveBanAsync(IDiscordGuildUser user)
-			=> await _client.RemoveBanAsync(Id, user.Id);
+			=> await _client.ApiClient.RemoveGuildBanAsync(Id, user.Id);
 	}
 }

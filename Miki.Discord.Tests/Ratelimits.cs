@@ -1,5 +1,5 @@
 ﻿using Miki.Cache;
-using Miki.Cache.StackExchange;
+using Miki.Cache.InMemory;
 using Miki.Discord.Rest;
 using Miki.Serialization.Protobuf;
 using System;
@@ -16,7 +16,7 @@ namespace Miki.Discord.Tests
 
 		public Ratelimits()
 		{
-			_pool = new StackExchangeCachePool(new ProtobufSerializer(), "localhost");
+			_pool = new InMemoryCachePool(new ProtobufSerializer());
 		}
 
 		[Fact]

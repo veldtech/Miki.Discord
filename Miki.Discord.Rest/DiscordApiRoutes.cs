@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Miki.Discord.Common;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,14 @@ namespace Miki.Discord.Rest
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string ChannelMessageRoute(ulong channelId, ulong messageId)
 			=> $"{ChannelMessagesRoute(channelId)}/{messageId}";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string ChannelTypingRoute(ulong channelId)
+			=> $"{ChannelRoute(channelId)}/typing";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string ChannelBulkDeleteMessages(ulong channelId)
+			=> $"{ChannelRoute(channelId)}/messages/bulk-delete";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string ChannelMessagesRoute(ulong channelId)
@@ -59,16 +68,16 @@ namespace Miki.Discord.Rest
 			=> $"{ChannelMessageRoute(channelId, messageId)}/reactions";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string MessageReactionRoute(ulong channelId, ulong messageId, ulong emojiId)
-			=> $"{MessageReactionsRoute(channelId, messageId)}/{emojiId}";
+		internal static string MessageReactionRoute(ulong channelId, ulong messageId, DiscordEmoji emoji)
+			=> $"{MessageReactionsRoute(channelId, messageId)}/{(emoji.Id.HasValue ? emoji.Name + ":" + emoji.Id.ToString() : emoji.Name)}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string MessageReactionRoute(ulong channelId, ulong messageId, ulong emojiId, ulong userId)
-			=> $"{MessageReactionRoute(channelId, messageId, emojiId)}/{userId}";
+		internal static string MessageReactionRoute(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId)
+			=> $"{MessageReactionRoute(channelId, messageId, emoji)}/{userId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string MessageReactionMeRoute(ulong channelId, ulong messageId, ulong emojiId)
-			=> $"{MessageReactionRoute(channelId, messageId, emojiId)}/@me";
+		internal static string MessageReactionMeRoute(ulong channelId, ulong messageId, DiscordEmoji emoji)
+			=> $"{MessageReactionRoute(channelId, messageId, emoji)}/@me";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string UserMeRoute()

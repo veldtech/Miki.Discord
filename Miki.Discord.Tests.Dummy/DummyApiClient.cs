@@ -1,6 +1,7 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Rest;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,6 +26,11 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
+		public Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
+		{
+			return Task.FromResult(new DiscordEmoji());	
+		}
+
 		public async Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args)
 		{
 			await Task.Yield();
@@ -39,12 +45,52 @@ namespace Miki.Discord.Mocking
 			};
 		}
 
+		public Task CreateReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteAllReactions(ulong channelId, ulong messageId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteChannelAsync(ulong channelId)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task DeleteGuildAsync(ulong guildId)
 		{
 			throw new NotImplementedException();
 		}
 
 		public Task DeleteMessageAsync(ulong channelId, ulong messageId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteMessagesAsync(ulong channelId, ulong[] messages)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReaction(ulong channelId, ulong messageId, ulong userId, DiscordEmoji emoji)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteReactionsAsync(ulong channelId, ulong messageId)
 		{
 			throw new NotImplementedException();
 		}
@@ -94,7 +140,17 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
+		public Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emojiId)
 		{
 			throw new NotImplementedException();
 		}
@@ -140,6 +196,16 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task TriggerTypingAsync(ulong channelId)
 		{
 			throw new NotImplementedException();
 		}

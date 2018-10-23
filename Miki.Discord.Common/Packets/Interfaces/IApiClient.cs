@@ -1,5 +1,6 @@
 ﻿using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Rest;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +17,25 @@ namespace Miki.Discord.Common
 
 		Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId);
 
+		Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args);
+
+		Task CreateReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji);
+
 		Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args);
+
+		Task DeleteChannelAsync(ulong channelId);
 
 		Task DeleteGuildAsync(ulong guildId);
 
+		Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji);
+
+		Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId);
+
+		Task DeleteReactionsAsync(ulong channelId, ulong messageId);
+
 		Task DeleteMessageAsync(ulong channelId, ulong messageId);
+
+		Task DeleteMessagesAsync(ulong channelId, ulong[] messages);
 
 		Task<DiscordMessagePacket> EditMessageAsync(ulong channelId, ulong messageId, EditMessageArgs args);
 
@@ -38,9 +53,9 @@ namespace Miki.Discord.Common
 
 		Task<DiscordMessagePacket> GetMessageAsync(ulong channelId, ulong messageId);
 
-		Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId);
+		Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100);
 
-		Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId);
+		Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emojiId);
 
 		Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId);
 
@@ -58,6 +73,8 @@ namespace Miki.Discord.Common
 
 		Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true);
 
-		Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true);
+		Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args);
+
+		Task TriggerTypingAsync(ulong channelId);
 	}
 }

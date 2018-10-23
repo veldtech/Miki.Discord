@@ -6,25 +6,22 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IDiscordChannel : ISnowflake
+    public interface IDiscordTextChannel : IDiscordChannel
 	{
-		bool IsNsfw { get; }
+		Task DeleteMessagesAsync(params ulong[] id);
+		Task DeleteMessagesAsync(params IDiscordMessage[] id);
 
-		string Name { get; }
+		Task<IEnumerable<IDiscordMessage>> GetMessagesAsync(int amount = 100);
+		Task<IDiscordMessage> GetMessageAsync(ulong id);
 
 		Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null);
 		Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content = null, bool isTTs = false, DiscordEmbed embed = null);
+
+		Task TriggerTypingAsync();
 	}
 
-	public interface IDiscordGuildChannel : IDiscordChannel
+	public enum GetMessageType
 	{
-		ulong GuildId { get; }
-
-		ChannelType Type { get; }
-
-		Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user);
-
-		Task<IDiscordGuildUser> GetUserAsync(ulong id);
-		Task<IDiscordGuild> GetGuildAsync();
+		Around, Before, After
 	}
 }

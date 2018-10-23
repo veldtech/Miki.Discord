@@ -42,12 +42,12 @@ namespace Miki.Discord.Common.Packets
 		{
 			get
 			{
-				return new DateTime(JoinedAt).ToString("MM/dd/yyyy HH:mm:ss");
+				return new DateTime(JoinedAt).ToString("MM-dd-yyyyTHH:mm:ss.fffffffzzz");
 			}
 
 			set
 			{
-				if (DateTime.TryParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime d))
+				if (DateTime.TryParseExact(value, "MM-dd-yyyyTHH:mm:ss.fffffffzzz", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime d))
 				{
 					JoinedAt = d.Ticks;
 				}

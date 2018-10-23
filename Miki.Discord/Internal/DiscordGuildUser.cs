@@ -15,15 +15,9 @@ namespace Miki.Discord.Internal
 		DiscordClient _client;
 		IDiscordGuild _guild;
 
-		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordUserPacket user, DiscordClient client, IDiscordGuild guild)
+		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client, IDiscordGuild guild)
 		{
 			_packet = packet;
-
-			if (user != null)
-			{
-				_packet.User = user;
-			}
-
 			_client = client;
 			_guild = guild;
 		}
@@ -56,20 +50,20 @@ namespace Miki.Discord.Internal
 			=> _packet.GuildId;
 
 		public DateTimeOffset JoinedAt
-			=> new DateTimeOffset();
+			=> new DateTimeOffset(_packet.JoinedAt, new TimeSpan(0));
 
 		public DateTimeOffset CreatedAt 
-			=> new DateTimeOffset((long)Id >> 22, TimeSpan.FromTicks(1420070400000));
+			=> this.GetCreationTime();
 
 		public async Task AddRoleAsync(IDiscordRole role)
 		{
-			await _client.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await _client.ApiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
 			=> DiscordHelper.GetAvatarUrl(_packet.User, type, size);
 
-		public async Task<IDiscordChannel> GetDMChannelAsync()
+		public async Task<IDiscordTextChannel> GetDMChannelAsync()
 			=> await _client.CreateDMAsync(_packet.User.Id);
 
 		public async Task<IDiscordPresence> GetPresenceAsync()
@@ -80,12 +74,12 @@ namespace Miki.Discord.Internal
 
 		public async Task KickAsync(string reason = null)
 		{
-			await _client.RemoveGuildMemberAsync(GuildId, Id, reason);
+			await _client.ApiClient.RemoveGuildMemberAsync(GuildId, Id, reason);
 		}
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
 		{
-			await _client.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await _client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public async Task<bool> HasPermissionsAsync(GuildPermission permissions)

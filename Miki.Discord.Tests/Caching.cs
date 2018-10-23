@@ -1,5 +1,5 @@
 using Miki.Cache;
-using Miki.Cache.StackExchange;
+using Miki.Cache.InMemory;
 using Miki.Discord.Caching;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
@@ -7,7 +7,6 @@ using Miki.Discord.Common.Packets;
 using Miki.Discord.Mocking;
 using Miki.Discord.Tests.Dummy;
 using Miki.Serialization.Protobuf;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +21,6 @@ namespace Miki.Discord.Tests
     public class Caching
     {
 		readonly DummyGateway gateway;
-		CacheClient cache;
 		ICachePool pool;
 		IExtendedCacheClient client;
 
@@ -41,17 +39,11 @@ namespace Miki.Discord.Tests
 
 		void ResetObjects()
 		{
-			pool = new StackExchangeCachePool(new ProtobufSerializer(), "localhost");
-
-			cache = new CacheClient(
-				gateway,
-				pool.GetAsync().Result as IExtendedCacheClient,
-				new DummyApiClient()
-			);
+			pool = new InMemoryCachePool(new ProtobufSerializer());
 
 			client = pool.GetAsync().Result as IExtendedCacheClient;
 
-			new BasicCacheStage().Initialize(cache);
+			new BasicCacheStage().Initialize(gateway, client);
 
 			role = new DiscordRolePacket
 			{
@@ -102,7 +94,6 @@ namespace Miki.Discord.Tests
 			{
 				Channels = new List<DiscordChannelPacket> { channel },
 				DefaultMessageNotifications = 1,
-				Emojis = new List<DiscordEmojiPacket>(),
 				ExplicitContentFilter = 1,
 				Features = new List<string>(),
 				Icon = "this-is-a-icon.png",
@@ -118,8 +109,8 @@ namespace Miki.Discord.Tests
 				Roles = new List<DiscordRolePacket>(),
 			};
 
-			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
-			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildsCacheKey(), guild.Id.ToString(), guild).GetAwaiter().GetResult();
+			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
+			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild).GetAwaiter().GetResult();
 		}
 
 		[Fact]
@@ -135,11 +126,15 @@ namespace Miki.Discord.Tests
 
 			user.Avatar = "new avi";
 
-			await gateway.OnUserUpdate(user);
+			await gateway.OnUserUpdate(new DiscordPresencePacket()
+			{
+				User = user,
+				GuildId = guild.Id
+			});
 
 			var x = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 
-			DiscordUserPacket currentUser = await client.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey(), user.Id.ToString());
+			DiscordUserPacket currentUser = await client.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, user.Id.ToString());
 
 			Assert.NotEmpty(x);
 
@@ -192,7 +187,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelUpdate(channel);
 
-			DiscordChannelPacket[] channels = await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.GuildChannelsKey(guild.Id));
+			DiscordChannelPacket[] channels = await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guild.Id));
 		
 			Assert.NotEmpty(channels);
 
@@ -217,7 +212,7 @@ namespace Miki.Discord.Tests
 			await gateway.OnChannelCreate(otherChannel);
 
 			DiscordChannelPacket otherAddedChannel = await client.HashGetAsync<DiscordChannelPacket>(
-				CacheUtils.GuildChannelsKey(guild.Id), otherChannel.Id.ToString());
+				CacheUtils.ChannelsKey(guild.Id), otherChannel.Id.ToString());
 
 			Assert.Equal("another channel", otherAddedChannel.Name);
 
@@ -229,7 +224,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelDelete(otherChannel);
 			otherAddedChannel = await client.HashGetAsync<DiscordChannelPacket>(
-				CacheUtils.GuildChannelsKey(guild.Id), otherAddedChannel.Id.ToString()
+				CacheUtils.ChannelsKey(guild.Id), otherAddedChannel.Id.ToString()
 				);
 
 			Assert.Null(otherAddedChannel);
@@ -246,16 +241,24 @@ namespace Miki.Discord.Tests
 				IsUnavailable = true
 			});
 
-			var deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey(), guild.Id.ToString());
+			var deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey, guild.Id.ToString());
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
 			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
-				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
 			);
 
 			Assert.NotNull(deletedGuild);
+
+			await gateway.OnGuildEmojiUpdate(deletedGuild.Id, new DiscordEmoji[] { new DiscordEmoji() });
+
+			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
+			);
+
+			Assert.NotEmpty(deletedGuild.Emojis);
 
 			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
 			{
@@ -264,14 +267,14 @@ namespace Miki.Discord.Tests
 			});
 
 			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
-				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
 			);
 			Assert.Null(deletedGuild);
 
 			await gateway.OnGuildCreate(guild);
 
 			deletedGuild = await client.HashGetAsync<DiscordGuildPacket>(
-				CacheUtils.GuildsCacheKey(), guild.Id.ToString()
+				CacheUtils.GuildsCacheKey, guild.Id.ToString()
 			);
 			Assert.NotNull(deletedGuild);
 		}
