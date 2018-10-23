@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.4.3</Version>
+    <Version>1.5</Version>
     <Copyright>Velddev</Copyright>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>velddev.pfx</AssemblyOriginatorKeyFile>
