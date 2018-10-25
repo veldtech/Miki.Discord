@@ -315,6 +315,8 @@ namespace Miki.Discord
 				switch (packet.Type)
 				{
 					case ChannelType.GUILDTEXT:
+					case ChannelType.DM:
+					case ChannelType.GROUPDM:
 					{
 						return new DiscordGuildTextChannel(packet, this);
 					}
