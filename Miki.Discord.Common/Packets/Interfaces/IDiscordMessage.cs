@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IDiscordMessage : ISnowflake
-    {
+	public interface IDiscordMessage : ISnowflake
+	{
 		string Content { get; }
 
 		IDiscordUser Author { get; }
@@ -16,7 +15,9 @@ namespace Miki.Discord.Common
 		Task CreateReactionAsync(DiscordEmoji emoji);
 
 		Task DeleteReactionAsync(DiscordEmoji emoji);
+
 		Task DeleteReactionAsync(DiscordEmoji emoji, IDiscordUser user);
+
 		Task DeleteReactionAsync(DiscordEmoji emoji, ulong userId);
 
 		Task DeleteAllReactionsAsync();

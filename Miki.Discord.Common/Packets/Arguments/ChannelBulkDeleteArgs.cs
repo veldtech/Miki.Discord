@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Rest.Arguments
 {
-    public class ChannelBulkDeleteArgs
-    {
+	public class ChannelBulkDeleteArgs
+	{
 		[JsonProperty("messages")]
 		public ulong[] Messages { get; set; }
 
@@ -14,5 +11,5 @@ namespace Miki.Discord.Rest.Arguments
 		{
 			Messages = messages;
 		}
-    }
+	}
 }

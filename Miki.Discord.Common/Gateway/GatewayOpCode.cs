@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Discord.Common.Gateway
+﻿namespace Miki.Discord.Common.Gateway
 {
-    public enum GatewayOpcode
-    {
+	public enum GatewayOpcode
+	{
 		Dispatch = 0,
 		Heartbeat = 1,
 		Identify = 2,
@@ -18,5 +14,5 @@ namespace Miki.Discord.Common.Gateway
 		InvalidSession = 9,
 		Hello = 10,
 		HeartbeatAcknowledge = 11
-    }
+	}
 }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Discord.Gateway.Centralized
+﻿namespace Miki.Discord.Gateway.Centralized
 {
-    public enum GatewayEncoding
-    {
+	public enum GatewayEncoding
+	{
 		Json,
 		ETF
-    }
+	}
 }

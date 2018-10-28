@@ -1,9 +1,6 @@
 ﻿using MessagePack;
-using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
 using Newtonsoft.Json;
 using ProtoBuf;
-using System;
 using System.Collections.Generic;
 
 namespace Miki.Discord.Common.Packets
@@ -30,7 +27,7 @@ namespace Miki.Discord.Common.Packets
 		[JsonProperty("guild_id")]
 		[ProtoMember(4)]
 		[Key(3)]
-		public ulong GuildId { get; set; }
+		public ulong? GuildId { get; set; }
 
 		[JsonProperty("status")]
 		[ProtoMember(5)]
@@ -101,7 +98,7 @@ namespace Miki.Discord.Common.Packets
 		[ProtoMember(7)]
 		[Key(6)]
 		public string Details { get; set; }
-		
+
 		[JsonProperty("party")]
 		[ProtoMember(8)]
 		[Key(7)]

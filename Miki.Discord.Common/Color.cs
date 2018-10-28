@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Miki.Discord.Rest
+﻿namespace Miki.Discord.Rest
 {
 	public class Color
 	{
@@ -16,14 +14,17 @@ namespace Miki.Discord.Rest
 		{
 			_value = baseValue;
 		}
+
 		public Color(byte r, byte g, byte b)
 			: this(((uint)r << 16) | ((uint)g << 8) | (uint)b)
 		{
 		}
+
 		public Color(int r, int g, int b)
 			: this(((uint)r << 16) | ((uint)g << 8) | (uint)b)
 		{
 		}
+
 		public Color(float r, float g, float b)
 			: this((byte)(r * 255), (byte)(g * 255), (byte)(b * 255))
 		{

@@ -1,8 +1,4 @@
-﻿using Miki.Discord.Common.Packets;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace Miki.Discord.Common
 {

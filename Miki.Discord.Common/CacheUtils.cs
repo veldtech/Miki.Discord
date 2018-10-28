@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
-    public static class CacheUtils
-    {
+	public static class CacheUtils
+	{
 		/// <summary>
 		/// Returns a DM channel cache key collection
 		/// </summary>
@@ -28,7 +24,7 @@ namespace Miki.Discord.Common
 		/// <returns></returns>
 		public const string UsersCacheKey = "discord:users";
 
-		public const string GuildsCacheKey ="discord:guilds";
+		public const string GuildsCacheKey = "discord:guilds";
 
 		public static string GuildMembersKey(ulong guildId)
 			=> $"{GuildsCacheKey}:members:{guildId}";

@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common.Events
 {
-    public class RoleDeleteEventArgs
-    {
+	public class RoleDeleteEventArgs
+	{
 		[JsonProperty("guild_id")]
 		public ulong GuildId;
 

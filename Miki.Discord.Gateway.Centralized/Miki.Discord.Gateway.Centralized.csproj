@@ -5,8 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Miki.Net.Websockets" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj" />
-    <ProjectReference Include="..\..\Miki.Net.Websockets\Miki.Net.Websockets\Miki.Net.Websockets.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
   </ItemGroup>
 
 </Project>

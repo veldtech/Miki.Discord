@@ -2,8 +2,6 @@
 using Newtonsoft.Json;
 using ProtoBuf;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common
 {
@@ -24,7 +22,10 @@ namespace Miki.Discord.Common
 		[JsonProperty("afk")]
 		public bool IsAFK { get; private set; }
 
-		public DiscordPresence() { }
+		public DiscordPresence()
+		{
+		}
+
 		public DiscordPresence(DiscordPresencePacket packet)
 		{
 			Activity = packet.Game;

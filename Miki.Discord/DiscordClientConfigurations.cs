@@ -1,14 +1,11 @@
 ﻿using Miki.Cache;
 using Miki.Discord.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord
 {
-    public class DiscordClientConfigurations
-    {
-		public string Token;
+	public class DiscordClientConfigurations
+	{
+		public IApiClient ApiClient;
 		public IGateway Gateway;
 		public IExtendedCacheClient CacheClient;
 	}

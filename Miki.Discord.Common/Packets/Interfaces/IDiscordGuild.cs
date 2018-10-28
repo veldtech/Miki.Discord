@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IDiscordGuild : ISnowflake
-    {
+	public interface IDiscordGuild : ISnowflake
+	{
 		string Name { get; }
 
 		string IconUrl { get; }

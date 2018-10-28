@@ -1,13 +1,10 @@
 ﻿using Miki.Discord.Common.Packets;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
-    public class GatewayReadyPacket
-    {
+	public class GatewayReadyPacket
+	{
 		[JsonProperty("v")]
 		public int ProtocolVersion;
 
@@ -29,10 +26,10 @@ namespace Miki.Discord.Common.Gateway.Packets
 		[JsonProperty("shard")]
 		public int[] Shard;
 
-		public int CurrentShard 
+		public int CurrentShard
 			=> Shard[0];
 
-		public int TotalShards 
+		public int TotalShards
 			=> Shard[1];
 	}
 }

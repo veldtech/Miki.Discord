@@ -12,7 +12,7 @@ namespace Miki.Discord.Common.Packets
 
 		[JsonProperty("type")]
 		public MessageType Type { get; set; }
-			
+
 		[JsonProperty("content")]
 		public string Content { get; set; }
 

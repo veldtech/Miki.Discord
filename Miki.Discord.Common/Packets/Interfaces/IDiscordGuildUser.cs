@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IDiscordGuildUser : IDiscordUser
-    {
+	public interface IDiscordGuildUser : IDiscordUser
+	{
 		string Nickname { get; }
 
 		IReadOnlyCollection<ulong> RoleIds { get; }
@@ -26,5 +25,5 @@ namespace Miki.Discord.Common
 		Task KickAsync(string reason = "");
 
 		Task RemoveRoleAsync(IDiscordRole role);
-    }
+	}
 }

@@ -1,11 +1,9 @@
-﻿using Miki.Net.WebSockets;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Miki.Discord.Common.Gateway;
+using Miki.Net.WebSockets;
 
 namespace Miki.Discord.Gateway.Centralized
 {
-    public struct GatewayConfiguration
+	public struct GatewayConfiguration
 	{
 		public string Token;
 
@@ -16,6 +14,7 @@ namespace Miki.Discord.Gateway.Centralized
 		public int ShardCount;
 		public int ShardId;
 
+		public IGatewayApiClient ApiClient;
 		public IWebSocketClient WebSocketClient;
 
 		public static GatewayConfiguration Default()

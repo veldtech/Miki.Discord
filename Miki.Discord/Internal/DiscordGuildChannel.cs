@@ -1,9 +1,5 @@
 ﻿using Miki.Discord.Common;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
@@ -11,7 +7,7 @@ namespace Miki.Discord.Internal
 	public class DiscordGuildChannel : DiscordChannel, IDiscordGuildChannel
 	{
 		public DiscordGuildChannel(DiscordChannelPacket packet, DiscordClient client)
-			:base(packet, client)
+			: base(packet, client)
 		{
 		}
 
@@ -29,8 +25,8 @@ namespace Miki.Discord.Internal
 			IDiscordGuild guild = await GetGuildAsync();
 
 			GuildPermission permissions = await guild.GetPermissionsAsync(user);
-			
-			if(permissions.HasFlag(GuildPermission.Administrator))
+
+			if (permissions.HasFlag(GuildPermission.Administrator))
 			{
 				return GuildPermission.All;
 			}

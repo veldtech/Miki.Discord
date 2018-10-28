@@ -54,4 +54,3 @@ namespace Miki.Discord.Common.Packets
 		public bool Suppressed { get; set; }
 	}
 }
- 

@@ -1,15 +1,12 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Internal;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
-    public class DiscordUser : IDiscordUser
-    {
+	public class DiscordUser : IDiscordUser
+	{
 		private DiscordClient _client;
 		private DiscordUserPacket _user;
 
@@ -35,7 +32,7 @@ namespace Miki.Discord.Internal
 		public ulong Id
 			=> _user.Id;
 
-		public string AvatarId 
+		public string AvatarId
 			=> _user.Avatar;
 
 		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
@@ -47,7 +44,7 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordPresence> GetPresenceAsync()
 			=> await _client.GetUserPresence(Id);
 
-		public DateTimeOffset CreatedAt 
+		public DateTimeOffset CreatedAt
 			=> this.GetCreationTime();
 
 		public async Task<IDiscordTextChannel> GetDMChannelAsync()

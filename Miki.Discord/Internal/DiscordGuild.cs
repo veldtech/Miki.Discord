@@ -1,9 +1,7 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
@@ -40,12 +38,12 @@ namespace Miki.Discord.Internal
 		public IReadOnlyCollection<IDiscordGuildChannel> Channels
 			=> _packet.Channels.Select(x => new DiscordGuildChannel(x, _client)).ToList();
 
-		public IReadOnlyCollection<IDiscordRole> Roles 
+		public IReadOnlyCollection<IDiscordRole> Roles
 			=> _packet.Roles.Select(x => new DiscordRole(x, _client)).ToList();
 
 		public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{
-			await _client.ApiClient.AddGuildBanAsync(Id, user.Id, pruneDays, reason);
+			await _client._apiClient.AddGuildBanAsync(Id, user.Id, pruneDays, reason);
 		}
 
 		public async Task<IDiscordRole> CreateRoleAsync(CreateRoleArgs roleParams = null)
@@ -137,6 +135,6 @@ namespace Miki.Discord.Internal
 		}
 
 		public async Task RemoveBanAsync(IDiscordGuildUser user)
-			=> await _client.ApiClient.RemoveGuildBanAsync(Id, user.Id);
+			=> await _client._apiClient.RemoveGuildBanAsync(Id, user.Id);
 	}
 }

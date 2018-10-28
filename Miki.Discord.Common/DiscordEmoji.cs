@@ -1,11 +1,8 @@
-﻿using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
-using MessagePack;
-using System.Text.RegularExpressions;
+﻿using MessagePack;
 using Miki.Discord.Common.Packets;
+using Newtonsoft.Json;
+using ProtoBuf;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -13,8 +10,8 @@ namespace Miki.Discord.Common
 {
 	[ProtoContract]
 	[MessagePackObject]
-    public class DiscordEmoji
-    {
+	public class DiscordEmoji
+	{
 		[ProtoMember(1)]
 		[JsonProperty("id")]
 		[Key(0)]
@@ -79,7 +76,7 @@ namespace Miki.Discord.Common
 				};
 				return true;
 			}
-			else if(text.Length > 0 && text.All((t) => char.IsSurrogate(t)))
+			else if (text.Length > 0 && text.All((t) => char.IsSurrogate(t)))
 			{
 				emoji = new DiscordEmoji
 				{

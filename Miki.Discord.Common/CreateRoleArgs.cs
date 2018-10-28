@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common
 {
-    public class CreateRoleArgs
-    {
+	public class CreateRoleArgs
+	{
 		[JsonProperty("name")]
 		public string Name;
 
@@ -21,5 +18,5 @@ namespace Miki.Discord.Common
 
 		[JsonProperty("mentionable")]
 		public bool? Mentionable;
-    }
+	}
 }

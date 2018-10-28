@@ -136,7 +136,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnMessageCreate != null)
 						{
 							await OnMessageCreate(
-								body.Data.ToObject<DiscordMessagePacket>()
+								(body.Data as JToken).ToObject<DiscordMessagePacket>()
 							);
 						}
 					}
@@ -146,7 +146,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnGuildCreate != null)
 						{
-							var guild = body.Data.ToObject<DiscordGuildPacket>();
+							var guild = (body.Data as JToken).ToObject<DiscordGuildPacket>();
 
 							await OnGuildCreate(
 								guild
@@ -159,7 +159,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnGuildCreate != null)
 						{
-							var channel = body.Data.ToObject<DiscordChannelPacket>();
+							var channel = (body.Data as JToken).ToObject<DiscordChannelPacket>();
 
 							await OnChannelCreate(
 								channel
@@ -172,7 +172,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnGuildMemberRemove != null)
 						{
-							var packet = body.Data.ToObject<GuildIdUserArgs>();
+							var packet = (body.Data as JToken).ToObject<GuildIdUserArgs>();
 
 							await OnGuildMemberRemove(
 								packet.guildId,
@@ -184,7 +184,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 					case GatewayEventType.GuildMemberAdd:
 					{
-						DiscordGuildMemberPacket guildMember = body.Data.ToObject<DiscordGuildMemberPacket>();
+						DiscordGuildMemberPacket guildMember = (body.Data as JToken).ToObject<DiscordGuildMemberPacket>();
 
 						if (OnGuildMemberAdd != null)
 						{
@@ -195,7 +195,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 					case GatewayEventType.GuildMemberUpdate:
 					{
-						GuildMemberUpdateEventArgs guildMember = body.Data.ToObject<GuildMemberUpdateEventArgs>();
+						GuildMemberUpdateEventArgs guildMember = (body.Data as JToken).ToObject<GuildMemberUpdateEventArgs>();
 
 						if (OnGuildMemberUpdate != null)
 						{
@@ -208,7 +208,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 					case GatewayEventType.GuildRoleCreate:
 					{
-						RoleEventArgs role = body.Data.ToObject<RoleEventArgs>();
+						RoleEventArgs role = (body.Data as JToken).ToObject<RoleEventArgs>();
 
 						if (OnGuildRoleCreate != null)
 						{
@@ -224,7 +224,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnGuildRoleDelete != null)
 						{
-							RoleDeleteEventArgs role = body.Data.ToObject<RoleDeleteEventArgs>();
+							RoleDeleteEventArgs role = (body.Data as JToken).ToObject<RoleDeleteEventArgs>();
 
 							await OnGuildRoleDelete(
 								role.GuildId,
@@ -236,7 +236,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 					case GatewayEventType.GuildRoleUpdate:
 					{
-						RoleEventArgs role = body.Data.ToObject<RoleEventArgs>();
+						RoleEventArgs role = (body.Data as JToken).ToObject<RoleEventArgs>();
 
 						if (OnGuildRoleUpdate != null)
 						{
@@ -253,7 +253,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnChannelDelete != null)
 						{
 							await OnChannelDelete(
-								body.Data.ToObject<DiscordChannelPacket>()
+								(body.Data as JToken).ToObject<DiscordChannelPacket>()
 							);
 						}
 					}
@@ -264,7 +264,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnChannelUpdate != null)
 						{
 							await OnChannelUpdate(
-								body.Data.ToObject<DiscordChannelPacket>()
+								(body.Data as JToken).ToObject<DiscordChannelPacket>()
 							);
 						}
 					}
@@ -274,7 +274,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnGuildBanAdd != null)
 						{
-							var packet = body.Data.ToObject<GuildIdUserArgs>();
+							var packet = (body.Data as JToken).ToObject<GuildIdUserArgs>();
 
 							await OnGuildBanAdd(
 								packet.guildId,
@@ -288,7 +288,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnGuildBanRemove != null)
 						{
-							var packet = body.Data.ToObject<GuildIdUserArgs>();
+							var packet = (body.Data as JToken).ToObject<GuildIdUserArgs>();
 
 							await OnGuildBanRemove(
 								packet.guildId,
@@ -302,7 +302,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if (OnGuildDelete != null)
 						{
-							var packet = body.Data.ToObject<DiscordGuildUnavailablePacket>();
+							var packet = (body.Data as JToken).ToObject<DiscordGuildUnavailablePacket>();
 
 							await OnGuildDelete(
 								packet
@@ -315,7 +315,7 @@ namespace Miki.Discord.Gateway.Distributed
 					{
 						if(OnGuildEmojiUpdate != null)
 						{
-							var packet = body.Data.ToObject<GuildEmojisUpdateEventArgs>();
+							var packet = (body.Data as JToken).ToObject<GuildEmojisUpdateEventArgs>();
 
 							await OnGuildEmojiUpdate(
 								packet.guildId,
@@ -340,7 +340,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnGuildUpdate != null)
 						{
 							await OnGuildUpdate(
-								body.Data.ToObject<DiscordGuildPacket>()
+								(body.Data as JToken).ToObject<DiscordGuildPacket>()
 							);
 						}
 					}
@@ -351,7 +351,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnMessageDelete != null)
 						{
 							await OnMessageDelete(
-								body.Data.ToObject<MessageDeleteArgs>()
+								(body.Data as JToken).ToObject<MessageDeleteArgs>()
 							);
 						}
 					}
@@ -362,7 +362,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if(OnMessageDeleteBulk != null)
 						{
 							await OnMessageDeleteBulk(
-								 body.Data.ToObject<MessageBulkDeleteEventArgs>()
+								(body.Data as JToken).ToObject<MessageBulkDeleteEventArgs>()
 							);
 						}
 					}
@@ -373,7 +373,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnMessageUpdate != null)
 						{
 							await OnMessageUpdate(
-								body.Data.ToObject<DiscordMessagePacket>()
+							(body.Data as JToken).ToObject<DiscordMessagePacket>()
 							);
 						}
 					}
@@ -384,7 +384,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnPresenceUpdate != null)
 						{
 							await OnPresenceUpdate(
-								body.Data.ToObject<DiscordPresencePacket>()
+								(body.Data as JToken).ToObject<DiscordPresencePacket>()
 							);
 						}
 					}
@@ -395,7 +395,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnReady != null)
 						{
 							OnReady(
-								body.Data.ToObject<GatewayReadyPacket>()
+								(body.Data as JToken).ToObject<GatewayReadyPacket>()
 							).Wait();
 						}
 					}
@@ -411,7 +411,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if(OnTypingStart != null)
 						{
 							await OnTypingStart(
-								body.Data.ToObject<TypingStartEventArgs>()
+								(body.Data as JToken).ToObject<TypingStartEventArgs>()
 							);
 						}
 					}
@@ -422,7 +422,7 @@ namespace Miki.Discord.Gateway.Distributed
 						if (OnUserUpdate != null)
 						{
 							await OnUserUpdate(
-								body.Data.ToObject<DiscordPresencePacket>()
+								(body.Data as JToken).ToObject<DiscordPresencePacket>()
 							);
 						}
 					}

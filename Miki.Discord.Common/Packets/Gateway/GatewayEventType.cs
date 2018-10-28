@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Discord.Rest
+﻿namespace Miki.Discord.Rest
 {
 	public enum GatewayEventType
 	{

@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Rest
 {
-    public class EmojiModifyArgs
-    {
+	public class EmojiModifyArgs
+	{
 		[JsonProperty("name")]
 		public string Name { get; private set; }
 

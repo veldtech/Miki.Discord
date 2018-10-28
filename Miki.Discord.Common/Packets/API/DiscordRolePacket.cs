@@ -1,16 +1,13 @@
 ﻿using MessagePack;
 using Newtonsoft.Json;
 using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common.Packets
 {
 	[ProtoContract]
 	[MessagePackObject]
-    public class DiscordRolePacket
-    {
+	public class DiscordRolePacket
+	{
 		[ProtoMember(1)]
 		[JsonProperty("id")]
 		[Key(0)]

@@ -19,7 +19,7 @@ namespace Miki.Discord.Common.Packets
 		[JsonProperty("name")]
 		[ProtoMember(2)]
 		[Key(1)]
-		public string Name;	
+		public string Name;
 
 		[JsonProperty("icon")]
 		[ProtoMember(3)]
@@ -154,14 +154,12 @@ namespace Miki.Discord.Common.Packets
 		//[ProtoMember(26)]
 		[IgnoreMember]
 		public List<DiscordVoiceStatePacket> VoiceStates;
-		
+
 		[JsonProperty("members")]
 		[IgnoreMember]
-
 		public List<DiscordGuildMemberPacket> Members = new List<DiscordGuildMemberPacket>();
 
 		[JsonProperty("channels")]
-
 		[IgnoreMember]
 		public List<DiscordChannelPacket> Channels = new List<DiscordChannelPacket>();
 

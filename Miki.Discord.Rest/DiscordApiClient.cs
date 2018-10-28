@@ -1,30 +1,27 @@
 ﻿using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Rest;
 using Miki.Discord.Rest.Arguments;
-using Miki.Logging;
 using Miki.Rest;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Rest
 {
-	public class DiscordApiClient : IApiClient
+	public class DiscordApiClient : IApiClient, IGatewayApiClient
 	{
 		public RestClient HttpClient { get; private set; }
 
-		readonly ICacheClient _cache;
+		private readonly ICacheClient _cache;
 
-		readonly JsonSerializerSettings serializer;
-		
+		private readonly JsonSerializerSettings serializer;
+
 		public DiscordApiClient(string token, ICacheClient cache)
 		{
 			HttpClient = new RestClient(DiscordHelper.DiscordUrl + DiscordHelper.BaseUrl)
@@ -77,7 +74,7 @@ namespace Miki.Discord.Rest
 		public async Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
 		{
 			return (await HttpClient.PostAsync<DiscordEmoji>(
-				DiscordApiRoutes.GuildEmojiRoute(guildId), 
+				DiscordApiRoutes.GuildEmojiRoute(guildId),
 				JsonConvert.SerializeObject(args, serializer)
 			)).Data;
 		}
@@ -107,7 +104,7 @@ namespace Miki.Discord.Rest
 				});
 		}
 
-		public async Task DeleteChannelAsync (ulong channelId)
+		public async Task DeleteChannelAsync(ulong channelId)
 		{
 			await RatelimitHelper.ProcessRateLimitedAsync(
 				$"channels:{channelId}:delete", _cache,
@@ -401,7 +398,7 @@ namespace Miki.Discord.Rest
 
 		public async Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true)
 		{
-			if(stream == null)
+			if (stream == null)
 			{
 				throw new ArgumentNullException(nameof(stream));
 			}
@@ -474,5 +471,11 @@ namespace Miki.Discord.Rest
 		{
 			throw new NotImplementedException();
 		}
+
+		public async Task<GatewayConnectionPacket> GetGatewayAsync()
+			=> (await HttpClient.GetAsync<GatewayConnectionPacket>(DiscordApiRoutes.GatewayRoute())).Data;
+
+		public async Task<GatewayConnectionPacket> GetGatewayBotAsync()
+			=> (await HttpClient.GetAsync<GatewayConnectionPacket>(DiscordApiRoutes.BotGatewayRoute())).Data;
 	}
 }

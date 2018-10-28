@@ -25,8 +25,8 @@ namespace Miki.Discord.Rest
 
 		public static bool IsRatelimited(Ratelimit rl)
 		{
-			return ((rl?.Global ?? 1) <= 0 
-					|| (rl?.Remaining ?? 1) <= 0) 
+			return ((rl?.Global ?? 1) <= 0
+					|| (rl?.Remaining ?? 1) <= 0)
 				&& DateTime.UtcNow <= DateTimeOffset.FromUnixTimeSeconds(rl?.Reset ?? 0);
 		}
 	}

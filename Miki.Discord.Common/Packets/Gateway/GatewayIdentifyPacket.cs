@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Miki.Discord.Common.Packets;
+using Newtonsoft.Json;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
@@ -20,7 +18,10 @@ namespace Miki.Discord.Common.Gateway.Packets
 		public int LargeThreshold;
 
 		[JsonProperty("presence")]
-		public DiscordPresence Presence;
+		public DiscordStatus Presence;
+
+		[JsonProperty("shard")]
+		public int[] Shard;
 	}
 
 	public class GatewayIdentifyConnectionProperties

@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common
 {
-    public class DiscordEmbed
-    {
+	public class DiscordEmbed
+	{
 		[JsonProperty("title")]
 		public string Title { get; set; }
 

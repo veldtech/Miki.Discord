@@ -1,7 +1,4 @@
 ﻿using Miki.Discord.Rest;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common
 {

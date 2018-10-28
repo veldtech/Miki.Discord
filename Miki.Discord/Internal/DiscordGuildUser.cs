@@ -1,19 +1,17 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
 	public class DiscordGuildUser : IDiscordGuildUser
-    {
-		DiscordGuildMemberPacket _packet;
-		DiscordClient _client;
-		IDiscordGuild _guild;
+	{
+		private DiscordGuildMemberPacket _packet;
+		private DiscordClient _client;
+		private IDiscordGuild _guild;
 
 		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client, IDiscordGuild guild)
 		{
@@ -35,29 +33,29 @@ namespace Miki.Discord.Internal
 			=> _packet.User.IsBot;
 
 		public string AvatarId
-			=> _packet.User.Avatar; 
+			=> _packet.User.Avatar;
 
 		public string Mention
 			=> $"<@{Id}>";
 
-		public string Nickname 
+		public string Nickname
 			=> _packet.Nickname;
 
-		public IReadOnlyCollection<ulong> RoleIds 
+		public IReadOnlyCollection<ulong> RoleIds
 			=> _packet.Roles;
 
-		public ulong GuildId 
+		public ulong GuildId
 			=> _packet.GuildId;
 
 		public DateTimeOffset JoinedAt
 			=> new DateTimeOffset(_packet.JoinedAt, new TimeSpan(0));
 
-		public DateTimeOffset CreatedAt 
+		public DateTimeOffset CreatedAt
 			=> this.GetCreationTime();
 
 		public async Task AddRoleAsync(IDiscordRole role)
 		{
-			await _client.ApiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await _client._apiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
@@ -74,12 +72,12 @@ namespace Miki.Discord.Internal
 
 		public async Task KickAsync(string reason = null)
 		{
-			await _client.ApiClient.RemoveGuildMemberAsync(GuildId, Id, reason);
+			await _client._apiClient.RemoveGuildMemberAsync(GuildId, Id, reason);
 		}
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
 		{
-			await _client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await _client._apiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public async Task<bool> HasPermissionsAsync(GuildPermission permissions)

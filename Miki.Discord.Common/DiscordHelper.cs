@@ -1,19 +1,17 @@
 ﻿using Miki.Discord.Common.Packets;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common
 {
-    public static class DiscordHelper
-    {
+	public static class DiscordHelper
+	{
 		public const string DiscordUrl = "https://discordapp.com";
 		public const string BaseUrl = "/api/v6";
 		public const string CdnUrl = "https://cdn.discordapp.com";
 
 		public static string GetAvatarUrl(DiscordUserPacket packet, ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
 		{
-			if(packet.Avatar != null)
+			if (packet.Avatar != null)
 			{
 				return GetAvatarUrl(packet.Id, packet.Avatar, type, size);
 			}
@@ -22,10 +20,10 @@ namespace Miki.Discord.Common
 
 		public static string GetAvatarUrl(ulong id, string hash, ImageType imageType = ImageType.AUTO, ImageSize size = ImageSize.x256)
 		{
-			if(imageType == ImageType.AUTO)
+			if (imageType == ImageType.AUTO)
 			{
-				imageType = hash.StartsWith("a_") 
-					? ImageType.GIF 
+				imageType = hash.StartsWith("a_")
+					? ImageType.GIF
 					: ImageType.PNG;
 			}
 

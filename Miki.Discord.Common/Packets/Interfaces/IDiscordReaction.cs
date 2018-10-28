@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
-    public interface IDiscordReaction
-    {
+	public interface IDiscordReaction
+	{
 		/// <summary>
 		/// The emoji information.
 		/// </summary>
@@ -15,5 +11,5 @@ namespace Miki.Discord.Common
 		/// The user information.
 		/// </summary>
 		IDiscordUser User { get; }
-    }
+	}
 }

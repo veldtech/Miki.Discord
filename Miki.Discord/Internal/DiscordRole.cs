@@ -1,16 +1,13 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Internal
 {
 	public class DiscordRole : IDiscordRole
 	{
-		DiscordRolePacket _packet;
-		readonly DiscordClient _client;
+		private DiscordRolePacket _packet;
+		private readonly DiscordClient _client;
 
 		public DiscordRole(DiscordRolePacket packet, DiscordClient client)
 		{
@@ -18,7 +15,7 @@ namespace Miki.Discord.Internal
 			_client = client;
 		}
 
-		public string Name 
+		public string Name
 			=> _packet.Name;
 
 		public Color Color

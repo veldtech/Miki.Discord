@@ -3,13 +3,12 @@ using Miki.Discord.Common.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
 	public class DiscordMessage : IDiscordMessage
-    {
+	{
 		private DiscordMessagePacket _packet;
 		private DiscordClient _client;
 
@@ -41,7 +40,7 @@ namespace Miki.Discord.Internal
 			=> await _client.EditMessageAsync(ChannelId, Id, args.content, args.embed);
 
 		public async Task DeleteAsync()
-			=> await _client.ApiClient.DeleteMessageAsync(_packet.ChannelId, _packet.Id);
+			=> await _client._apiClient.DeleteMessageAsync(_packet.ChannelId, _packet.Id);
 
 		public async Task<IDiscordTextChannel> GetChannelAsync()
 			=> (await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId)) as IDiscordTextChannel;
@@ -50,18 +49,18 @@ namespace Miki.Discord.Internal
 			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji);
 
 		public async Task CreateReactionAsync(DiscordEmoji emoji)
-			=> await _client.ApiClient.CreateReactionAsync(ChannelId, Id, emoji);
+			=> await _client._apiClient.CreateReactionAsync(ChannelId, Id, emoji);
 
 		public async Task DeleteReactionAsync(DiscordEmoji emoji)
-			=> await _client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji);
+			=> await _client._apiClient.DeleteReactionAsync(ChannelId, Id, emoji);
 
 		public async Task DeleteReactionAsync(DiscordEmoji emoji, IDiscordUser user)
 			=> await DeleteReactionAsync(emoji, user.Id);
 
 		public async Task DeleteReactionAsync(DiscordEmoji emoji, ulong userId)
-			=> await _client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji, userId);
+			=> await _client._apiClient.DeleteReactionAsync(ChannelId, Id, emoji, userId);
 
 		public async Task DeleteAllReactionsAsync()
-			=> await _client.ApiClient.DeleteReactionsAsync(ChannelId, Id);
+			=> await _client._apiClient.DeleteReactionsAsync(ChannelId, Id);
 	}
 }

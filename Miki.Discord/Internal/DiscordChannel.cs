@@ -1,14 +1,11 @@
 ﻿using Miki.Discord.Common;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
 	public class DiscordChannel : IDiscordChannel
-    {
+	{
 		protected DiscordChannelPacket _packet;
 		protected DiscordClient _client;
 
@@ -33,7 +30,7 @@ namespace Miki.Discord.Internal
 
 		public async Task DeleteAsync()
 		{
-			await _client.ApiClient.DeleteChannelAsync(Id);
+			await _client._apiClient.DeleteChannelAsync(Id);
 		}
 
 		public Task ModifyAsync(object todo)

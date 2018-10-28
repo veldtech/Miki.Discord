@@ -1,16 +1,15 @@
 ﻿using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-    public interface IApiClient
-    {
+	public interface IApiClient : IGatewayApiClient
+	{
 		Task AddGuildBanAsync(ulong guildId, ulong userId, int pruneDays = 7, string reason = null);
 
 		Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId);

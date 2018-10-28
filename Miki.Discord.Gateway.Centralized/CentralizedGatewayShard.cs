@@ -3,103 +3,119 @@ using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Rest.Entities;
-using Miki.Net.WebSockets;
-using Newtonsoft.Json;
+using Miki.Discord.Common.Packets.Events;
+using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Gateway.Centralized
 {
-    public class CentralizedGatewayShard : IGateway
+	public class CentralizedGatewayShard : IDisposable, IGateway
 	{
 		private GatewayConfiguration _configuration;
 		private GatewayConnection _connection;
 
+		private CancellationTokenSource _tokenSource;
+		private bool _isRunning;
+
 		public CentralizedGatewayShard(GatewayConfiguration configuration)
 		{
 			_configuration = configuration;
+			_tokenSource = new CancellationTokenSource();
 			_connection = new GatewayConnection(configuration);
 		}
 
 		public async Task StartAsync()
 		{
-			_connection.OnTextPacket += OnTextPacketReceivedAsync;
+			if (_isRunning)
+			{
+				return;
+			}
 
+			_connection.OnPacketReceived += OnPacketReceivedAsync;
 			await _connection.StartAsync();
+			_isRunning = true;
 		}
 
 		public async Task StopAsync()
 		{
-			_connection.OnTextPacket -= OnTextPacketReceivedAsync;
+			if (!_isRunning)
+			{
+				return;
+			}
 
+			_connection.OnPacketReceived -= OnPacketReceivedAsync;
+			_tokenSource.Cancel();
 			await _connection.StopAsync();
+			_isRunning = false;
 		}
 
-		public async Task OnTextPacketReceivedAsync(string text)
+		public async Task OnPacketReceivedAsync(GatewayMessage text)
 		{
-			Console.WriteLine(text);
-
-			GatewayMessage msg = JsonConvert.DeserializeObject<GatewayMessage>(text);
-
-			switch (msg.OpCode)
+			if (text.OpCode != GatewayOpcode.Dispatch)
 			{
-				case GatewayOpcode.Dispatch:
-				{
+				// oof.
+				return;
+			}
 
-				} break;
-				case GatewayOpcode.Heartbeat:
+			switch (text.EventName)
+			{
+				case "GUILD_CREATE":
 				{
-
-				} break;
-				case GatewayOpcode.Reconnect:
-				{
-					
-				} break;
-				case GatewayOpcode.InvalidSession:
-				{
-					throw new Exception("oh no.");
+					if (OnGuildCreate != null)
+					{
+						await OnGuildCreate((text.Data as JToken).ToObject<DiscordGuildPacket>());
+					}
 				}
-				case GatewayOpcode.Hello:
-				{
-					await IdentifyAsync(msg.Data.ToObject<GatewayHelloPacket>());
-				} break;
-				case GatewayOpcode.HeartbeatAcknowledge:
-				{
+				break;
 
-				} break;
+				case "GUILD_UPDATE":
+				{
+					if (OnGuildUpdate != null)
+					{
+						await OnGuildUpdate((text.Data as JToken).ToObject<DiscordGuildPacket>());
+					}
+				}
+				break;
+
+				case "GUILD_DELETE":
+				{
+					if (OnGuildDelete != null)
+					{
+						await OnGuildDelete((text.Data as JToken).ToObject<DiscordGuildUnavailablePacket>());
+					}
+				}
+				break;
+
+				case "MESSAGE_CREATE":
+				{
+					if (OnMessageCreate != null)
+					{
+						await OnMessageCreate((text.Data as JToken).ToObject<DiscordMessagePacket>());
+					}
+				}
+				break;
 			}
 		}
 
-		public async Task IdentifyAsync(GatewayHelloPacket packet)
+		public async Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
 		{
-			GatewayIdentifyPacket identifyPacket = new GatewayIdentifyPacket();
-			identifyPacket.Compressed = _configuration.Compressed;
-			identifyPacket.ConnectionProperties = new GatewayIdentifyConnectionProperties
+			if (payload == null)
 			{
-				Browser = "Miki.Discord",
-				OperatingSystem = Environment.OSVersion.ToString(),
-				Device = "Miki.Discord",
-			};
-			identifyPacket.Token = _configuration.Token;
-			identifyPacket.Presence = null;
-			identifyPacket.LargeThreshold = 250;
+				throw new ArgumentNullException(nameof(payload));
+			}
 
-			string serializedPacket = JsonConvert.SerializeObject(identifyPacket);
-			CancellationTokenSource token = new CancellationTokenSource();
-
-			await _connection.WebSocketClient.SendAsync(serializedPacket, token.Token);
+			await _connection.SendCommandAsync(opcode, payload, _tokenSource.Token);
 		}
 
-		public Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
+		public void Dispose()
 		{
-			throw new NotImplementedException();
+			_tokenSource.Dispose();
 		}
 
-		#region Events		
+		#region Events
+
 		public Func<DiscordChannelPacket, Task> OnChannelCreate { get; set; }
 		public Func<DiscordChannelPacket, Task> OnChannelUpdate { get; set; }
 		public Func<DiscordChannelPacket, Task> OnChannelDelete { get; set; }
@@ -115,6 +131,8 @@ namespace Miki.Discord.Gateway.Centralized
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanAdd { get; set; }
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanRemove { get; set; }
 
+		public Func<ulong, DiscordEmoji[], Task> OnGuildEmojiUpdate { get; set; }
+
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleCreate { get; set; }
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleUpdate { get; set; }
 		public Func<ulong, ulong, Task> OnGuildRoleDelete { get; set; }
@@ -122,16 +140,19 @@ namespace Miki.Discord.Gateway.Centralized
 		public Func<DiscordMessagePacket, Task> OnMessageCreate { get; set; }
 		public Func<DiscordMessagePacket, Task> OnMessageUpdate { get; set; }
 		public Func<MessageDeleteArgs, Task> OnMessageDelete { get; set; }
-		public Func<DiscordMessagePacket, Task> OnMessageDeleteBulk { get; set; }
+		public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
 
 		public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
 
-		public Func<Task> OnReady { get; set; }
+		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
 
-		public Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
+		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
+
+		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
 
 		public Func<GatewayMessage, Task> OnPacketSent { get; set; }
 		public Func<GatewayMessage, Task> OnPacketReceived { get; set; }
-		#endregion
+
+		#endregion Events
 	}
 }

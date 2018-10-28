@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Miki.Discord.Rest
 {
-    public class EmojiCreationArgs : EmojiModifyArgs
-    {
+	public class EmojiCreationArgs : EmojiModifyArgs
+	{
 		[JsonProperty("image")]
 		public Stream Image { get; private set; }
 
@@ -16,5 +13,5 @@ namespace Miki.Discord.Rest
 		{
 			Image = image;
 		}
-    }
+	}
 }

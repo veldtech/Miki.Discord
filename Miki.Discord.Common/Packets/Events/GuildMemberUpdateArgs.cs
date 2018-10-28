@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common.Events
 {
-    public class ModifyGuildMemberArgs
-    {
+	public class ModifyGuildMemberArgs
+	{
 		[JsonProperty("nick")]
 		public string Nickname;
 
@@ -21,5 +18,5 @@ namespace Miki.Discord.Common.Events
 
 		[JsonProperty("channel_id")]
 		public ulong? MoveToChannelId;
-    }
+	}
 }

@@ -1,15 +1,13 @@
 ﻿using Miki.Cache;
 using Miki.Rest;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Rest
 {
-    public static class RatelimitHelper
-    {
+	public static class RatelimitHelper
+	{
 		public static async Task ProcessRateLimitedAsync(string redisId, ICacheClient cache, Func<Task<RestResponse>> t)
 		{
 			string key = $"discord:ratelimit:" + redisId;
@@ -26,6 +24,7 @@ namespace Miki.Discord.Rest
 				await HandleRateLimit(cache, response, rateLimit, key);
 			}
 		}
+
 		public static async Task<RestResponse<T>> ProcessRateLimitedAsync<T>(string redisId, ICacheClient cache, Func<Task<RestResponse<T>>> t)
 		{
 			string key = $"discord:ratelimit:" + redisId;
@@ -36,7 +35,7 @@ namespace Miki.Discord.Rest
 				await cache.UpsertAsync(key, rateLimit);
 			}
 
-			if(!Ratelimit.IsRatelimited(rateLimit))
+			if (!Ratelimit.IsRatelimited(rateLimit))
 			{
 				var response = await t();
 				await HandleRateLimit(cache, response, rateLimit, key);

@@ -1,14 +1,12 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Rest;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord
 {
-    public class EmbedBuilder
-    {
-		DiscordEmbed embed = new DiscordEmbed();
+	public class EmbedBuilder
+	{
+		private DiscordEmbed embed = new DiscordEmbed();
 
 		public string Title
 		{
@@ -102,10 +100,12 @@ namespace Miki.Discord
 			embed.Color = new Color(r, g, b).Value;
 			return this;
 		}
+
 		public EmbedBuilder SetColor(float r, float g, float b)
 		{
 			return SetColor(new Color(r, g, b));
 		}
+
 		public EmbedBuilder SetColor(Color color)
 		{
 			embed.Color = color?.Value ?? 0;

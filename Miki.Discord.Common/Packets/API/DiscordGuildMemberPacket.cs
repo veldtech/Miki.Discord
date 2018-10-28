@@ -1,18 +1,16 @@
 ﻿using MessagePack;
-using Miki.Discord.Common.Packets;
 using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace Miki.Discord.Common.Packets
 {
 	[ProtoContract]
 	[MessagePackObject]
 	public class DiscordGuildMemberPacket
-    {
+	{
 		[JsonProperty("user")]
 		[ProtoMember(1)]
 		[Key(0)]
@@ -68,5 +66,5 @@ namespace Miki.Discord.Common.Packets
 		[JsonProperty("mute")]
 		[Key(6)]
 		public bool Muted { get; set; }
-    }
+	}
 }

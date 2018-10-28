@@ -1,5 +1,4 @@
 ﻿using MessagePack;
-using Miki.Discord.Common;
 using Newtonsoft.Json;
 using ProtoBuf;
 using System;

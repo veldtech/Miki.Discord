@@ -1,12 +1,9 @@
 ﻿using Miki.Discord.Common;
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Miki.Discord.Rest
 {
-    internal static class DiscordApiRoutes
+	internal static class DiscordApiRoutes
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string ChannelMessageRoute(ulong channelId, ulong messageId)
@@ -91,5 +88,12 @@ namespace Miki.Discord.Rest
 		internal static string UserRoute(ulong userId)
 			=> $"/users/{userId}";
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string GatewayRoute()
+			=> $"/gateway";
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static string BotGatewayRoute()
+			=> $"/gateway/bot";
 	}
 }

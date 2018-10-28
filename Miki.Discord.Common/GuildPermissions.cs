@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProtoBuf;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.Discord.Common
 {
@@ -31,6 +29,7 @@ namespace Miki.Discord.Common
 	{
 		// General
 		CreateInstantInvite = 0x00_00_00_01,
+
 		KickMembers = 0x00_00_00_02,
 		BanMembers = 0x00_00_00_04,
 		Administrator = 0x00_00_00_08,
@@ -39,6 +38,7 @@ namespace Miki.Discord.Common
 
 		// Text
 		AddReactions = 0x00_00_00_40,
+
 		ViewAuditLog = 0x00_00_00_80,
 		ViewChannel = 0x00_00_04_00,
 		SendMessages = 0x00_00_08_00,
@@ -52,6 +52,7 @@ namespace Miki.Discord.Common
 
 		// Voice
 		Connect = 0x00_10_00_00,
+
 		Speak = 0x00_20_00_00,
 		MuteMembers = 0x00_40_00_00,
 		DeafenMembers = 0x00_80_00_00,
@@ -60,6 +61,7 @@ namespace Miki.Discord.Common
 
 		// General 2
 		ChangeNickname = 0x04_00_00_00,
+
 		ManageNicknames = 0x08_00_00_00,
 		ManageRoles = 0x10_00_00_00,
 		ManageWebhooks = 0x20_00_00_00,
@@ -74,10 +76,12 @@ namespace Miki.Discord.Common
 	{
 		// General
 		CreateInstantInvite = 0x00_00_00_01,
+
 		ManageChannels = 0x00_00_00_10,
 
 		// Text
 		AddReactions = 0x00_00_00_40,
+
 		ViewChannel = 0x00_00_04_00,
 		SendMessages = 0x00_00_08_00,
 		SendTTSMessages = 0x00_00_10_00,
@@ -87,7 +91,6 @@ namespace Miki.Discord.Common
 		ReadMessageHistory = 0x00_01_00_00,
 		MentionEveryone = 0x00_02_00_00,
 		UseExternalEmojis = 0x00_04_00_00,
-
 
 		ManageRoles = 0x10_00_00_00,
 		ManageWebhooks = 0x20_00_00_00,
@@ -101,6 +104,7 @@ namespace Miki.Discord.Common
 	{
 		// General
 		CreateInstantInvite = 0x00_00_00_01,
+
 		ManageChannels = 0x00_00_00_10,
 
 		// Text
@@ -108,6 +112,7 @@ namespace Miki.Discord.Common
 
 		// Voice
 		Connect = 0x00_10_00_00,
+
 		Speak = 0x00_20_00_00,
 		MuteMembers = 0x00_40_00_00,
 		DeafenMembers = 0x00_80_00_00,
@@ -116,6 +121,7 @@ namespace Miki.Discord.Common
 
 		// General 2
 		ManageRoles = 0x10_00_00_00,
+
 		ManageWebhooks = 0x20_00_00_00,
 
 		All = 0xff_ff_ff_ff,

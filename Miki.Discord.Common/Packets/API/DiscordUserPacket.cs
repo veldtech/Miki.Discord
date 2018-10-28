@@ -1,11 +1,6 @@
 ﻿using MessagePack;
-using Miki.Discord.Common;
 using Newtonsoft.Json;
 using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki.Discord.Common.Packets
 {
