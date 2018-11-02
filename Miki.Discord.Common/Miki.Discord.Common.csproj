@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.5</Version>
+    <Version>1.6.0</Version>
     <Copyright>Velddev</Copyright>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>velddev.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-    <Description>Common type and helper library for Miki.Discord.*</Description>
+    <Description>Common type and helper library for Miki.Discord libraries</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

@@ -1,20 +1,19 @@
 ﻿using Miki.Discord.Common;
-using Miki.Discord.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Miki.Discord
+namespace Miki.Discord.Internal
 {
-	internal class DiscordTextChannel : DiscordChannel, IDiscordTextChannel
+	public class DiscordGuildTextChannel : DiscordGuildChannel, IDiscordGuildChannel, IDiscordTextChannel
 	{
-		public DiscordTextChannel(DiscordChannelPacket packet, DiscordClient client)
+		public DiscordGuildTextChannel(DiscordChannelPacket packet, DiscordClient client)
 			: base(packet, client)
 		{
 		}
+
 		public async Task DeleteMessagesAsync(params ulong[] id)
 		{
 			if (id.Length == 0)

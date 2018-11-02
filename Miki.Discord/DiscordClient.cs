@@ -311,12 +311,11 @@ namespace Miki.Discord
 				switch (packet.Type)
 				{
 					case ChannelType.GUILDTEXT:
-					case ChannelType.DM:
-					case ChannelType.GROUPDM:
 					{
 						return new DiscordGuildTextChannel(packet, this);
 					}
 
+					case ChannelType.GUILDVOICE:
 					default:
 					{
 						return new DiscordGuildChannel(packet, this);
@@ -325,7 +324,19 @@ namespace Miki.Discord
 			}
 			else
 			{
-				return new DiscordChannel(packet, this);
+				switch (packet.Type)
+				{
+					case ChannelType.DM:
+					case ChannelType.GROUPDM:
+					{
+						return new DiscordTextChannel(packet, this);
+					}
+
+					default:
+					{
+						return new DiscordChannel(packet, this);
+					}
+				}
 			}
 		}
 	}

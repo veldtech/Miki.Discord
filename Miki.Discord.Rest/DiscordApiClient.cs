@@ -68,7 +68,22 @@ namespace Miki.Discord.Rest
 
 		public async Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId)
 		{
-			return (await HttpClient.PostAsync<DiscordChannelPacket>(DiscordApiRoutes.UserMeChannelsRoute(), $"{{ \"recipient_id\": {userId} }}")).Data;
+			var response = await HttpClient.PostAsync<DiscordChannelPacket>(DiscordApiRoutes.UserMeChannelsRoute(), $"{{ \"recipient_id\": {userId} }}");
+
+			if (response.Success)
+			{
+				return response.Data;
+			}
+			throw CreateException(response);
+		}
+
+		private Exception CreateException(RestResponse<DiscordChannelPacket> response)
+		{
+			switch(response.HttpResponseMessage.StatusCode)
+			{
+				default:
+					return new Exception($"Invalid response from Discord API: {response.HttpResponseMessage.StatusCode}");
+			}
 		}
 
 		public async Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
