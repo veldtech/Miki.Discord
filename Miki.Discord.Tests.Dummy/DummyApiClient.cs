@@ -1,5 +1,6 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
 using System;
@@ -116,6 +117,16 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task<DiscordUserPacket> GetCurrentUserAsync()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<GatewayConnectionPacket> GetGatewayAsync()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<GatewayConnectionPacket> GetGatewayBotAsync()
 		{
 			throw new NotImplementedException();
 		}

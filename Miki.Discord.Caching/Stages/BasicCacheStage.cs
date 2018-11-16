@@ -74,23 +74,31 @@ namespace Miki.Discord.Caching.Stages
 				readyPackets[i] = new KeyValuePair<string, DiscordGuildPacket>(ready.Guilds[i].Id.ToString(), ready.Guilds[i]);
 			}
 
-			await _cache.HashUpsertAsync(CacheUtils.GuildsCacheKey, readyPackets);
-
-			await _cache.HashUpsertAsync(CacheUtils.UsersCacheKey, "me", ready.CurrentUser);
-			await _cache.HashUpsertAsync(CacheUtils.UsersCacheKey, ready.CurrentUser.Id.ToString(), ready.CurrentUser);
+			await Task.WhenAll(
+				_cache.HashUpsertAsync(CacheUtils.GuildsCacheKey, readyPackets),
+				_cache.HashUpsertAsync(CacheUtils.UsersCacheKey, "me", ready.CurrentUser),
+				_cache.HashUpsertAsync(CacheUtils.UsersCacheKey, ready.CurrentUser.Id.ToString(), ready.CurrentUser)
+			);
 		}
 
 		private async Task OnUserUpdate(DiscordPresencePacket user)
 		{
-			await _cache.HashUpsertAsync(CacheUtils.UsersCacheKey, user.User.Id.ToString(), user.User);
+			List<Task> tasks = new List<Task>();
 
-			var guildMember = await _cache.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(user.User.Id), user.User.Id.ToString());
+			tasks.Add(_cache.HashUpsertAsync(CacheUtils.UsersCacheKey, user.User.Id.ToString(), user.User));
 
-			if (guildMember != null)
+			if (user.GuildId.HasValue)
 			{
+				var guildMember = await _cache.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(user.GuildId.Value), user.User.Id.ToString());
+				if(guildMember == null)
+				{
+					guildMember = new DiscordGuildMemberPacket();
+				}
 				guildMember.User = user.User;
-				await _cache.HashUpsertAsync(CacheUtils.GuildMembersKey(user.GuildId), user.User.Id.ToString(), guildMember);
+				tasks.Add(_cache.HashUpsertAsync(CacheUtils.GuildMembersKey(user.GuildId.Value), user.User.Id.ToString(), guildMember));
 			}
+
+			await Task.WhenAll(tasks);
 		}
 
 		private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs member)

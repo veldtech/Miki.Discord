@@ -52,9 +52,20 @@ namespace Miki.Discord
 
 		public async Task<IDiscordTextChannel> CreateDMAsync(ulong userid)
 		{
-			var channel = await _apiClient.CreateDMChannelAsync(userid);
-
-			return ResolveChannel(channel) as IDiscordTextChannel;
+			var packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(), userid.ToString());
+			if (packet == null)
+			{
+				packet = await _apiClient.CreateDMChannelAsync(userid);
+				if (packet != null)
+				{
+					await CacheClient.HashUpsertAsync(CacheUtils.ChannelsKey(), userid.ToString(), packet);
+				}
+				else
+				{
+					return null;
+				}
+			}
+			return ResolveChannel(packet) as IDiscordTextChannel;
 		}
 
 		public async Task<IDiscordRole> CreateRoleAsync(ulong guildId, CreateRoleArgs args = null)
@@ -72,13 +83,15 @@ namespace Miki.Discord
 		public async Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId)
 			=> new DiscordRole(await GetRolePacketAsync(roleId, guildId), this);
 
-		public async Task<IEnumerable<IDiscordRole>> GetRolesAsync(ulong guildId)
+		public async Task<IReadOnlyList<IDiscordRole>> GetRolesAsync(ulong guildId)
 			=> (await GetRolePacketsAsync(guildId))
-				.Select(x => new DiscordRole(x, this));
+				.Select(x => new DiscordRole(x, this))
+				.ToList();
 
-		public async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
+		public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
 			=> (await GetGuildChannelPacketsAsync(guildId))
-				.Select(x => ResolveChannel(x) as IDiscordGuildChannel);
+				.Select(x => ResolveChannel(x) as IDiscordGuildChannel)
+				.ToList();
 
 		public async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
 		{
@@ -114,13 +127,18 @@ namespace Miki.Discord
 			);
 		}
 
-		public async Task<IDiscordUser[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+		public async Task<IReadOnlyList<IDiscordUser>> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
 		{
 			var users = await _apiClient.GetReactionsAsync(channelId, messageId, emoji);
 
-			return users.Select(
-				x => new DiscordUser(x, this)
-			).ToArray();
+			if(users != null)
+			{
+				return users.Select(
+					x => new DiscordUser(x, this)
+				).ToList();
+			}
+
+			return new List<IDiscordUser>();
 		}
 
 		public async Task<IDiscordUser> GetUserAsync(ulong id)

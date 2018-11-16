@@ -482,11 +482,6 @@ namespace Miki.Discord.Rest
 			);
 		}
 
-		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
-		{
-			throw new NotImplementedException();
-		}
-
 		public async Task<GatewayConnectionPacket> GetGatewayAsync()
 			=> (await HttpClient.GetAsync<GatewayConnectionPacket>(DiscordApiRoutes.GatewayRoute())).Data;
 

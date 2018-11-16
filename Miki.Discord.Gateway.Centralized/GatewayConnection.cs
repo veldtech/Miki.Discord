@@ -26,6 +26,8 @@ namespace Miki.Discord.Gateway.Centralized
 		private Task _heartbeatTask = null;
 
 		private int? _sequenceNumber = null;
+		private MemoryStream _receiveStream = new MemoryStream(GatewayConstants.WebSocketReceiveSize);
+		private byte[] _receivePacket = new byte[GatewayConstants.WebSocketReceiveSize];
 
 		private CancellationTokenSource _connectionToken;
 
@@ -33,6 +35,11 @@ namespace Miki.Discord.Gateway.Centralized
 
 		public GatewayConnection(GatewayConfiguration configuration)
 		{
+			if(string.IsNullOrWhiteSpace(configuration.Token))
+			{
+				throw new ArgumentNullException("Token can not be blank.");
+			}
+
 			WebSocketClient = configuration.WebSocketClient ?? new BasicWebSocketClient();
 			_configuration = configuration;
 		}
@@ -41,12 +48,10 @@ namespace Miki.Discord.Gateway.Centralized
 		{
 			_connectionToken = new CancellationTokenSource();
 
-			var connectionProperties = await _configuration.ApiClient.GetGatewayBotAsync();
-
-			string connectionUri = new WebSocketUrlBuilder(connectionProperties.Url)
-				.SetCompression(_configuration.Compressed)
-				.SetEncoding(_configuration.Encoding)
-				.SetVersion(_configuration.Version)
+			string connectionUri = new WebSocketUrlBuilder("wss://gateway.discord.gg/")
+				.SetCompression(_configuration.Compressed.GetValueOrDefault(false))
+				.SetEncoding(_configuration.Encoding.GetValueOrDefault(GatewayEncoding.Json))
+				.SetVersion(_configuration.Version.GetValueOrDefault(GatewayConstants.DefaultVersion))
 				.Build();
 
 			await WebSocketClient.ConnectAsync(new Uri(connectionUri), _connectionToken.Token);
@@ -116,7 +121,7 @@ namespace Miki.Discord.Gateway.Centralized
 		public async Task IdentifyAsync(GatewayHelloPacket packet)
 		{
 			GatewayIdentifyPacket identifyPacket = new GatewayIdentifyPacket();
-			identifyPacket.Compressed = _configuration.Compressed;
+			identifyPacket.Compressed = _configuration.Compressed.GetValueOrDefault(false);
 			identifyPacket.ConnectionProperties = new GatewayIdentifyConnectionProperties
 			{
 				Browser = "Miki.Discord",
@@ -149,38 +154,46 @@ namespace Miki.Discord.Gateway.Centralized
 			await WebSocketClient.SendAsync(json, token);
 		}
 
-		private async Task<WebSocketResponse> ReceivePacketBytesAsync(byte[] packet)
+		private async Task<WebSocketPacket> ReceivePacketBytesAsync()
 		{
-			MemoryStream _receiveStream = new MemoryStream(GatewayConstants.WebSocketReceiveSize);
-
+			int size = 0;
 			_receiveStream.Position = 0;
 			_receiveStream.SetLength(0);
 
 			WebSocketResponse response;
 			do
 			{
+
 				if (_connectionToken.IsCancellationRequested)
 				{
 					throw new OperationCanceledException();
 				}
 
-				response = await WebSocketClient.ReceiveAsync(new ArraySegment<byte>(packet), _connectionToken.Token);
-				await _receiveStream.WriteAsync(packet, 0, response.Count);
+				response = await WebSocketClient.ReceiveAsync(new ArraySegment<byte>(_receivePacket), _connectionToken.Token);
+				size += response.Count;
+
+				if (response.Count + _receiveStream.Position > _receiveStream.Capacity)
+				{
+					_receiveStream.Capacity = _receiveStream.Capacity * 2;
+				}
+
+				await _receiveStream.WriteAsync(_receivePacket, 0, response.Count);
 			}
 			while (!response.EndOfMessage);
 
-			packet = _receiveStream.TryGetBuffer(out var responseBuffer) ? responseBuffer.Array : _receiveStream.ToArray();
-			return response;
+			byte[] p = _receiveStream.TryGetBuffer(out var responseBuffer) ? responseBuffer.Array : _receiveStream.ToArray();
+			response.Count = size;
+
+			return new WebSocketPacket(response, p);
 		}
 
 		private async Task<GatewayMessage> ReceivePacketAsync()
 		{
-			byte[] packet = new byte[GatewayConstants.WebSocketReceiveSize];
-			WebSocketResponse response = await ReceivePacketBytesAsync(packet);
+			var response = await ReceivePacketBytesAsync();
 
-			if (response.MessageType == WebSocketContentType.Text)
+			if (response.Response.MessageType == WebSocketContentType.Text)
 			{
-				string textPacket = Encoding.UTF8.GetString(packet, 0, response.Count);
+				string textPacket = Encoding.UTF8.GetString(response.Packet, 0, response.Response.Count);
 
 				GatewayMessage msg = JsonConvert.DeserializeObject<GatewayMessage>(textPacket, GatewayConstants.JsonSettings);
 
@@ -195,6 +208,18 @@ namespace Miki.Discord.Gateway.Centralized
 				// TODO (Veld): Add zlib && ETF
 				return null;
 			}
+		}
+	}
+
+	public class WebSocketPacket
+	{
+		public WebSocketResponse Response { get; }
+		public byte[] Packet { get; }
+
+		public WebSocketPacket(WebSocketResponse r, byte[] packet)
+		{
+			Packet = packet;
+			Response = r;
 		}
 	}
 }

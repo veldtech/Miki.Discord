@@ -5,7 +5,7 @@
     <AssemblyName>Miki.Discord</AssemblyName>
     <RootNamespace>Miki.Discord</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>2.6.4</Version>
+    <Version>2.6.7</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Miki Discord Client</Description>
@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
-    <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
   </ItemGroup>
 
 </Project>

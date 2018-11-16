@@ -26,7 +26,7 @@ namespace Miki.Discord.Internal
 			=> _packet.Id;
 
 		public bool IsNsfw
-			=> _packet.IsNsfw.Value;
+			=> _packet?.IsNsfw.GetValueOrDefault(false) ?? false;
 
 		public async Task DeleteAsync()
 		{
