@@ -173,13 +173,9 @@ namespace Miki.Discord.Caching.Stages
 		}
 
 		private async Task OnChannelCreate(DiscordChannelPacket channel)
-		{
-			await _cache.HashUpsertAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString(), channel);
-		}
+			=> await _cache.HashUpsertAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString(), channel);
 
 		private async Task OnChannelDelete(DiscordChannelPacket channel)
-		{
-			await _cache.HashDeleteAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString());
-		}
+			=>	await _cache.HashDeleteAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString());
 	}
 }
