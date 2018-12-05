@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Miki.Discord.Common.Packets;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,5 +34,7 @@ namespace Miki.Discord.Common
 		IReadOnlyList<ulong> MentionedUserIds { get; }
 
 		DateTimeOffset Timestamp { get; }
+
+		MessageType Type { get; }
 	}
 }
