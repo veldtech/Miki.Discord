@@ -42,6 +42,7 @@ namespace Miki.Discord.Caching.Stages
 			client.OnGuildRoleDelete += OnRoleDelete;
 
 			client.OnUserUpdate += OnUserUpdate;
+			client.OnPresenceUpdate += OnUserUpdate;
 
 			client.OnReady += OnReady;
 		}

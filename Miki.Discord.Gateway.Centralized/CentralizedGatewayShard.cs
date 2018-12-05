@@ -96,6 +96,41 @@ namespace Miki.Discord.Gateway.Centralized
 					}
 				}
 				break;
+
+				case "PRESENCE_UPDATE":
+				{
+					if (OnPresenceUpdate != null)
+					{
+						await OnPresenceUpdate((text.Data as JToken).ToObject<DiscordPresencePacket>());
+					}
+				}
+				break;
+
+				case "CHANNEL_CREATE":
+				{
+					if (OnChannelCreate != null)
+					{
+						await OnChannelCreate((text.Data as JToken).ToObject<DiscordChannelPacket>());
+					}
+				} break;
+
+				case "CHANNEL_UPDATE":
+				{
+					if (OnChannelUpdate != null)
+					{
+						await OnChannelUpdate((text.Data as JToken).ToObject<DiscordChannelPacket>());
+					}
+				}
+				break;
+
+				case "CHANNEL_DELETE":
+				{
+					if (OnChannelDelete != null)
+					{
+						await OnChannelDelete((text.Data as JToken).ToObject<DiscordChannelPacket>());
+					}
+				}
+				break;
 			}
 		}
 

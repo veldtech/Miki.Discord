@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -100,6 +101,11 @@ namespace Miki.Discord.Gateway.Centralized
 					}
 				}
 			}
+			catch (WebSocketException ws)
+			{
+				await StopAsync();
+				await StartAsync();
+			}
 			catch (Exception e)
 			{
 				Console.WriteLine("error: " + e.ToString());
@@ -149,7 +155,7 @@ namespace Miki.Discord.Gateway.Centralized
 
 			var json = JsonConvert.SerializeObject(msg, GatewayConstants.JsonSettings);
 
-			Log.Debug($"=> {msg.OpCode.ToString()} | {json}");
+			Log.Debug($"=> {msg.OpCode.ToString()}");
 
 			await WebSocketClient.SendAsync(json, token);
 		}
@@ -199,8 +205,10 @@ namespace Miki.Discord.Gateway.Centralized
 
 				_sequenceNumber = msg.SequenceNumber;
 
-				Log.Debug($"<= {msg.OpCode.ToString()} | {textPacket}");
-
+				if (msg.OpCode == GatewayOpcode.Dispatch)
+				{
+					Log.Debug($"<= {msg.EventName.ToString()}");
+				}
 				return msg;
 			}
 			else
