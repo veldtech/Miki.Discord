@@ -145,6 +145,8 @@ namespace Miki.Discord.Caching.Stages
 
 		private async Task OnGuildCreate(DiscordGuildPacket guild)
 		{
+            guild.Members.RemoveAll(x => x == null);
+
 			await Task.WhenAll(
 				_cache.HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild),
 				_cache.HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id),
