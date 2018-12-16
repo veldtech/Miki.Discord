@@ -84,11 +84,12 @@ namespace Miki.Discord.Caching.Stages
 
 		private async Task OnUserUpdate(DiscordPresencePacket user)
 		{
-			List<Task> tasks = new List<Task>();
+            List<Task> tasks = new List<Task>
+            {
+                _cache.HashUpsertAsync(CacheUtils.UsersCacheKey, user.User.Id.ToString(), user.User)
+            };
 
-			tasks.Add(_cache.HashUpsertAsync(CacheUtils.UsersCacheKey, user.User.Id.ToString(), user.User));
-
-			if (user.GuildId.HasValue)
+            if (user.GuildId.HasValue)
 			{
 				var guildMember = await _cache.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(user.GuildId.Value), user.User.Id.ToString());
 				if(guildMember == null)
