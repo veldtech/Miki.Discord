@@ -15,7 +15,7 @@ namespace Miki.Discord.Rest.Exceptions
 
         public override string ToString()
         {
-            return $"{_error.Code}: {_error.Message}";
+            return $"{nameof(DiscordRestException)}: {_error.Code} - {_error.Message}\n{StackTrace}";
         }
     }
 }

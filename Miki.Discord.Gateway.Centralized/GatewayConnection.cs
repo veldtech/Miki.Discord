@@ -16,8 +16,10 @@ namespace Miki.Discord.Gateway.Centralized
 {
 	public class GatewayConnection
 	{
-		public Func<GatewayMessage, Task> OnPacketReceived { get; set; }
-		public Func<byte[], Task> OnBinaryPacket { get; set; }
+        public event Func<Task> OnConnect;
+        public event Func<Exception, Task> OnDisconnect;
+        public event Func<GatewayMessage, Task> OnPacketReceived;
+        public event Func<Task> OnReady;
 
 		public readonly IWebSocketClient WebSocketClient;
 
@@ -101,16 +103,17 @@ namespace Miki.Discord.Gateway.Centralized
 					}
 				}
 			}
-			catch (WebSocketException ws)
+			catch (WebSocketException e)
 			{
 				await StopAsync();
 				await StartAsync();
-			}
+            }
 			catch (Exception e)
 			{
 				Console.WriteLine("error: " + e.ToString());
-			}
-		}
+                throw new GatewayException("Unspecified gateway exception", e);
+            }
+        }
 
 		public async Task HeartbeatAsync(int latency)
 		{

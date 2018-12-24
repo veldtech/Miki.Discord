@@ -266,11 +266,6 @@ namespace Miki.Discord
 			return packets;
 		}
 
-		internal async Task<DiscordGuildMemberPacket[]> GetGuildMemberPacketsAsync(ulong guildId)
-		{
-			return await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId));
-		}
-
 		internal async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
 		{
 			DiscordGuildPacket packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey, id.ToString());

@@ -12,5 +12,10 @@ namespace Miki.Discord.Rest.Exceptions
 
         [JsonProperty("message")]
         public string Message { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Code}: {Message}\n";
+        }
     }
 }
