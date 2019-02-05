@@ -109,7 +109,8 @@ namespace Miki.Discord.Internal
 
 			if (user.RoleIds != null)
 			{
-				foreach (IDiscordRole role in Roles.Where(x => user.RoleIds.Contains(x.Id)))
+                var roles = await GetRolesAsync();
+				foreach (IDiscordRole role in roles.Where(x => user.RoleIds.Contains(x.Id)))
 				{
 					permissions |= role.Permissions;
 				}
