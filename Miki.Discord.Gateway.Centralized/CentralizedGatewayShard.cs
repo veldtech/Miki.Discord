@@ -4,6 +4,7 @@ using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Common.Packets.Events;
+using Miki.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Threading;
@@ -13,13 +14,13 @@ namespace Miki.Discord.Gateway.Centralized
 {
 	public class CentralizedGatewayShard : IDisposable, IGateway
 	{
-		private GatewayConfiguration _configuration;
+		private GatewayProperties _configuration;
 		private GatewayConnection _connection;
 
 		private CancellationTokenSource _tokenSource;
 		private bool _isRunning;
 
-		public CentralizedGatewayShard(GatewayConfiguration configuration)
+		public CentralizedGatewayShard(GatewayProperties configuration)
 		{
 			_configuration = configuration;
 			_tokenSource = new CancellationTokenSource();
@@ -55,62 +56,92 @@ namespace Miki.Discord.Gateway.Centralized
 		{
 			if (text.OpCode != GatewayOpcode.Dispatch)
 			{
-				// oof.
 				return;
 			}
 
 			switch (text.EventName)
 			{
+                case "READY":
+                {
+                    if(OnReady != null)
+                    {
+                        await OnReady((text.Data as JToken)
+                            .ToObject<GatewayReadyPacket>());
+                    }
+                } break;
+
 				case "GUILD_CREATE":
 				{
 					if (OnGuildCreate != null)
 					{
-						await OnGuildCreate((text.Data as JToken).ToObject<DiscordGuildPacket>());
+						await OnGuildCreate((text.Data as JToken)
+                            .ToObject<DiscordGuildPacket>());
 					}
-				}
-				break;
+				} break;
 
-				case "GUILD_UPDATE":
+                case "GUILD_ROLE_UPDATE":
+                {
+                    if(OnGuildRoleUpdate != null)
+                    {
+                        var role = (text.Data as JToken)
+                            .ToObject<RoleEventArgs>();
+                        await OnGuildRoleUpdate(role.GuildId, role.Role);
+                    }
+                } break;
+
+                case "GUILD_MEMBER_UPDATE":
+                {
+                    if (OnGuildRoleUpdate != null)
+                    {
+                        var member = (text.Data as JToken)
+                            .ToObject<GuildMemberUpdateEventArgs>();
+                        await OnGuildMemberUpdate(member);
+                    }
+                }
+                break;
+
+                case "GUILD_UPDATE":
 				{
 					if (OnGuildUpdate != null)
 					{
-						await OnGuildUpdate((text.Data as JToken).ToObject<DiscordGuildPacket>());
+						await OnGuildUpdate((text.Data as JToken)
+                            .ToObject<DiscordGuildPacket>());
 					}
-				}
-				break;
+				} break;
 
 				case "GUILD_DELETE":
 				{
 					if (OnGuildDelete != null)
 					{
-						await OnGuildDelete((text.Data as JToken).ToObject<DiscordGuildUnavailablePacket>());
+						await OnGuildDelete((text.Data as JToken)
+                            .ToObject<DiscordGuildUnavailablePacket>());
 					}
-				}
-				break;
+				} break;
 
 				case "MESSAGE_CREATE":
 				{
 					if (OnMessageCreate != null)
 					{
-						await OnMessageCreate((text.Data as JToken).ToObject<DiscordMessagePacket>());
+						await OnMessageCreate((text.Data as JToken)
+                            .ToObject<DiscordMessagePacket>());
 					}
-				}
-				break;
+				} break;
 
 				case "PRESENCE_UPDATE":
 				{
 					if (OnPresenceUpdate != null)
 					{
-						await OnPresenceUpdate((text.Data as JToken).ToObject<DiscordPresencePacket>());
+						await OnPresenceUpdate((text.Data as JToken)
+                            .ToObject<DiscordPresencePacket>());
 					}
-				}
-				break;
+				} break;
 
 				case "CHANNEL_CREATE":
 				{
 					if (OnChannelCreate != null)
 					{
-						await OnChannelCreate((text.Data as JToken).ToObject<DiscordChannelPacket>());
+						await OnChannelCreate((text.Data as JToken)
+                            .ToObject<DiscordChannelPacket>());
 					}
 				} break;
 
@@ -118,19 +149,24 @@ namespace Miki.Discord.Gateway.Centralized
 				{
 					if (OnChannelUpdate != null)
 					{
-						await OnChannelUpdate((text.Data as JToken).ToObject<DiscordChannelPacket>());
+						await OnChannelUpdate((text.Data as JToken)
+                            .ToObject<DiscordChannelPacket>());
 					}
-				}
-				break;
+				} break;
 
 				case "CHANNEL_DELETE":
 				{
 					if (OnChannelDelete != null)
 					{
-						await OnChannelDelete((text.Data as JToken).ToObject<DiscordChannelPacket>());
+						await OnChannelDelete((text.Data as JToken)
+                            .ToObject<DiscordChannelPacket>());
 					}
-				}
-				break;
+				} break;
+
+                default:
+                {
+                    Log.Warning($"{text.EventName} is not implemented.");
+                } break;
 			}
 		}
 
