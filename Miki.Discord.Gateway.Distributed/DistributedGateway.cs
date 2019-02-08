@@ -99,7 +99,7 @@ namespace Miki.Discord.Gateway.Distributed
 
 			_commandChannel = connectionFactory.CreateConnection().CreateModel();
 			_commandChannel.ExchangeDeclare(config.QueueName + "-command", ExchangeType.Fanout, true);
-			_commandChannel.QueueDeclare(config.QueueName + "-command", true, false, false);
+			_commandChannel.QueueDeclare(config.QueueName + "-command", false, false, false);
 			_commandChannel.QueueBind(config.QueueName + "-command", config.QueueName + "-command", config.ExchangeRoutingKey, null);
 		}
 
