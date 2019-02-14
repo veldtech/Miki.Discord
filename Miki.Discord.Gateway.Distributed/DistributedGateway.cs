@@ -11,7 +11,6 @@ using Newtonsoft.Json.Linq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
@@ -463,7 +462,7 @@ namespace Miki.Discord.Gateway.Distributed
 			msg.ShardId = shardId;
 			msg.Data = payload;
 
-			_channel.BasicPublish("gateway-command", "*", body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg)));
+			_channel.BasicPublish("gateway-command", "", body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg)));
 			return Task.CompletedTask;
 		}
 	}
