@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Miki.Discord.Gateway.Centralized
+namespace Miki.Discord.Gateway
 {
     public class GatewayException : Exception
     {

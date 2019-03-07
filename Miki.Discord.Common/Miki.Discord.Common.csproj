@@ -1,14 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.7.0</Version>
+    <Version>1.8.0</Version>
     <Copyright>Velddev</Copyright>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>velddev.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <Description>Common type and helper library for Miki.Discord libraries</Description>
+    <PackageLicenseExpression />
+    <Authors>Velddev</Authors>
+    <Product>Miki</Product>
+    <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
+    <PackageTags>Discord Bot Miki</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -27,7 +32,7 @@
 
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="protobuf-net" Version="2.3.17" />
   </ItemGroup>
 

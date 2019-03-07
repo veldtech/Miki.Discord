@@ -1,9 +1,16 @@
 ﻿using Miki.Discord.Common.Gateway;
+using Miki.Discord.Gateway.Ratelimiting;
 using Miki.Net.WebSockets;
 
-namespace Miki.Discord.Gateway.Centralized
+namespace Miki.Discord.Gateway
 {
-    public struct GatewayProperties
+    public enum GatewayMode
+    {
+        Default,
+        RawOnly
+    }
+
+    public class GatewayProperties
     {
         /// <summary>
         /// Discord token
@@ -13,38 +20,35 @@ namespace Miki.Discord.Gateway.Centralized
         /// <summary>
         /// Whether the gateway should receive gzip-compressed packets.
         /// </summary>
-		public bool? Compressed;
+		public bool Compressed;
 
         /// <summary>
         /// What kind of encoding do you want receive.
         /// </summary>
-		public GatewayEncoding? Encoding;
+		public GatewayEncoding Encoding = GatewayEncoding.Json;
 
         /// <summary>
         /// If you are unsure what this should be, keep it null or GatewayConstants.DefaultVersion.
         /// </summary>
-		public int? Version;
+		public int Version = GatewayConstants.DefaultVersion;
 
         /// <summary>
         /// Total shards running on this token
         /// </summary>
-		public int ShardCount;
+		public int ShardCount = 1;
 
         /// <summary>
         /// The current shard's Id
         /// </summary>
 		public int ShardId;
 
-        public IWebSocketClient WebSocketClient;
+        public IWebSocketClient WebSocketClient = new BasicWebSocketClient();
 
-        public static GatewayProperties Default()
-        {
-            return new GatewayProperties
-            {
-                Compressed = false,
-                Encoding = GatewayEncoding.Json,
-                Version = GatewayConstants.DefaultVersion
-            };
-        }
+        public IGatewayRatelimiter Ratelimiter = new DefaultGatewayRatelimiter();
+
+        /// <summary>
+        /// Allow events other than dispatch to be received in raw events?
+        /// </summary>
+        public bool AllowNonDispatchEvents = false;
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Miki.Discord.Gateway.Centralized
+namespace Miki.Discord.Gateway
 {
     public class GatewayResumePacket
     {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2043
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28527.54
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord", "Miki.Discord\Miki.Discord.csproj", "{EA983525-DBAD-407C-BC7A-39878EA46EEC}"
 EndProject
@@ -19,7 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Dummy", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Performance", "Miki.Discord.Tests.Performance\Miki.Discord.Tests.Performance.csproj", "{C5BABE08-66DA-403E-8BD9-4562D4EA1031}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway.Centralized", "Miki.Discord.Gateway.Centralized\Miki.Discord.Gateway.Centralized.csproj", "{E4339CF4-C551-4013-8237-0427FFD35032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway", "Miki.Discord.Gateway.Centralized\Miki.Discord.Gateway.csproj", "{E4339CF4-C551-4013-8237-0427FFD35032}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Example", "..\Miki.Discord.Example\Miki.Discord.Example\Miki.Discord.Example.csproj", "{19AF63D3-77FD-4C56-9A53-75123257AAF9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Net.Http", "..\Miki.Rest\Miki.Rest\Miki.Net.Http.csproj", "{E815E131-8DDC-4307-822C-85E4F8B88DBE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Net.Websockets", "..\Miki.Net.WebSockets\Miki.Net.Websockets\Miki.Net.Websockets.csproj", "{94DDE84F-632D-4559-B562-EF49BFF74F0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +69,18 @@ Global
 		{E4339CF4-C551-4013-8237-0427FFD35032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4339CF4-C551-4013-8237-0427FFD35032}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4339CF4-C551-4013-8237-0427FFD35032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E815E131-8DDC-4307-822C-85E4F8B88DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E815E131-8DDC-4307-822C-85E4F8B88DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E815E131-8DDC-4307-822C-85E4F8B88DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E815E131-8DDC-4307-822C-85E4F8B88DBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94DDE84F-632D-4559-B562-EF49BFF74F0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DDE84F-632D-4559-B562-EF49BFF74F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DDE84F-632D-4559-B562-EF49BFF74F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94DDE84F-632D-4559-B562-EF49BFF74F0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

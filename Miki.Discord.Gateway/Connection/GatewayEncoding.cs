@@ -1,4 +1,4 @@
-﻿namespace Miki.Discord.Gateway.Centralized
+﻿namespace Miki.Discord.Gateway
 {
     /// <summary>
     /// Discord supported Gateway encoding formats

@@ -4,28 +4,35 @@ using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Common.Packets.Events;
+using Miki.Discord.Gateway.Connection;
 using Miki.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Miki.Discord.Gateway.Centralized
+namespace Miki.Discord.Gateway
 {
-	public class CentralizedGatewayShard : IDisposable, IGateway
+	public class GatewayShard : IDisposable, IGateway
 	{
-		private GatewayProperties _configuration;
-		private GatewayConnection _connection;
+        public int ShardId => _connection.ShardId;
+        public ConnectionStatus Status => _connection.ConnectionStatus;
+
+        private GatewayConnection _connection;
 
 		private CancellationTokenSource _tokenSource;
 		private bool _isRunning;
 
-		public CentralizedGatewayShard(GatewayProperties configuration)
+		public GatewayShard(GatewayProperties configuration)
 		{
-			_configuration = configuration;
 			_tokenSource = new CancellationTokenSource();
 			_connection = new GatewayConnection(configuration);
 		}
+
+        public async Task RestartAsync()
+        {
+            await _connection.ReconnectAsync();
+        }
 
 		public async Task StartAsync()
 		{
@@ -35,6 +42,7 @@ namespace Miki.Discord.Gateway.Centralized
 			}
 
 			_connection.OnPacketReceived += OnPacketReceivedAsync;
+            _connection.OnRawPacketReceived += OnRawPacketReceived;
 			await _connection.StartAsync();
 			_isRunning = true;
 		}
@@ -47,6 +55,7 @@ namespace Miki.Discord.Gateway.Centralized
 			}
 
 			_connection.OnPacketReceived -= OnPacketReceivedAsync;
+            _connection.OnRawPacketReceived -= OnRawPacketReceived;
 			_tokenSource.Cancel();
 			await _connection.StopAsync();
 			_isRunning = false;
@@ -186,44 +195,32 @@ namespace Miki.Discord.Gateway.Centralized
 		}
 
 		#region Events
-
 		public Func<DiscordChannelPacket, Task> OnChannelCreate { get; set; }
 		public Func<DiscordChannelPacket, Task> OnChannelUpdate { get; set; }
 		public Func<DiscordChannelPacket, Task> OnChannelDelete { get; set; }
-
 		public Func<DiscordGuildPacket, Task> OnGuildCreate { get; set; }
 		public Func<DiscordGuildPacket, Task> OnGuildUpdate { get; set; }
 		public Func<DiscordGuildUnavailablePacket, Task> OnGuildDelete { get; set; }
-
 		public Func<DiscordGuildMemberPacket, Task> OnGuildMemberAdd { get; set; }
 		public Func<ulong, DiscordUserPacket, Task> OnGuildMemberRemove { get; set; }
 		public Func<GuildMemberUpdateEventArgs, Task> OnGuildMemberUpdate { get; set; }
-
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanAdd { get; set; }
 		public Func<ulong, DiscordUserPacket, Task> OnGuildBanRemove { get; set; }
-
 		public Func<ulong, DiscordEmoji[], Task> OnGuildEmojiUpdate { get; set; }
-
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleCreate { get; set; }
 		public Func<ulong, DiscordRolePacket, Task> OnGuildRoleUpdate { get; set; }
 		public Func<ulong, ulong, Task> OnGuildRoleDelete { get; set; }
-
 		public Func<DiscordMessagePacket, Task> OnMessageCreate { get; set; }
 		public Func<DiscordMessagePacket, Task> OnMessageUpdate { get; set; }
 		public Func<MessageDeleteArgs, Task> OnMessageDelete { get; set; }
 		public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
-
 		public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
-
 		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
-
 		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
-
 		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
-
-		public Func<GatewayMessage, Task> OnPacketSent { get; set; }
-		public Func<GatewayMessage, Task> OnPacketReceived { get; set; }
-
-		#endregion Events
-	}
+        public event Func<GatewayMessage, Task> OnPacketSent;
+        public event Func<GatewayMessage, Task> OnPacketReceived;
+        public event Func<ArraySegment<byte>, Task> OnRawPacketReceived;
+        #endregion Events
+    }
 }

@@ -21,8 +21,6 @@ namespace Miki.Discord.Rest
     {
         public Net.Http.HttpClient RestClient { get; private set; }
 
-        private readonly ICacheClient _cache;
-
         private readonly JsonSerializerSettings serializer;
 
         public DiscordApiClient(string token, ICacheClient cache)
@@ -32,7 +30,6 @@ namespace Miki.Discord.Rest
                 .WithRateLimiter(new DiscordRateLimiter(cache))
                 .CreateNew()
                 .SetAuthorization("Bot", token);
-            _cache = cache;
 
             serializer = new JsonSerializerSettings()
             {

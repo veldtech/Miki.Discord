@@ -1,5 +1,6 @@
 ﻿using Miki.Discord.Common.Packets;
 using Newtonsoft.Json;
+using System;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
@@ -9,7 +10,7 @@ namespace Miki.Discord.Common.Gateway.Packets
 		public string Token;
 
 		[JsonProperty("properties")]
-		public GatewayIdentifyConnectionProperties ConnectionProperties;
+		public GatewayIdentifyConnectionProperties ConnectionProperties = new GatewayIdentifyConnectionProperties();
 
 		[JsonProperty("compress")]
 		public bool Compressed;
@@ -27,12 +28,12 @@ namespace Miki.Discord.Common.Gateway.Packets
 	public class GatewayIdentifyConnectionProperties
 	{
 		[JsonProperty("$os")]
-		public string OperatingSystem;
+		public string OperatingSystem = Environment.OSVersion.ToString();
 
 		[JsonProperty("$browser")]
-		public string Browser;
+		public string Browser = "Miki.Discord";
 
 		[JsonProperty("$device")]
-		public string Device;
+		public string Device = "Miki.Discord";
 	}
 }

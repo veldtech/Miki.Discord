@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Miki.Discord.Gateway.Centralized.Utils
+namespace Miki.Discord.Gateway.Utils
 {
 	public static class DictionaryUtils
 	{

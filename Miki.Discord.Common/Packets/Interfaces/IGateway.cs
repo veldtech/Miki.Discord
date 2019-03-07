@@ -10,7 +10,8 @@ namespace Miki.Discord.Common
 {
 	public interface IGateway
 	{
-		Func<DiscordChannelPacket, Task> OnChannelCreate { get; set; }
+        #region Events
+        Func<DiscordChannelPacket, Task> OnChannelCreate { get; set; }
 		Func<DiscordChannelPacket, Task> OnChannelUpdate { get; set; }
 		Func<DiscordChannelPacket, Task> OnChannelDelete { get; set; }
 
@@ -44,10 +45,14 @@ namespace Miki.Discord.Common
 
 		Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
 
-		Func<GatewayMessage, Task> OnPacketSent { get; set; }
-		Func<GatewayMessage, Task> OnPacketReceived { get; set; }
+        event Func<GatewayMessage, Task> OnPacketSent;
+        event Func<GatewayMessage, Task> OnPacketReceived;
+        event Func<ArraySegment<byte>, Task> OnRawPacketReceived;
+        #endregion
 
-		Task SendAsync(int shardId, GatewayOpcode opcode, object payload);
+        Task RestartAsync();
+
+        Task SendAsync(int shardId, GatewayOpcode opcode, object payload);
 
 		Task StartAsync();
 
