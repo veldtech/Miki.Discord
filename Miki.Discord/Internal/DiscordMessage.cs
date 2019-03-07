@@ -18,6 +18,11 @@ namespace Miki.Discord.Internal
 			_client = client;
 		}
 
+        public IReadOnlyList<IDiscordAttachment> Attachments
+            => _packet.Attachments
+                .Select(x => new DiscordAttachment(x))
+                .ToList();
+
 		public IDiscordUser Author
 			=> new DiscordUser(_packet.Author, _client);
 

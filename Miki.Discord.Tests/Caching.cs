@@ -137,9 +137,6 @@ namespace Miki.Discord.Tests
 			DiscordUserPacket currentUser = await client.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, user.Id.ToString());
 
 			Assert.NotEmpty(x);
-
-			DiscordGuildMemberPacket newUser = x[0];
-
 			Assert.Equal("new avi", currentUser.Avatar);
 		}	
 

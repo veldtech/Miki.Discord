@@ -1,4 +1,5 @@
 ﻿using Miki.Discord.Common.Gateway;
+using Miki.Discord.Gateway.Connection;
 using Miki.Discord.Gateway.Ratelimiting;
 using Miki.Net.WebSockets;
 

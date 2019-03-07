@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Tests.Dummy
 {
-	public class DummyGateway : IGateway
+    /// <inheritdoc/>
+    public class DummyGateway : IGateway
 	{
 		public Func<DiscordChannelPacket, Task> OnChannelCreate { get; set; }
 		public Func<DiscordChannelPacket, Task> OnChannelUpdate { get; set; }
@@ -39,19 +40,38 @@ namespace Miki.Discord.Tests.Dummy
 		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
 		public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
 
-		public Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
-		{
-			throw new NotImplementedException();
-		}
+        public event Func<ArraySegment<byte>, Task> OnRawPacketReceived;
 
-		public Task StartAsync()
-		{
-			throw new NotImplementedException();
-		}
+        event Func<GatewayMessage, Task> IGateway.OnPacketSent
+        {
+            add { }
+            remove { }
+        }
 
-		public Task StopAsync()
+        event Func<GatewayMessage, Task> IGateway.OnPacketReceived
+        {
+            add { }
+            remove { }
+        }
+
+        public Task RestartAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
 		{
-			throw new NotImplementedException();
-		}
-	}
+            return Task.CompletedTask;
+        }
+
+        public Task StartAsync()
+		{
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync()
+		{
+            return Task.CompletedTask;
+        }
+    }
 }

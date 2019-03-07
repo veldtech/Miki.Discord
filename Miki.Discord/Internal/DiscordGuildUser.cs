@@ -59,7 +59,7 @@ namespace Miki.Discord.Internal
 		}
 
 		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
-			=> DiscordHelper.GetAvatarUrl(_packet.User, type, size);
+			=> DiscordUtils.GetAvatarUrl(_packet.User, type, size);
 
 		public async Task<IDiscordTextChannel> GetDMChannelAsync()
 			=> await _client.CreateDMAsync(_packet.User.Id);

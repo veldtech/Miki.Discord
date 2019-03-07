@@ -27,9 +27,9 @@ namespace Miki.Discord.Tests
 			{
 				user.Avatar = "2345243f3oim4foi34mf3k4f";
 
-				Assert.Equal("https://cdn.discordapp.com/avatars/111/2345243f3oim4foi34mf3k4f.png?size=256", DiscordHelper.GetAvatarUrl(user));
-				Assert.Equal("https://cdn.discordapp.com/avatars/111/2345243f3oim4foi34mf3k4f.webp?size=2048", DiscordHelper.GetAvatarUrl(user, ImageType.WEBP, ImageSize.x2048));
-				Assert.Equal("https://cdn.discordapp.com/avatars/111/2345243f3oim4foi34mf3k4f.jpeg?size=16", DiscordHelper.GetAvatarUrl(user, ImageType.JPEG, ImageSize.x16));
+				Assert.Equal("https://cdn.discordapp.com/avatars/111/2345243f3oim4foi34mf3k4f.png?size=256", DiscordUtils.GetAvatarUrl(user));
+				Assert.Equal("https://cdn.discordapp.com/avatars/111/2345243f3oim4foi34mf3k4f.webp?size=2048", DiscordUtils.GetAvatarUrl(user, ImageType.WEBP, ImageSize.x2048));
+				Assert.Equal("https://cdn.discordapp.com/avatars/111/2345243f3oim4foi34mf3k4f.jpeg?size=16", DiscordUtils.GetAvatarUrl(user, ImageType.JPEG, ImageSize.x16));
 			}
 
 			[Fact]
@@ -37,9 +37,9 @@ namespace Miki.Discord.Tests
 			{
 				user.Avatar = "a_owiejfowiejf432ijf3o";
 
-				Assert.Equal("https://cdn.discordapp.com/avatars/111/a_owiejfowiejf432ijf3o.gif?size=256", DiscordHelper.GetAvatarUrl(user));
-				Assert.Equal("https://cdn.discordapp.com/avatars/111/a_owiejfowiejf432ijf3o.webp?size=2048", DiscordHelper.GetAvatarUrl(user, ImageType.WEBP, ImageSize.x2048));
-				Assert.Equal("https://cdn.discordapp.com/avatars/111/a_owiejfowiejf432ijf3o.jpeg?size=16", DiscordHelper.GetAvatarUrl(user, ImageType.JPEG, ImageSize.x16));
+				Assert.Equal("https://cdn.discordapp.com/avatars/111/a_owiejfowiejf432ijf3o.gif?size=256", DiscordUtils.GetAvatarUrl(user));
+				Assert.Equal("https://cdn.discordapp.com/avatars/111/a_owiejfowiejf432ijf3o.webp?size=2048", DiscordUtils.GetAvatarUrl(user, ImageType.WEBP, ImageSize.x2048));
+				Assert.Equal("https://cdn.discordapp.com/avatars/111/a_owiejfowiejf432ijf3o.jpeg?size=16", DiscordUtils.GetAvatarUrl(user, ImageType.JPEG, ImageSize.x16));
 			}
 
 			[Fact]
@@ -47,8 +47,8 @@ namespace Miki.Discord.Tests
 			{
 				user.Avatar = null;
 
-				Assert.Equal($"https://cdn.discordapp.com/embed/avatars/{ushort.Parse(user.Discriminator) % 5}.png", DiscordHelper.GetAvatarUrl(user));
-				Assert.Equal($"https://cdn.discordapp.com/embed/avatars/{ushort.Parse(user.Discriminator) % 5}.png", DiscordHelper.GetAvatarUrl(user, ImageType.PNG, ImageSize.x512));
+				Assert.Equal($"https://cdn.discordapp.com/embed/avatars/{ushort.Parse(user.Discriminator) % 5}.png", DiscordUtils.GetAvatarUrl(user));
+				Assert.Equal($"https://cdn.discordapp.com/embed/avatars/{ushort.Parse(user.Discriminator) % 5}.png", DiscordUtils.GetAvatarUrl(user, ImageType.PNG, ImageSize.x512));
 			}
 		}
 	}

@@ -37,7 +37,7 @@ namespace Miki.Discord.Rest
             ICacheClient cache)
         {
             RestClient = new HttpClientFactory()
-                .HasBaseUri(DiscordHelper.DiscordUrl + DiscordHelper.BaseUrl)
+                .HasBaseUri(DiscordUtils.DiscordUrl + DiscordUtils.BaseUrl)
                 .WithRateLimiter(new DiscordRateLimiter(cache))
                 .CreateNew()
                 .SetAuthorization("Bot", token);
@@ -464,8 +464,6 @@ namespace Miki.Discord.Rest
                     Url = "attachment://" + fileName
                 }
             };
-
-            string json = JsonConvert.SerializeObject(args, serializer);
 
             List<MultiformItem> items = new List<MultiformItem>();
 

@@ -2,17 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.2.0</Version>
+    <Version>0.1.0</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
-    <Description>Single-connection gateway implementation</Description>
+    <Description>Discord gateway implementation</Description>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Miki.Discord.Gateway.Centralized.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <PackageTags>Discord Gateway Miki</PackageTags>
+    <Product>Miki</Product>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.13.3" />
     <PackageReference Include="Miki.Net.Websockets" Version="1.1.0" />
   </ItemGroup>
 

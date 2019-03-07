@@ -201,17 +201,12 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true)
+		public Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args, bool toChannel = true)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
+        public Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
 		{
 			throw new NotImplementedException();
 		}

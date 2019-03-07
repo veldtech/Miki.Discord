@@ -36,7 +36,7 @@ namespace Miki.Discord.Internal
 			=> _user.Avatar;
 
 		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
-			=> DiscordHelper.GetAvatarUrl(_user, type, size);
+			=> DiscordUtils.GetAvatarUrl(_user, type, size);
 
 		public string Mention
 			=> $"<@{Id}>";

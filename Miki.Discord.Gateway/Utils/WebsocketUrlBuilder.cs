@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Miki.Discord.Gateway.Connection;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Miki.Discord.Gateway.Utils
