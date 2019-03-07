@@ -34,6 +34,9 @@ namespace Miki.Discord.Common.Packets
 		[JsonProperty("mentions")]
 		public List<DiscordUserPacket> Mentions { get; set; }
 
+        [JsonProperty("attachments")]
+        public List<DiscordAttachmentPacket> Attachments { get; set; }
+
 		[JsonProperty("guild_id")]
 		public ulong? GuildId { get; set; }
 	}

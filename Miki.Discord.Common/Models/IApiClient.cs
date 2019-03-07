@@ -70,7 +70,7 @@ namespace Miki.Discord.Common
 
 		Task RemoveGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId);
 
-		Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true);
+		Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args);
 
 		Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args);
 

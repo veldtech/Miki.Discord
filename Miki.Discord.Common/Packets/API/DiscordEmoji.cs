@@ -87,5 +87,14 @@ namespace Miki.Discord.Common
 			}
 			return false;
 		}
+
+        public override string ToString()
+        {
+            if(Id.HasValue)
+            {
+                return $"{Name}:{Id}";
+            }
+            return Name;
+        }
 	}
 }

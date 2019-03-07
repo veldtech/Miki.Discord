@@ -25,7 +25,6 @@ namespace Miki.Discord.Common
 		public DiscordPresence()
 		{
 		}
-
 		public DiscordPresence(DiscordPresencePacket packet)
 		{
 			Activity = packet.Game;

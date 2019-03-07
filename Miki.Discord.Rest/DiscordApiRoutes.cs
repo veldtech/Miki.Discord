@@ -6,94 +6,128 @@ namespace Miki.Discord.Rest
 	internal static class DiscordApiRoutes
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string ChannelMessageRoute(ulong channelId, ulong messageId)
-			=> $"{ChannelMessagesRoute(channelId)}/{messageId}";
+		internal static string ChannelMessage(
+            ulong channelId, 
+            ulong messageId)
+			=> $"{ChannelMessages(channelId)}/{messageId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string ChannelTypingRoute(ulong channelId)
-			=> $"{ChannelRoute(channelId)}/typing";
+		internal static string ChannelTyping(
+            ulong channelId)
+			=> $"{Channel(channelId)}/typing";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string ChannelBulkDeleteMessages(ulong channelId)
-			=> $"{ChannelRoute(channelId)}/messages/bulk-delete";
+		internal static string ChannelBulkDeleteMessages(
+            ulong channelId)
+			=> $"{Channel(channelId)}/messages/bulk-delete";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string ChannelMessagesRoute(ulong channelId)
-			=> $"{ChannelRoute(channelId)}/messages";
+		internal static string ChannelMessages(
+            ulong channelId)
+			=> $"{Channel(channelId)}/messages";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string ChannelRoute(ulong channelId)
+		internal static string Channel(
+            ulong channelId)
 			=> $"/channels/{channelId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildBanRoute(ulong guildId, ulong userId)
-			=> $"{GuildRoute(guildId)}/bans/{userId}";
+		internal static string GuildBan(
+            ulong guildId, 
+            ulong userId)
+			=> $"{Guild(guildId)}/bans/{userId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildChannelsRoute(ulong guildId)
-			=> $"{GuildRoute(guildId)}/channels";
+		internal static string GuildChannels(
+            ulong guildId)
+			=> $"{Guild(guildId)}/channels";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildEmojiRoute(ulong guildId)
-			=> $"{GuildRoute(guildId)}/emojis";
+		internal static string GuildEmoji(
+            ulong guildId)
+			=> $"{Guild(guildId)}/emojis";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildEmojiRoute(ulong guildId, ulong emojiId)
-			=> $"{GuildEmojiRoute(guildId)}/{emojiId}";
+		internal static string GuildEmoji(
+            ulong guildId, 
+            ulong emojiId)
+			=> $"{GuildEmoji(guildId)}/{emojiId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildMemberRoute(ulong guildId, ulong userId)
-			=> $"{GuildRoute(guildId)}/members/{userId}";
+		internal static string GuildMember(
+            ulong guildId, 
+            ulong userId)
+			=> $"{Guild(guildId)}/members/{userId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildMemberRoleRoute(ulong guildId, ulong userId, ulong roleId)
-			=> $"{GuildMemberRoute(guildId, userId)}/roles/{roleId}";
+		internal static string GuildMemberRole(
+            ulong guildId, 
+            ulong userId, 
+            ulong roleId)
+			=> $"{GuildMember(guildId, userId)}/roles/{roleId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildRolesRoute(ulong guildId)
-			=> $"{GuildRoute(guildId)}/roles";
+		internal static string GuildRoles(
+            ulong guildId)
+			=> $"{Guild(guildId)}/roles";
 
-		internal static string GuildRoleRoute(ulong guildId, ulong roleId)
-			=> $"{GuildRolesRoute(guildId)}/{roleId}";
+		internal static string GuildRole(
+            ulong guildId, 
+            ulong roleId)
+			=> $"{GuildRoles(guildId)}/{roleId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GuildRoute(ulong guildId)
+		internal static string Guild(
+            ulong guildId)
 			=> $"/guilds/{guildId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string MessageReactionsRoute(ulong channelId, ulong messageId)
-			=> $"{ChannelMessageRoute(channelId, messageId)}/reactions";
+		internal static string MessageReactions(
+            ulong channelId, 
+            ulong messageId)
+			=> $"{ChannelMessage(channelId, messageId)}/reactions";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string MessageReactionRoute(ulong channelId, ulong messageId, DiscordEmoji emoji)
-			=> $"{MessageReactionsRoute(channelId, messageId)}/{(emoji.Id.HasValue ? emoji.Name + ":" + emoji.Id.ToString() : emoji.Name)}";
+		internal static string MessageReaction(
+            ulong channelId, 
+            ulong messageId, 
+            DiscordEmoji emoji)
+			=> $"{MessageReactions(channelId, messageId)}/{emoji.ToString()}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string MessageReactionRoute(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId)
-			=> $"{MessageReactionRoute(channelId, messageId, emoji)}/{userId}";
+		internal static string MessageReaction(
+            ulong channelId, 
+            ulong messageId, 
+            DiscordEmoji emoji, 
+            ulong userId)
+			=> $"{MessageReaction(channelId, messageId, emoji)}/{userId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string MessageReactionMeRoute(ulong channelId, ulong messageId, DiscordEmoji emoji)
-			=> $"{MessageReactionRoute(channelId, messageId, emoji)}/@me";
+		internal static string MessageReactionMe(
+            ulong channelId, 
+            ulong messageId, 
+            DiscordEmoji emoji)
+			=> $"{MessageReaction(channelId, messageId, emoji)}/@me";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string UserMeRoute()
+		internal static string UserMe()
 			=> $"/users/@me";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string UserMeChannelsRoute()
-			=> $"{UserMeRoute()}/channels";
+		internal static string UserMeChannels()
+			=> $"{UserMe()}/channels";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string UserRoute(ulong userId)
+		internal static string User(
+            ulong userId)
 			=> $"/users/{userId}";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GatewayRoute()
+		internal static string Gateway()
 			=> $"/gateway";
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string BotGatewayRoute()
+		internal static string BotGateway()
 			=> $"/gateway/bot";
 	}
 }

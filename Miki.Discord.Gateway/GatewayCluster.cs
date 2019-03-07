@@ -7,6 +7,7 @@ using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Common.Packets.Events;
+using Miki.Discord.Gateway.Connection;
 
 namespace Miki.Discord.Gateway
 {

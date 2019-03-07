@@ -17,13 +17,24 @@ using Miki.Discord.Rest.Exceptions;
 
 namespace Miki.Discord.Rest
 {
-    public class DiscordApiClient : IApiClient, IGatewayApiClient
+    /// <summary>
+    /// A client for Discord's API. Used to perform calls to their RESTful API.
+    /// </summary>
+    public class DiscordApiClient 
+        : IApiClient, IGatewayApiClient, IDisposable
     {
         public Net.Http.HttpClient RestClient { get; private set; }
 
         private readonly JsonSerializerSettings serializer;
 
-        public DiscordApiClient(string token, ICacheClient cache)
+        /// <summary>
+        /// Creates a new Discord API instance.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="cache"></param>
+        public DiscordApiClient(
+            string token, 
+            ICacheClient cache)
         {
             RestClient = new HttpClientFactory()
                 .HasBaseUri(DiscordHelper.DiscordUrl + DiscordHelper.BaseUrl)
@@ -37,7 +48,18 @@ namespace Miki.Discord.Rest
             };
         }
 
-        public async Task AddGuildBanAsync(ulong guildId, ulong userId, int pruneDays = 7, string reason = null)
+        /// <summary>
+        /// Adds a user to a guild's ban list.
+        /// </summary>
+        /// <param name="guildId">Id of the guild you want to ban a user from</param>
+        /// <param name="userId">Id of the user you want to ban</param>
+        /// <param name="pruneDays">Amount of days you want to prune messages from the user</param>
+        /// <param name="reason">Reason for the ban</param>
+        public async Task AddGuildBanAsync(
+            ulong guildId, 
+            ulong userId, 
+            int pruneDays = 7, 
+            string reason = null)
         {
             QueryString qs = new QueryString();
 
@@ -52,124 +74,198 @@ namespace Miki.Discord.Rest
             }
 
 
-            var response = await RestClient.PutAsync(DiscordApiRoutes.GuildBanRoute(guildId, userId) + qs.Query);
+            var response = await RestClient.PutAsync(DiscordApiRoutes.GuildBan(guildId, userId) + qs.Query);
             HandleErrors(response);
         }
 
-        public async Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
+        /// <summary>
+        /// Adds a role to a guild member.
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <param name="userId"></param>
+        /// <param name="roleId"></param>
+        public async Task AddGuildMemberRoleAsync(
+            ulong guildId, 
+            ulong userId, 
+            ulong roleId)
         {
-            var response = await RestClient.PutAsync(DiscordApiRoutes.GuildMemberRoleRoute(guildId, userId, roleId));
+            var response = await RestClient.PutAsync(
+                DiscordApiRoutes.GuildMemberRole(guildId, userId, roleId));
             HandleErrors(response);
         }
 
-        public async Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId)
+        /// <summary>
+        /// Creates a Direct channel to a user.
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        public async Task<DiscordChannelPacket> CreateDMChannelAsync(
+            ulong userId)
         {
-            var response = await RestClient.PostAsync(DiscordApiRoutes.UserMeChannelsRoute(), $"{{ \"recipient_id\": {userId} }}");
+            var response = await RestClient.PostAsync(
+                DiscordApiRoutes.UserMeChannels(), 
+                $"{{\"recipient_id\":{userId}}}");
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordChannelPacket>(response.Body);
         }
 
-        public async Task<DiscordEmoji> CreateEmojiAsync(ulong guildId, EmojiCreationArgs args)
+        /// <summary>
+        /// Creates and uploads a new emoji for a guild.
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <param name="args"></param>
+        /// <returns>The created emoji.</returns>
+        public async Task<DiscordEmoji> CreateEmojiAsync(
+            ulong guildId, 
+            EmojiCreationArgs args)
         {
             var response = await RestClient.PostAsync(
-                DiscordApiRoutes.GuildEmojiRoute(guildId),
+                DiscordApiRoutes.GuildEmoji(guildId),
                 JsonConvert.SerializeObject(args, serializer)
             );
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
         }
 
-        public async Task<DiscordRolePacket> CreateGuildRoleAsync(ulong guildId, CreateRoleArgs args)
+        /// <summary>
+        /// Creates a new role in the guild specified.
+        /// </summary>
+        /// <param name="guildId">The guild in which you want to create a role.</param>
+        /// <param name="args">The properties of the role.</param>
+        /// <returns>The role you've created, if successful</returns>
+        public async Task<DiscordRolePacket> CreateGuildRoleAsync(
+            ulong guildId, 
+            CreateRoleArgs args)
         {
             var response = await RestClient.PostAsync(
-                DiscordApiRoutes.GuildRolesRoute(guildId),
+                DiscordApiRoutes.GuildRoles(guildId),
                 JsonConvert.SerializeObject(args) ?? ""
             );
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordRolePacket>(response.Body);
         }
 
-        public async Task CreateReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+        public async Task CreateReactionAsync(
+            ulong channelId, 
+            ulong messageId, 
+            DiscordEmoji emoji)
         {
             var response = await RestClient.PutAsync(
-                DiscordApiRoutes.MessageReactionMeRoute(channelId, messageId, emoji)
+                DiscordApiRoutes.MessageReactionMe(channelId, messageId, emoji)
             );
             HandleErrors(response);
         }
 
-        public async Task DeleteChannelAsync(ulong channelId)
+        public async Task DeleteChannelAsync(
+            ulong channelId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.ChannelRoute(channelId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.Channel(channelId));
             HandleErrors(response);
         }
 
-        public async Task DeleteGuildAsync(ulong guildId)
+        public async Task DeleteGuildAsync(
+            ulong guildId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.GuildRoute(guildId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.Guild(guildId));
             HandleErrors(response);
         }
 
-        public async Task DeleteEmojiAsync(ulong guildId, ulong emojiId)
+        public async Task DeleteEmojiAsync(
+            ulong guildId, 
+            ulong emojiId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.GuildEmojiRoute(guildId, emojiId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.GuildEmoji(guildId, emojiId));
             HandleErrors(response);
         }
 
-        public async Task DeleteMessageAsync(ulong channelId, ulong messageId)
+        public async Task DeleteMessageAsync(
+            ulong channelId, 
+            ulong messageId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.ChannelMessageRoute(channelId, messageId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.ChannelMessage(channelId, messageId));
             HandleErrors(response);
         }
 
-        public async Task DeleteMessagesAsync(ulong channelId, ulong[] messageId)
+        public async Task DeleteMessagesAsync(
+            ulong channelId, 
+            params ulong[] messageId)
         {
-            var response = await RestClient.PostAsync(DiscordApiRoutes.ChannelBulkDeleteMessages(channelId), JsonConvert.SerializeObject(new ChannelBulkDeleteArgs(messageId)));
+            var response = await RestClient.PostAsync(
+                DiscordApiRoutes.ChannelBulkDeleteMessages(channelId), 
+                JsonConvert.SerializeObject(new ChannelBulkDeleteArgs(messageId)));
             HandleErrors(response);
         }
 
-        public async Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+        public async Task DeleteReactionAsync(
+            ulong channelId, 
+            ulong messageId, 
+            DiscordEmoji emoji)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.MessageReactionMeRoute(channelId, messageId, emoji));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.MessageReactionMe(channelId, messageId, emoji));
             HandleErrors(response);
         }
 
-        public async Task DeleteReactionAsync(ulong channelId, ulong messageId, DiscordEmoji emoji, ulong userId)
+        public async Task DeleteReactionAsync(
+            ulong channelId, 
+            ulong messageId, 
+            DiscordEmoji emoji, 
+            ulong userId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emoji, userId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.MessageReaction(channelId, messageId, emoji, userId));
             HandleErrors(response);
         }
 
-        public async Task DeleteReactionsAsync(ulong channelId, ulong messageId)
+        public async Task DeleteReactionsAsync(
+            ulong channelId, 
+            ulong messageId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.MessageReactionsRoute(channelId, messageId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.MessageReactions(channelId, messageId));
             HandleErrors(response);
         }
 
-        public async Task<DiscordEmoji> EditEmojiAsync(ulong guildId, ulong emojiId, EmojiModifyArgs args)
+        public async Task<DiscordEmoji> EditEmojiAsync(
+            ulong guildId, 
+            ulong emojiId, 
+            EmojiModifyArgs args)
         {
             var response = await RestClient.PatchAsync(
-                        DiscordApiRoutes.GuildEmojiRoute(guildId, emojiId),
-                        JsonConvert.SerializeObject(args, serializer)
-
+                DiscordApiRoutes.GuildEmoji(guildId, emojiId),
+                JsonConvert.SerializeObject(args, serializer)
             );
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
         }
 
-        public async Task<DiscordMessagePacket> EditMessageAsync(ulong channelId, ulong messageId, EditMessageArgs args)
+        public void Dispose()
+        {
+            RestClient.Dispose();
+        }
+
+        public async Task<DiscordMessagePacket> EditMessageAsync(
+            ulong channelId, 
+            ulong messageId, 
+            EditMessageArgs args)
         {
             var response = await RestClient.PatchAsync(
-                DiscordApiRoutes.ChannelMessageRoute(channelId, messageId),
+                DiscordApiRoutes.ChannelMessage(channelId, messageId),
                 JsonConvert.SerializeObject(args, serializer)
             );
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
         }
 
-        public async Task<DiscordRolePacket> EditRoleAsync(ulong guildId, DiscordRolePacket role)
+        public async Task<DiscordRolePacket> EditRoleAsync(
+            ulong guildId,
+            DiscordRolePacket role)
         {
             var response = await RestClient.PutAsync(
-                DiscordApiRoutes.GuildRoleRoute(guildId, role.Id),
+                DiscordApiRoutes.GuildRole(guildId, role.Id),
                 JsonConvert.SerializeObject(role)
             );
             HandleErrors(response);
@@ -178,115 +274,155 @@ namespace Miki.Discord.Rest
 
         public async Task<DiscordUserPacket> GetCurrentUserAsync()
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.UserMeRoute());
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.UserMe());
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordUserPacket>(response.Body);
         }
 
-        public async Task<DiscordChannelPacket> GetChannelAsync(ulong channelId)
+        public async Task<DiscordChannelPacket> GetChannelAsync(
+            ulong channelId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.ChannelRoute(channelId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.Channel(channelId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordChannelPacket>(response.Body);
         }
 
-        public async Task<List<DiscordChannelPacket>> GetChannelsAsync(ulong guildId)
+        public async Task<List<DiscordChannelPacket>> GetChannelsAsync(
+            ulong guildId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GuildChannelsRoute(guildId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.GuildChannels(guildId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<List<DiscordChannelPacket>>(response.Body);
         }
 
-        public async Task<DiscordEmoji> GetEmojiAsync(ulong guildId, ulong emojiId)
+        public async Task<DiscordEmoji> GetEmojiAsync(
+            ulong guildId, 
+            ulong emojiId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GuildEmojiRoute(guildId, emojiId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.GuildEmoji(guildId, emojiId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
         }
 
-        public async Task<DiscordEmoji[]> GetEmojisAsync(ulong guildId)
+        public async Task<DiscordEmoji[]> GetEmojisAsync(
+            ulong guildId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GuildEmojiRoute(guildId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.GuildEmoji(guildId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordEmoji[]>(response.Body);
         }
 
-        public async Task<DiscordGuildPacket> GetGuildAsync(ulong guildId)
+        public async Task<DiscordGuildPacket> GetGuildAsync(
+            ulong guildId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GuildRoute(guildId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.Guild(guildId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordGuildPacket>(response.Body);
         }
 
-        public async Task<DiscordGuildMemberPacket> GetGuildUserAsync(ulong userId, ulong guildId)
+        public async Task<DiscordGuildMemberPacket> GetGuildUserAsync(
+            ulong userId, 
+            ulong guildId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GuildMemberRoute(guildId, userId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.GuildMember(guildId, userId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordGuildMemberPacket>(response.Body);
         }
 
-        public async Task<DiscordMessagePacket> GetMessageAsync(ulong channelId, ulong messageId)
+        public async Task<DiscordMessagePacket> GetMessageAsync(
+            ulong channelId, 
+            ulong messageId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.ChannelMessageRoute(channelId, messageId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.ChannelMessage(channelId, messageId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
         }
 
-        public async Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100)
+        public async Task<List<DiscordMessagePacket>> GetMessagesAsync(
+            ulong channelId, 
+            int amount = 100)
         {
             QueryString qs = new QueryString();
 
             qs.Add("limit", amount);
 
-            var response = await RestClient.GetAsync(DiscordApiRoutes.ChannelMessagesRoute(channelId) + qs.Query);
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.ChannelMessages(channelId) + qs.Query);
             HandleErrors(response);
             return JsonConvert.DeserializeObject<List<DiscordMessagePacket>>(response.Body);
         }
 
-        public async Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+        public async Task<DiscordUserPacket[]> GetReactionsAsync(
+            ulong channelId, 
+            ulong messageId, 
+            DiscordEmoji emoji)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.MessageReactionRoute(channelId, messageId, emoji));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.MessageReaction(channelId, messageId, emoji));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordUserPacket[]>(response.Body);
         }
 
-        public async Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId)
+        public async Task<DiscordRolePacket> GetRoleAsync(
+            ulong roleId, 
+            ulong guildId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GuildRoleRoute(guildId, roleId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.GuildRole(guildId, roleId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordRolePacket>(response.Body);
         }
 
-        public async Task<List<DiscordRolePacket>> GetRolesAsync(ulong guildId)
+        public async Task<List<DiscordRolePacket>> GetRolesAsync(
+            ulong guildId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GuildRolesRoute(guildId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.GuildRoles(guildId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<List<DiscordRolePacket>>(response.Body);
         }
 
         public async Task<DiscordUserPacket> GetUserAsync(ulong userId)
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.UserRoute(userId));
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.User(userId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordUserPacket>(response.Body);
         }
 
-        public async Task ModifyGuildMemberAsync(ulong guildId, ulong userId, ModifyGuildMemberArgs packet)
+        public async Task ModifyGuildMemberAsync(
+            ulong guildId, 
+            ulong userId, 
+            ModifyGuildMemberArgs packet)
         {
             var response = await RestClient.PatchAsync(
-                DiscordApiRoutes.GuildMemberRoute(guildId, userId),
+                DiscordApiRoutes.GuildMember(guildId, userId),
                 JsonConvert.SerializeObject(packet, serializer)
             );
             HandleErrors(response);
         }
 
-        public async Task RemoveGuildBanAsync(ulong guildId, ulong userId)
+        public async Task RemoveGuildBanAsync(
+            ulong guildId, 
+            ulong userId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.GuildBanRoute(guildId, userId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.GuildBan(guildId, userId));
             HandleErrors(response);
         }
 
-        public async Task RemoveGuildMemberAsync(ulong guildId, ulong userId, string reason = null)
+        public async Task RemoveGuildMemberAsync(
+            ulong guildId, 
+            ulong userId, 
+            string reason = null)
         {
             QueryString qs = new QueryString();
 
@@ -295,17 +431,26 @@ namespace Miki.Discord.Rest
                 qs.Add("reason", reason);
             }
 
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoute(guildId, userId) + qs.Query);
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.GuildMember(guildId, userId) + qs.Query);
             HandleErrors(response);
         }
 
-        public async Task RemoveGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
+        public async Task RemoveGuildMemberRoleAsync(
+            ulong guildId, 
+            ulong userId, 
+            ulong roleId)
         {
-            var response = await RestClient.DeleteAsync(DiscordApiRoutes.GuildMemberRoleRoute(guildId, userId, roleId));
+            var response = await RestClient.DeleteAsync(
+                DiscordApiRoutes.GuildMemberRole(guildId, userId, roleId));
             HandleErrors(response);
         }
 
-        public async Task<DiscordMessagePacket> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs args, bool toChannel = true)
+        public async Task<DiscordMessagePacket> SendFileAsync(
+            ulong channelId, 
+            Stream stream, 
+            string fileName, 
+            MessageArgs args)
         {
             if (stream == null)
             {
@@ -344,7 +489,7 @@ namespace Miki.Discord.Rest
             image.Headers.Add("Content-Disposition", "form-data; name=\"file\"; filename=\"" + fileName + "\"");
 
             var response = await RestClient.PostMultipartAsync(
-                DiscordApiRoutes.ChannelMessagesRoute(channelId),
+                DiscordApiRoutes.ChannelMessages(channelId),
                 items.ToArray()
             );
             HandleErrors(response);
@@ -355,7 +500,7 @@ namespace Miki.Discord.Rest
         {
             string json = JsonConvert.SerializeObject(args, serializer);
             {
-                var response = await RestClient.PostAsync(DiscordApiRoutes.ChannelMessagesRoute(channelId), json);
+                var response = await RestClient.PostAsync(DiscordApiRoutes.ChannelMessages(channelId), json);
                 HandleErrors(response);
                 return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
             }
@@ -363,20 +508,20 @@ namespace Miki.Discord.Rest
 
         public async Task TriggerTypingAsync(ulong channelId)
         {
-            var response = await RestClient.PostAsync(DiscordApiRoutes.ChannelTypingRoute(channelId));
+            var response = await RestClient.PostAsync(DiscordApiRoutes.ChannelTyping(channelId));
             HandleErrors(response);
         }
 
         public async Task<GatewayConnectionPacket> GetGatewayAsync()
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.GatewayRoute());
+            var response = await RestClient.GetAsync(DiscordApiRoutes.Gateway());
             HandleErrors(response);
             return JsonConvert.DeserializeObject<GatewayConnectionPacket>(response.Body);
         }
 
         public async Task<GatewayConnectionPacket> GetGatewayBotAsync()
         {
-            var response = await RestClient.GetAsync(DiscordApiRoutes.BotGatewayRoute());
+            var response = await RestClient.GetAsync(DiscordApiRoutes.BotGateway());
             HandleErrors(response);
             return JsonConvert.DeserializeObject<GatewayConnectionPacket>(response.Body);
         }

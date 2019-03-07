@@ -6,30 +6,12 @@ namespace Miki.Discord
 {
 	public class EmbedBuilder
 	{
-		private DiscordEmbed embed = new DiscordEmbed();
+		private readonly DiscordEmbed embed = new DiscordEmbed();
 
-		public string Title
+        public EmbedAuthor Author
 		{
-			get
-			{
-				return embed.Title;
-			}
-			set
-			{
-				embed.Title = value;
-			}
-		}
-
-		public string Description
-		{
-			get
-			{
-				return embed.Description;
-			}
-			set
-			{
-				embed.Description = value;
-			}
+			get => embed.Author;
+			set => embed.Author = value;
 		}
 
 		public Color Color
@@ -38,16 +20,10 @@ namespace Miki.Discord
 			set => embed.Color = value.Value;
 		}
 
-		public string ThumbnailUrl
+        public string Description
 		{
-			get => embed.Thumbnail?.Url ?? null;
-			set => embed.Thumbnail = new EmbedImage() { Url = value };
-		}
-
-		public string ImageUrl
-		{
-			get => embed.Image?.Url ?? null;
-			set => embed.Image = new EmbedImage() { Url = value };
+			get => embed.Description;
+			set => embed.Description = value;
 		}
 
 		public EmbedFooter Footer
@@ -56,10 +32,22 @@ namespace Miki.Discord
 			set => embed.Footer = value;
 		}
 
-		public EmbedAuthor Author
+        public string ImageUrl
 		{
-			get => embed.Author;
-			set => embed.Author = value;
+			get => embed.Image?.Url ?? null;
+			set => embed.Image = new EmbedImage() { Url = value };
+		}
+
+        public string ThumbnailUrl
+        {
+            get => embed.Thumbnail?.Url ?? null;
+            set => embed.Thumbnail = new EmbedImage() { Url = value };
+        }
+
+        public string Title
+		{
+			get => embed.Title;
+			set => embed.Title = value;
 		}
 
 		public EmbedBuilder AddField(string title, object content, bool isInline = false)
@@ -80,9 +68,7 @@ namespace Miki.Discord
 		}
 
 		public EmbedBuilder AddInlineField(string title, string content)
-		{
-			return AddField(title, content, true);
-		}
+            => AddField(title, content, true);
 
 		public EmbedBuilder SetAuthor(string name, string iconUrl = null, string url = null)
 		{
