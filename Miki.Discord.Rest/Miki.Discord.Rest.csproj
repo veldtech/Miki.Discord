@@ -16,8 +16,4 @@
     <PackageReference Include="Miki.Net.Http" Version="2.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
-  </ItemGroup>
-
 </Project>

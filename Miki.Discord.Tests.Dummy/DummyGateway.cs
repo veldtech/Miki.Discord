@@ -48,7 +48,7 @@ namespace Miki.Discord.Tests.Dummy
             remove { }
         }
 
-        event Func<GatewayMessage, Task> IGateway.OnPacketReceived
+        event Func<GatewayMessage, ArraySegment<byte>, Task> IGateway.OnPacketReceived
         {
             add { }
             remove { }
