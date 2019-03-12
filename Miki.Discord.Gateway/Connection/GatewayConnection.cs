@@ -31,8 +31,7 @@ namespace Miki.Discord.Gateway.Connection
 	{
         public event Func<Task> OnConnect;
         public event Func<Exception, Task> OnDisconnect; 
-        public event Func<GatewayMessage, Task> OnPacketReceived;
-        public event Func<ArraySegment<byte>, Task> OnRawPacketReceived;
+        public event Func<GatewayMessage, ArraySegment<byte>, Task> OnPacketReceived;
 
         public ConnectionStatus ConnectionStatus { get; private set; } = ConnectionStatus.Disconnected;
         public int ShardId => _configuration.ShardId;
@@ -156,7 +155,7 @@ namespace Miki.Discord.Gateway.Connection
             {
                 while (!_connectionToken.IsCancellationRequested)
                 {
-                    var response = await ReceivePacketAsync();
+                    var (response, bytes) = await ReceivePacketAsync();
                     if(response == null)
                     {
                         continue;
@@ -188,7 +187,7 @@ namespace Miki.Discord.Gateway.Connection
                             Log.Debug($"    <= {response.EventName.ToString()}");
                             if (OnPacketReceived != null)
                             {
-                                await OnPacketReceived(response);
+                                await OnPacketReceived(response, new ArraySegment<byte>(bytes));
                             }
                         } break;
 
@@ -399,7 +398,7 @@ namespace Miki.Discord.Gateway.Connection
                 .Build();
 
             await _webSocketClient.ConnectAsync(new Uri(connectionUri), _connectionToken.Token);
-            var response = await ReceivePacketAsync();
+            var (response, _) = await ReceivePacketAsync();
             return (response.Data as JToken).ToObject<GatewayHelloPacket>();
         }
 
@@ -446,7 +445,7 @@ namespace Miki.Discord.Gateway.Connection
                 && b[count - 1] == '\xff';
         }
 
-		private async Task<GatewayMessage> ReceivePacketAsync()
+		private async Task<(GatewayMessage, byte[])> ReceivePacketAsync()
 		{
 			var response = await ReceivePacketBytesAsync();
             using (var memoryStream = new MemoryStream())
@@ -478,17 +477,15 @@ namespace Miki.Discord.Gateway.Connection
 
                 if (_configuration.Encoding == GatewayEncoding.Json)
                 {
-                    string test = Encoding.UTF8.GetString(memoryStream.ToArray());
-
                     using (var stringReader = new StreamReader(memoryStream))
                     using (var jsonReader = new JsonTextReader(stringReader))
                     {
                         var msg = _serializer.Deserialize<GatewayMessage>(jsonReader);
                         if (msg == null)
                         {
-                            return null;
+                            return (null, null);
                         }
-                        return msg;
+                        return (msg, memoryStream.GetBuffer());
                     }
                 }
                 else

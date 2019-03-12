@@ -42,7 +42,6 @@ namespace Miki.Discord.Gateway
 			}
 
 			_connection.OnPacketReceived += OnPacketReceivedAsync;
-            _connection.OnRawPacketReceived += OnRawPacketReceived;
 			await _connection.StartAsync();
 			_isRunning = true;
 		}
@@ -55,13 +54,12 @@ namespace Miki.Discord.Gateway
 			}
 
 			_connection.OnPacketReceived -= OnPacketReceivedAsync;
-            _connection.OnRawPacketReceived -= OnRawPacketReceived;
 			_tokenSource.Cancel();
 			await _connection.StopAsync();
 			_isRunning = false;
 		}
 
-		public async Task OnPacketReceivedAsync(GatewayMessage text)
+		public async Task OnPacketReceivedAsync(GatewayMessage text, ArraySegment<byte> _)
 		{
 			if (text.OpCode != GatewayOpcode.Dispatch)
 			{
