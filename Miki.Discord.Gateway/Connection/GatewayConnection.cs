@@ -162,9 +162,6 @@ namespace Miki.Discord.Gateway.Connection
                         continue;
                     }
 
-                    Log.Debug($"<= {response.OpCode.ToString()}");
-                    Log.Trace($"    packet json: {JsonConvert.SerializeObject(response.Data)}");
-
                     switch (response.OpCode)
                     {
                         case GatewayOpcode.Dispatch:
@@ -287,7 +284,7 @@ namespace Miki.Discord.Gateway.Connection
                 {
                     if(!await _heartbeatLock.WaitAsync(latency, _connectionToken.Token))
                     {
-                        Task.Run(() => ReconnectAsync());
+                        var _ = Task.Run(() => ReconnectAsync());
                         break;
                     }
 
