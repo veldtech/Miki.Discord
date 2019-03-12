@@ -162,9 +162,6 @@ namespace Miki.Discord.Gateway.Connection
                         continue;
                     }
 
-                    Log.Debug($"<= {response.OpCode.ToString()}");
-                    Log.Trace($"    packet json: {JsonConvert.SerializeObject(response.Data)}");
-
                     switch (response.OpCode)
                     {
                         case GatewayOpcode.Dispatch:

@@ -174,7 +174,7 @@ namespace Miki.Discord.Gateway
 
                 default:
                 {
-                    Log.Warning($"{text.EventName} is not implemented.");
+                    Log.Debug($"{text.EventName} is not implemented.");
                 } break;
 			}
 		}
