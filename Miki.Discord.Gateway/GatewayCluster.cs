@@ -26,7 +26,7 @@ namespace Miki.Discord.Gateway
             {
                 Shards.Add(i, new GatewayShard(new GatewayProperties
                 {
-                    WebSocketClient = properties.WebSocketClient,
+                    WebSocketClientFactory = properties.WebSocketClientFactory,
                     Encoding = properties.Encoding,
                     Compressed = properties.Compressed,
                     Ratelimiter = properties.Ratelimiter,
@@ -53,7 +53,7 @@ namespace Miki.Discord.Gateway
             {
                 Shards.Add(i, new GatewayShard(new GatewayProperties
                 {
-                    WebSocketClient = properties.WebSocketClient,
+                    WebSocketClientFactory = properties.WebSocketClientFactory,
                     Encoding = properties.Encoding,
                     Compressed = properties.Compressed,
                     Ratelimiter = properties.Ratelimiter,
@@ -112,7 +112,8 @@ namespace Miki.Discord.Gateway
                 shard.OnPacketReceived += OnPacketReceived;
                 shard.OnRawPacketReceived += OnRawPacketReceived;
 
-                await shard.StartAsync();
+                await shard.StartAsync()
+                    .ConfigureAwait(false);
             }
         }
 
