@@ -76,9 +76,7 @@ namespace Miki.Discord.Gateway.Connection
             _deflateStream = new DeflateStream(_compressedStream, CompressionMode.Decompress);
             _serializer = new JsonSerializer();
 
-			_webSocketClient = configuration.WebSocketClient 
-                ?? new BasicWebSocketClient();
-
+            _webSocketClient = configuration.WebSocketClientFactory();
 			_configuration = configuration;
 		}
 
@@ -103,6 +101,7 @@ namespace Miki.Discord.Gateway.Connection
                 ConnectionStatus = ConnectionStatus.Identifying;
                 await IdentifyAsync();
             }
+
             _heartbeatTask = HeartbeatAsync(hello.HeartbeatInterval);
 			_runTask = RunAsync();
             ConnectionStatus = ConnectionStatus.Connected;
@@ -156,7 +155,8 @@ namespace Miki.Discord.Gateway.Connection
             {
                 while (!_connectionToken.IsCancellationRequested)
                 {
-                    var response = await ReceivePacketAsync();
+                    var response = await ReceivePacketAsync()
+                        .ConfigureAwait(false);
                     if(response == null)
                     {
                         continue;
@@ -252,7 +252,8 @@ namespace Miki.Discord.Gateway.Connection
             {
                 default:
                 {
-                    await ReconnectAsync();
+                    await ReconnectAsync()
+                        .ConfigureAwait(false);
                 } break;
 
                 case 4000: // unknown error
@@ -266,13 +267,15 @@ namespace Miki.Discord.Gateway.Connection
                 case 4009: // session timeout
                 {
                     _sequenceNumber = null;
-                    await ReconnectAsync();
+                    await ReconnectAsync()
+                        .ConfigureAwait(false);
                 } break;
 
                 case 4010: // invalid shard
                 case 4011: // sharding required
                 {
-                    await CloseAsync();
+                    await CloseAsync()
+                        .ConfigureAwait(false);
                     throw new GatewayException("Websocket returned error that should not be resumed, nor reconnected.", w);
                 };
             }
@@ -287,13 +290,15 @@ namespace Miki.Discord.Gateway.Connection
                 {
                     if(!await _heartbeatLock.WaitAsync(latency, _connectionToken.Token))
                     {
-                        Task.Run(() => ReconnectAsync());
+                        var _ = Task.Run(() => ReconnectAsync());
                         break;
                     }
 
-                    await SendHeartbeatAsync();
+                    await SendHeartbeatAsync()
+                        .ConfigureAwait(false);
 
-                    await Task.Delay(latency, _connectionToken.Token);
+                    await Task.Delay(latency, _connectionToken.Token)
+                        .ConfigureAwait(false);
                 }
                 catch(Exception e)
                 {
@@ -313,44 +318,52 @@ namespace Miki.Discord.Gateway.Connection
                 Shard = new int[] { _configuration.ShardId, _configuration.ShardCount }
             };
 
-            var canIdentify = await _configuration.Ratelimiter.CanIdentifyAsync();
+            var canIdentify = await _configuration.Ratelimiter.CanIdentifyAsync()
+                .ConfigureAwait(false);
             while (true)
             {
                 if (canIdentify)
                 {
-                    await SendCommandAsync(GatewayOpcode.Identify, identifyPacket, _connectionToken.Token);
+                    await SendCommandAsync(GatewayOpcode.Identify, identifyPacket, _connectionToken.Token)
+                        .ConfigureAwait(false);
                     break;
                 }
                 else
                 {
                     Log.Debug("Could not identify yet, retrying in 5 seconds.");
-                    await Task.Delay(5000);
-                    canIdentify = await _configuration.Ratelimiter.CanIdentifyAsync();
+                    await Task.Delay(5000)
+                        .ConfigureAwait(false);
+                    canIdentify = await _configuration.Ratelimiter.CanIdentifyAsync()
+                        .ConfigureAwait(false);
                 }
             }
 		}
 
         private async Task ResumeAsync(GatewayResumePacket packet)
         {
-            await SendCommandAsync(GatewayOpcode.Resume, packet, _connectionToken.Token);
+            await SendCommandAsync(GatewayOpcode.Resume, packet, _connectionToken.Token)
+                .ConfigureAwait(false);
         }
 
         public async Task ReconnectAsync(int initialDelay = 1000, bool shouldIncrease = true)
         {
             var delay = initialDelay;
             bool connected = false;
-            await StopAsync();
+            await StopAsync()
+                .ConfigureAwait(false);
             while (!connected)
             {
                 try
                 {
-                    await StartAsync();
+                    await StartAsync()
+                        .ConfigureAwait(false);
                     connected = true;
                 }
                 catch (Exception e)
                 {
                     Log.Error($"Reconnection failed with reason: {e.Message}, will retry in {delay/1000} seconds");
-                    await Task.Delay(delay);
+                    await Task.Delay(delay)
+                        .ConfigureAwait(false);
                     if (shouldIncrease)
                     {
                         delay += initialDelay;
@@ -368,7 +381,8 @@ namespace Miki.Discord.Gateway.Connection
                 EventName = null,
                 SequenceNumber = null
             };
-            await SendCommandAsync(msg, token);
+            await SendCommandAsync(msg, token)
+                .ConfigureAwait(false);
 		}
         private async Task SendCommandAsync(GatewayMessage msg, CancellationToken token)
         {
@@ -377,7 +391,8 @@ namespace Miki.Discord.Gateway.Connection
             Log.Debug($"=> {msg.OpCode.ToString()}");
             Log.Trace($"    json packet: {json}");
 
-            await _webSocketClient.SendAsync(json, token);
+            await _webSocketClient.SendAsync(json, token)
+                .ConfigureAwait(false);
         }
 
         private async Task SendHeartbeatAsync()
@@ -387,7 +402,8 @@ namespace Miki.Discord.Gateway.Connection
                 OpCode = GatewayOpcode.Heartbeat,
                 Data = _sequenceNumber
             };
-            await SendCommandAsync(msg, _connectionToken.Token);
+            await SendCommandAsync(msg, _connectionToken.Token)
+                .ConfigureAwait(false);
         }
 
         private async Task<GatewayHelloPacket> InitGateway()
@@ -420,7 +436,8 @@ namespace Miki.Discord.Gateway.Connection
 					throw new OperationCanceledException();
 				}
 
-				response = await _webSocketClient.ReceiveAsync(new ArraySegment<byte>(_receivePacket), _connectionToken.Token);
+				response = await _webSocketClient.ReceiveAsync(new ArraySegment<byte>(_receivePacket), _connectionToken.Token)
+                    .ConfigureAwait(false);
 				size += response.Count;
 
 				if (response.Count + _receiveStream.Position > _receiveStream.Capacity)
@@ -428,7 +445,8 @@ namespace Miki.Discord.Gateway.Connection
 					_receiveStream.Capacity = _receiveStream.Capacity * 2;
 				}
 
-				await _receiveStream.WriteAsync(_receivePacket, 0, response.Count, _connectionToken.Token);
+				await _receiveStream.WriteAsync(_receivePacket, 0, response.Count, _connectionToken.Token)
+                    .ConfigureAwait(false);
 			}
 			while (!response.EndOfMessage);
 
@@ -451,7 +469,8 @@ namespace Miki.Discord.Gateway.Connection
 
 		private async Task<GatewayMessage> ReceivePacketAsync()
 		{
-			var response = await ReceivePacketBytesAsync();
+			var response = await ReceivePacketBytesAsync()
+                .ConfigureAwait(false);
             using (var memoryStream = new MemoryStream())
             {
                 if (_configuration.Compressed)

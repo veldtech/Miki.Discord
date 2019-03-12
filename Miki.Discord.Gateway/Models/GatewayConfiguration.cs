@@ -2,6 +2,7 @@
 using Miki.Discord.Gateway.Connection;
 using Miki.Discord.Gateway.Ratelimiting;
 using Miki.Net.WebSockets;
+using System;
 
 namespace Miki.Discord.Gateway
 {
@@ -43,7 +44,7 @@ namespace Miki.Discord.Gateway
         /// </summary>
 		public int ShardId;
 
-        public IWebSocketClient WebSocketClient = new BasicWebSocketClient();
+        public Func<IWebSocketClient> WebSocketClientFactory = () => new BasicWebSocketClient();
 
         public IGatewayRatelimiter Ratelimiter = new DefaultGatewayRatelimiter();
 
