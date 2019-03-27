@@ -1,22 +1,22 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Events
 {
 	public class ModifyGuildMemberArgs
 	{
-		[JsonProperty("nick")]
+		[DataMember(Name ="nick")]
 		public string Nickname;
 
-		[JsonProperty("roles")]
+		[DataMember(Name ="roles")]
 		public ulong[] RoleIds;
 
-		[JsonProperty("mute")]
+		[DataMember(Name ="mute")]
 		public bool? Muted;
 
-		[JsonProperty("deaf")]
+		[DataMember(Name ="deaf")]
 		public bool? Deafened;
 
-		[JsonProperty("channel_id")]
+		[DataMember(Name ="channel_id")]
 		public ulong? MoveToChannelId;
 	}
 }

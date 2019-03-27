@@ -1,39 +1,41 @@
 ﻿using Miki.Discord.Common.Packets;
-using Newtonsoft.Json;
 using System;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
+    [DataContract]
 	public class GatewayIdentifyPacket
 	{
-		[JsonProperty("token")]
+        [DataMember(Name = "token")]
 		public string Token;
 
-		[JsonProperty("properties")]
-		public GatewayIdentifyConnectionProperties ConnectionProperties = new GatewayIdentifyConnectionProperties();
+        [DataMember(Name = "properties")]
+        public GatewayIdentifyConnectionProperties ConnectionProperties = new GatewayIdentifyConnectionProperties();
 
-		[JsonProperty("compress")]
-		public bool Compressed;
+        [DataMember(Name = "compress")]
+        public bool Compressed;
 
-		[JsonProperty("large_threshold")]
-		public int LargeThreshold;
+        [DataMember(Name = "large_threshold")]
+        public int LargeThreshold;
 
-		[JsonProperty("presence")]
-		public DiscordStatus Presence;
+        [DataMember(Name = "presence")]
+        public DiscordStatus Presence;
 
-		[JsonProperty("shard")]
-		public int[] Shard;
+        [DataMember(Name = "shard")]
+        public int[] Shard;
 	}
 
-	public class GatewayIdentifyConnectionProperties
+    [DataContract]
+    public class GatewayIdentifyConnectionProperties
 	{
-		[JsonProperty("$os")]
-		public string OperatingSystem = Environment.OSVersion.ToString();
+        [DataMember(Name = "$os")]
+        public string OperatingSystem = Environment.OSVersion.ToString();
 
-		[JsonProperty("$browser")]
-		public string Browser = "Miki.Discord";
+        [DataMember(Name = "$browser")]
+        public string Browser = "Miki.Discord";
 
-		[JsonProperty("$device")]
-		public string Device = "Miki.Discord";
+        [DataMember(Name = "$device")]
+        public string Device = "Miki.Discord";
 	}
 }

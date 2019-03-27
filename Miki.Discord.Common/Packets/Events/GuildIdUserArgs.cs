@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
 	public class GuildIdUserArgs
 	{
-		[JsonProperty("user")]
+		[DataMember(Name ="user")]
 		public DiscordUserPacket user;
 
-		[JsonProperty("guild_id")]
+		[DataMember(Name ="guild_id")]
 		public ulong guildId;
 	}
 }

@@ -1,43 +1,43 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
 	[Serializable]
 	public class DiscordMessagePacket
 	{
-		[JsonProperty("id")]
+		[DataMember(Name ="id")]
 		public ulong Id { get; set; }
 
-		[JsonProperty("type")]
+		[DataMember(Name ="type")]
 		public MessageType Type { get; set; }
 
-		[JsonProperty("content")]
+		[DataMember(Name ="content")]
 		public string Content { get; set; }
 
-		[JsonProperty("channel_id")]
+		[DataMember(Name ="channel_id")]
 		public ulong ChannelId { get; set; }
 
-		[JsonProperty("author")]
+		[DataMember(Name ="author")]
 		public DiscordUserPacket Author { get; set; }
 
-		[JsonProperty("timestamp")]
+		[DataMember(Name ="timestamp")]
 		public DateTimeOffset Timestamp { get; set; }
 
-		[JsonProperty("tts")]
+		[DataMember(Name ="tts")]
 		public bool IsTTS { get; set; }
 
-		[JsonProperty("mention_everyone")]
+		[DataMember(Name ="mention_everyone")]
 		public bool MentionsEveryone { get; set; }
 
-		[JsonProperty("mentions")]
+		[DataMember(Name ="mentions")]
 		public List<DiscordUserPacket> Mentions { get; set; }
 
-        [JsonProperty("attachments")]
+        [DataMember(Name ="attachments")]
         public List<DiscordAttachmentPacket> Attachments { get; set; }
 
-		[JsonProperty("guild_id")]
+		[DataMember(Name ="guild_id")]
 		public ulong? GuildId { get; set; }
 	}
 

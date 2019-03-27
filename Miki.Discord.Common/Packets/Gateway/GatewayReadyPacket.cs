@@ -1,30 +1,30 @@
 ﻿using Miki.Discord.Common.Packets;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
 	public class GatewayReadyPacket
 	{
-		[JsonProperty("v")]
-		public int ProtocolVersion;
+        [DataMember(Name = "v")]
+        public int ProtocolVersion;
 
-		[JsonProperty("user")]
-		public DiscordUserPacket CurrentUser;
+        [DataMember(Name = "user")]
+        public DiscordUserPacket CurrentUser;
 
-		[JsonProperty("private_channels")]
-		public DiscordChannelPacket[] PrivateChannels;
+        [DataMember(Name = "private_channels")]
+        public DiscordChannelPacket[] PrivateChannels;
 
-		[JsonProperty("guilds")]
-		public DiscordGuildPacket[] Guilds;
+        [DataMember(Name = "guilds")]
+        public DiscordGuildPacket[] Guilds;
 
-		[JsonProperty("session_id")]
-		public string SessionId;
+        [DataMember(Name = "session_id")]
+        public string SessionId;
 
-		[JsonProperty("_trace")]
-		public string[] TraceGuilds;
+        [DataMember(Name = "_trace")]
+        public string[] TraceGuilds;
 
-		[JsonProperty("shard")]
-		public int[] Shard;
+        [DataMember(Name = "shard")]
+        public int[] Shard;
 
 		public int CurrentShard
 			=> Shard[0];

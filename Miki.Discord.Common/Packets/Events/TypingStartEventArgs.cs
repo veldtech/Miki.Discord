@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets.Events
 {
 	public class TypingStartEventArgs
 	{
-		[JsonProperty("channel_id")]
+		[DataMember(Name ="channel_id")]
 		public ulong channelId;
 
-		[JsonProperty("guild_id")]
+		[DataMember(Name ="guild_id")]
 		public ulong guildId;
 
-		[JsonProperty("member")]
+		[DataMember(Name ="member")]
 		public DiscordGuildMemberPacket member;
 	}
 }

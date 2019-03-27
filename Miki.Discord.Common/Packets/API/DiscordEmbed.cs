@@ -1,71 +1,71 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
 	public class DiscordEmbed
 	{
-		[JsonProperty("title")]
+		[DataMember(Name ="title")]
 		public string Title { get; set; }
 
-		[JsonProperty("description")]
+		[DataMember(Name ="description")]
 		public string Description { get; set; }
 
-		[JsonProperty("color")]
+		[DataMember(Name ="color")]
 		public uint? Color { get; set; } = null;
 
-		[JsonProperty("fields")]
+		[DataMember(Name ="fields")]
 		public List<EmbedField> Fields { get; set; }
 
-		[JsonProperty("author")]
+		[DataMember(Name ="author")]
 		public EmbedAuthor Author;
 
-		[JsonProperty("footer")]
+		[DataMember(Name ="footer")]
 		public EmbedFooter Footer;
 
-		[JsonProperty("thumbnail")]
+		[DataMember(Name ="thumbnail")]
 		public EmbedImage Thumbnail;
 
-		[JsonProperty("image")]
+		[DataMember(Name ="image")]
 		public EmbedImage Image;
 	}
 
 	public class EmbedAuthor
 	{
-		[JsonProperty("name")]
+		[DataMember(Name ="name")]
 		public string Name { get; set; }
 
-		[JsonProperty("icon_url")]
+		[DataMember(Name ="icon_url")]
 		public string IconUrl { get; set; }
 
-		[JsonProperty("url")]
+		[DataMember(Name ="url")]
 		public string Url { get; set; }
 	}
 
 	public class EmbedFooter
 	{
-		[JsonProperty("icon_url")]
+		[DataMember(Name ="icon_url")]
 		public string IconUrl { get; set; }
 
-		[JsonProperty("text")]
+		[DataMember(Name ="text")]
 		public string Text { get; set; }
 	}
 
 	public class EmbedImage
 	{
-		[JsonProperty("url")]
+		[DataMember(Name ="url")]
 		public string Url { get; set; }
 	}
 
 	public class EmbedField
 	{
-		[JsonProperty("name")]
+		[DataMember(Name ="name")]
 		public string Title { get; set; }
 
-		[JsonProperty("value")]
+		[DataMember(Name ="value")]
 		public string Content { get; set; }
 
-		[JsonProperty("inline")]
+		[DataMember(Name ="inline")]
 		public bool Inline { get; set; } = false;
 	}
 }

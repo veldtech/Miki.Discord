@@ -1,14 +1,14 @@
 ﻿using Miki.Discord.Common.Packets;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Events
 {
 	public class RoleEventArgs
 	{
-		[JsonProperty("guild_id")]
+		[DataMember(Name ="guild_id")]
 		public ulong GuildId;
 
-		[JsonProperty("role")]
+		[DataMember(Name ="role")]
 		public DiscordRolePacket Role;
 	}
 }

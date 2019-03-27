@@ -1,6 +1,6 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using ProtoBuf;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
@@ -9,42 +9,42 @@ namespace Miki.Discord.Common.Packets
 	public class DiscordRolePacket
 	{
 		[ProtoMember(1)]
-		[JsonProperty("id")]
+		[DataMember(Name ="id")]
 		[Key(0)]
 		public ulong Id;
 
 		[ProtoMember(2)]
-		[JsonProperty("name")]
+		[DataMember(Name ="name")]
 		[Key(1)]
 		public string Name;
 
 		[ProtoMember(3)]
-		[JsonProperty("color")]
+		[DataMember(Name ="color")]
 		[Key(2)]
 		public int Color;
 
 		[ProtoMember(4)]
-		[JsonProperty("hoist")]
+		[DataMember(Name ="hoist")]
 		[Key(3)]
 		public bool IsHoisted;
 
 		[ProtoMember(5)]
-		[JsonProperty("position")]
+		[DataMember(Name ="position")]
 		[Key(4)]
 		public int Position;
 
 		[ProtoMember(6)]
-		[JsonProperty("permissions")]
+		[DataMember(Name ="permissions")]
 		[Key(5)]
 		public int Permissions;
 
 		[ProtoMember(7)]
-		[JsonProperty("managed")]
+		[DataMember(Name ="managed")]
 		[Key(6)]
 		public bool Managed;
 
 		[ProtoMember(8)]
-		[JsonProperty("mentionable")]
+		[DataMember(Name ="mentionable")]
 		[Key(7)]
 		public bool Mentionable;
 	}

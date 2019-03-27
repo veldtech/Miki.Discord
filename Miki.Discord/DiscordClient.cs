@@ -96,7 +96,6 @@ namespace Miki.Discord
 		public async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
 		{
 			var channel = await GetChannelPacketAsync(id, guildId);
-
 			return ResolveChannel(channel);
 		}
 

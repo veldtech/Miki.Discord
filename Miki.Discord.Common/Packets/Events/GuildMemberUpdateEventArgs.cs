@@ -1,20 +1,20 @@
 ﻿using Miki.Discord.Common.Packets;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Events
 {
 	public class GuildMemberUpdateEventArgs
 	{
-		[JsonProperty("guild_id")]
+		[DataMember(Name ="guild_id")]
 		public ulong GuildId;
 
-		[JsonProperty("roles")]
+		[DataMember(Name ="roles")]
 		public ulong[] RoleIds;
 
-		[JsonProperty("user")]
+		[DataMember(Name ="user")]
 		public DiscordUserPacket User;
 
-		[JsonProperty("nick")]
+		[DataMember(Name ="nick")]
 		public string Nickname;
 	}
 }

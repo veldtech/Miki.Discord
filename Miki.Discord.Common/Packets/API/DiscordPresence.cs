@@ -1,25 +1,25 @@
 ﻿using Miki.Discord.Common.Packets;
-using Newtonsoft.Json;
 using ProtoBuf;
 using System;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
 	[ProtoContract]
 	public class DiscordPresence : IDiscordPresence
 	{
-		[JsonProperty("game")]
+		[DataMember(Name ="game")]
 		[ProtoMember(1)]
 		public Activity Activity { get; private set; }
 
-		[JsonProperty("status")]
+		[DataMember(Name ="status")]
 		[ProtoMember(2)]
 		public UserStatus Status { get; private set; }
 
-		[JsonProperty("since")]
+		[DataMember(Name ="since")]
 		public long Since { get; private set; }
 
-		[JsonProperty("afk")]
+		[DataMember(Name ="afk")]
 		public bool IsAFK { get; private set; }
 
 		public DiscordPresence()

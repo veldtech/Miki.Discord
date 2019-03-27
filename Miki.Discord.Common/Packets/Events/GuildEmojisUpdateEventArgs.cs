@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets.Events
 {
 	public class GuildEmojisUpdateEventArgs
 	{
-		[JsonProperty("guild_id")]
+		[DataMember(Name ="guild_id")]
 		public ulong guildId;
 
-		[JsonProperty("emojis")]
+		[DataMember(Name ="emojis")]
 		public DiscordEmoji[] emojis;
 	}
 }

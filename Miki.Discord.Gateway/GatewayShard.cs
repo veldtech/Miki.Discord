@@ -59,7 +59,7 @@ namespace Miki.Discord.Gateway
 			_isRunning = false;
 		}
 
-		public async Task OnPacketReceivedAsync(GatewayMessage text, ArraySegment<byte> _)
+		public async Task OnPacketReceivedAsync(GatewayMessage text, Memory<byte> _)
 		{
 			if (text.OpCode != GatewayOpcode.Dispatch)
 			{
@@ -72,8 +72,7 @@ namespace Miki.Discord.Gateway
                 {
                     if(OnReady != null)
                     {
-                        await OnReady((text.Data as JToken)
-                            .ToObject<GatewayReadyPacket>());
+                        await OnReady((text.Data as JToken).ToObject<GatewayReadyPacket>());
                     }
                 } break;
 
@@ -81,8 +80,7 @@ namespace Miki.Discord.Gateway
 				{
 					if (OnGuildCreate != null)
 					{
-						await OnGuildCreate((text.Data as JToken)
-                            .ToObject<DiscordGuildPacket>());
+						await OnGuildCreate((text.Data as JToken).ToObject<DiscordGuildPacket>());
 					}
 				} break;
 
@@ -90,8 +88,7 @@ namespace Miki.Discord.Gateway
                 {
                     if(OnGuildRoleUpdate != null)
                     {
-                        var role = (text.Data as JToken)
-                            .ToObject<RoleEventArgs>();
+                        var role = (text.Data as JToken).ToObject<RoleEventArgs>();
                         await OnGuildRoleUpdate(role.GuildId, role.Role);
                     }
                 } break;
@@ -100,9 +97,8 @@ namespace Miki.Discord.Gateway
                 {
                     if (OnGuildRoleUpdate != null)
                     {
-                        var member = (text.Data as JToken)
-                            .ToObject<GuildMemberUpdateEventArgs>();
-                        await OnGuildMemberUpdate(member);
+                        await OnGuildMemberUpdate(
+                            (text.Data as JToken).ToObject<GuildMemberUpdateEventArgs>());
                     }
                 }
                 break;
@@ -111,44 +107,44 @@ namespace Miki.Discord.Gateway
 				{
 					if (OnGuildUpdate != null)
 					{
-						await OnGuildUpdate((text.Data as JToken)
-                            .ToObject<DiscordGuildPacket>());
-					}
+						await OnGuildUpdate(
+                             (text.Data as JToken).ToObject<DiscordGuildPacket>());
+                    }
 				} break;
 
 				case "GUILD_DELETE":
 				{
 					if (OnGuildDelete != null)
 					{
-						await OnGuildDelete((text.Data as JToken)
-                            .ToObject<DiscordGuildUnavailablePacket>());
-					}
+						await OnGuildDelete(
+                            (text.Data as JToken).ToObject<DiscordGuildUnavailablePacket>());
+                    }
 				} break;
 
 				case "MESSAGE_CREATE":
 				{
 					if (OnMessageCreate != null)
 					{
-						await OnMessageCreate((text.Data as JToken)
-                            .ToObject<DiscordMessagePacket>());
-					}
+						await OnMessageCreate(
+                            (text.Data as JToken).ToObject<DiscordMessagePacket>());
+                    }
 				} break;
 
 				case "PRESENCE_UPDATE":
 				{
 					if (OnPresenceUpdate != null)
 					{
-						await OnPresenceUpdate((text.Data as JToken)
-                            .ToObject<DiscordPresencePacket>());
-					}
+						await OnPresenceUpdate(
+                            (text.Data as JToken).ToObject<DiscordPresencePacket>());
+                    }
 				} break;
 
 				case "CHANNEL_CREATE":
 				{
 					if (OnChannelCreate != null)
 					{
-						await OnChannelCreate((text.Data as JToken)
-                            .ToObject<DiscordChannelPacket>());
+						await OnChannelCreate(
+                            (text.Data as JToken).ToObject<DiscordChannelPacket>());
 					}
 				} break;
 
@@ -156,18 +152,17 @@ namespace Miki.Discord.Gateway
 				{
 					if (OnChannelUpdate != null)
 					{
-						await OnChannelUpdate((text.Data as JToken)
-                            .ToObject<DiscordChannelPacket>());
-					}
+						await OnChannelUpdate(
+                            (text.Data as JToken).ToObject<DiscordChannelPacket>());
+                    }
 				} break;
 
 				case "CHANNEL_DELETE":
 				{
 					if (OnChannelDelete != null)
 					{
-						await OnChannelDelete((text.Data as JToken)
-                            .ToObject<DiscordChannelPacket>());
-					}
+						await OnChannelDelete((text.Data as JToken).ToObject<DiscordChannelPacket>());
+                    }
 				} break;
 
                 default:
@@ -217,7 +212,7 @@ namespace Miki.Discord.Gateway
 		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
 		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
         public event Func<GatewayMessage, Task> OnPacketSent;
-        public event Func<GatewayMessage, ArraySegment<byte>, Task> OnPacketReceived
+        public event Func<GatewayMessage, Memory<byte>, Task> OnPacketReceived
         {
             add { _connection.OnPacketReceived += value; }
             remove { _connection.OnPacketReceived -= value; }

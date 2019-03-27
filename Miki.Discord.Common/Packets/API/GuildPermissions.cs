@@ -1,25 +1,25 @@
-﻿using Newtonsoft.Json;
-using ProtoBuf;
+﻿using ProtoBuf;
 using System;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
 	[ProtoContract]
 	public class PermissionOverwrite
 	{
-		[JsonProperty("id")]
+		[DataMember(Name ="id")]
 		[ProtoMember(1)]
 		public ulong Id;
 
-		[JsonProperty("type")]
+		[DataMember(Name ="type")]
 		[ProtoMember(2)]
 		public string Type;
 
-		[JsonProperty("allow")]
+		[DataMember(Name ="allow")]
 		[ProtoMember(3)]
 		public GuildPermission AllowedPermissions;
 
-		[JsonProperty("deny")]
+		[DataMember(Name ="deny")]
 		[ProtoMember(4)]
 		public GuildPermission DeniedPermissions;
 	}

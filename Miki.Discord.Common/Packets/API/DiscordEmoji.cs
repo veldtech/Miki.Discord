@@ -1,10 +1,10 @@
 ﻿using MessagePack;
 using Miki.Discord.Common.Packets;
-using Newtonsoft.Json;
 using ProtoBuf;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
@@ -13,38 +13,38 @@ namespace Miki.Discord.Common
 	public class DiscordEmoji
 	{
 		[ProtoMember(1)]
-		[JsonProperty("id")]
+		[DataMember(Name ="id")]
 		[Key(0)]
 		public ulong? Id { get; set; }
 
 		[ProtoMember(2)]
-		[JsonProperty("name")]
+		[DataMember(Name ="name")]
 		[Key(1)]
 		public string Name { get; set; }
 
 		[ProtoMember(3)]
-		[JsonProperty("roles")]
+		[DataMember(Name ="roles")]
 		[Key(2)]
 		public List<ulong> WhitelistedRoles { get; set; }
 
 		[ProtoMember(4)]
-		[JsonProperty("user")]
+		[DataMember(Name ="user")]
 		[Key(3)]
 		public DiscordUserPacket Creator { get; set; }
 
 		[ProtoMember(5)]
 		[Key(4)]
-		[JsonProperty("require_colons")]
+		[DataMember(Name ="require_colons")]
 		public bool? RequireColons { get; set; }
 
 		[ProtoMember(6)]
 		[Key(5)]
-		[JsonProperty("managed")]
+		[DataMember(Name ="managed")]
 		public bool? Managed { get; set; }
 
 		[ProtoMember(7)]
 		[Key(6)]
-		[JsonProperty("animated")]
+		[DataMember(Name ="animated")]
 		public bool? Animated { get; set; }
 
 		public static bool TryParse(string text, out DiscordEmoji emoji)

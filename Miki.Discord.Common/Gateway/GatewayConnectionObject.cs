@@ -1,28 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Gateway
 {
 	public class GatewayConnectionPacket
 	{
-		[JsonProperty("url")]
+		[DataMember(Name ="url")]
 		public string Url;
 
-		[JsonProperty("shards")]
+		[DataMember(Name ="shards")]
 		public int ShardCount;
 
-		[JsonProperty("session_start_limit")]
+		[DataMember(Name ="session_start_limit")]
 		public GatewaySessionLimitsPacket SessionLimit;
 	}
 
 	public class GatewaySessionLimitsPacket
 	{
-		[JsonProperty("total")]
+		[DataMember(Name ="total")]
 		public int Total;
 
-		[JsonProperty("remaining")]
+		[DataMember(Name ="remaining")]
 		public int Remaining;
 
-		[JsonProperty("reset_after")]
+		[DataMember(Name ="reset_after")]
 		public int ResetAfter;
 	}
 }

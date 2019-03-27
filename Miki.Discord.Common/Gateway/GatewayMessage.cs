@@ -1,19 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
-	public class GatewayMessage
+    [DataContract]
+	public struct GatewayMessage
 	{
-		[JsonProperty("op")]
-		public GatewayOpcode OpCode;
+        [DataMember(Name = "op")]
+        public GatewayOpcode? OpCode;
 
-		[JsonProperty("d")]
+        [DataMember(Name = "d")]
 		public object Data;
 
-		[JsonProperty("s")]
-		public int? SequenceNumber;
+        [DataMember(Name = "s")]
+        public int? SequenceNumber;
 
-		[JsonProperty("t")]
-		public string EventName;
+        [DataMember(Name = "t")]
+        public string EventName;
 	}
 }

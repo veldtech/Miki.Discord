@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
 	public class DiscordGuildUnavailablePacket
 	{
-		[JsonProperty("id")]
+		[DataMember(Name ="id")]
 		public ulong GuildId;
 
-		[JsonProperty("unavailable")]
+		[DataMember(Name ="unavailable")]
 		public bool? IsUnavailable;
 
 		/// <summary>

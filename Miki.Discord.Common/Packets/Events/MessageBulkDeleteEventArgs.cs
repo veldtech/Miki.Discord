@@ -1,16 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets.Events
 {
 	public class MessageBulkDeleteEventArgs
 	{
-		[JsonProperty("guild_id")]
+		[DataMember(Name ="guild_id")]
 		public ulong guildId;
 
-		[JsonProperty("channel_id")]
+		[DataMember(Name ="channel_id")]
 		public ulong channelId;
 
-		[JsonProperty("ids")]
+		[DataMember(Name ="ids")]
 		public ulong[] messagesDeleted;
 	}
 }

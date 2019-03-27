@@ -1,22 +1,22 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
-	public class CreateRoleArgs
+    public class CreateRoleArgs
 	{
-		[JsonProperty("name")]
+		[DataMember(Name ="name")]
 		public string Name;
 
-		[JsonProperty("permissions")]
+		[DataMember(Name ="permissions")]
 		public GuildPermission? Permissions;
 
-		[JsonProperty("color")]
+		[DataMember(Name ="color")]
 		public int? Color;
 
-		[JsonProperty("hoist")]
+		[DataMember(Name ="hoist")]
 		public bool? Hoisted;
 
-		[JsonProperty("mentionable")]
+		[DataMember(Name ="mentionable")]
 		public bool? Mentionable;
 	}
 }

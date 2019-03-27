@@ -1,6 +1,6 @@
 ﻿using MessagePack;
-using Newtonsoft.Json;
 using ProtoBuf;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
@@ -8,42 +8,42 @@ namespace Miki.Discord.Common.Packets
 	[MessagePackObject]
 	public class DiscordUserPacket
 	{
-		[JsonProperty("id")]
+		[DataMember(Name ="id")]
 		[ProtoMember(1)]
 		[Key(0)]
 		public ulong Id { get; set; }
 
-		[JsonProperty("username")]
+		[DataMember(Name ="username")]
 		[ProtoMember(2)]
 		[Key(1)]
 		public string Username { get; set; }
 
-		[JsonProperty("discriminator")]
+		[DataMember(Name ="discriminator")]
 		[ProtoMember(3)]
 		[Key(2)]
 		public string Discriminator { get; set; }
 
-		[JsonProperty("bot")]
+		[DataMember(Name ="bot")]
 		[ProtoMember(4)]
 		[Key(3)]
 		public bool IsBot { get; set; }
 
-		[JsonProperty("avatar")]
+		[DataMember(Name ="avatar")]
 		[ProtoMember(5)]
 		[Key(4)]
 		public string Avatar { get; set; }
 
-		[JsonProperty("verified")]
+		[DataMember(Name ="verified")]
 		[ProtoMember(6)]
 		[Key(5)]
 		public bool Verified { get; set; }
 
-		[JsonProperty("email")]
+		[DataMember(Name ="email")]
 		[ProtoMember(7)]
 		[Key(6)]
 		public string Email { get; set; }
 
-		[JsonProperty("mfa_enabled")]
+		[DataMember(Name ="mfa_enabled")]
 		[ProtoMember(8)]
 		[Key(7)]
 		public bool MfaEnabled { get; set; }

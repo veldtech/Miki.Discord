@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Events
 {
 	public class MessageDeleteArgs
 	{
-		[JsonProperty("id")]
+		[DataMember(Name ="id")]
 		public ulong MessageId { get; set; }
 
-		[JsonProperty("channel_id")]
+		[DataMember(Name ="channel_id")]
 		public ulong ChannelId { get; set; }
 	}
 }

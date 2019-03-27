@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
+using System.Runtime.Serialization;
 
 namespace Miki.Discord.Rest
 {
@@ -8,7 +8,7 @@ namespace Miki.Discord.Rest
     /// </summary>
 	public class EmojiCreationArgs : EmojiModifyArgs
 	{
-		[JsonProperty("image")]
+		[DataMember(Name ="image")]
 		public Stream Image { get; private set; }
 
 		public EmojiCreationArgs(string name, Stream image, params ulong[] roles)

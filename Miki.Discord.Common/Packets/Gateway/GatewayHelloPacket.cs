@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
+    [DataContract]
 	public class GatewayHelloPacket
 	{
-		[JsonProperty("heartbeat_interval")]
-		public int HeartbeatInterval;
+        [DataMember(Name = "heartbeat_interval")]
+        public int HeartbeatInterval;
 
-		[JsonProperty("_trace")]
-		public string[] TraceServers;
+        [DataMember(Name = "_trace")]
+        public string[] TraceServers;
 	}
 }

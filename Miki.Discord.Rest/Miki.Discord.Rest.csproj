@@ -14,6 +14,11 @@
     <PackageReference Include="Miki.Cache" Version="1.1.0" />
     <PackageReference Include="Miki.Logging" Version="1.2.0" />
     <PackageReference Include="Miki.Net.Http" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
   </ItemGroup>
 
 </Project>

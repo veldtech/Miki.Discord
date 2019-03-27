@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
 	public class DiscordReactionPacket
 	{
-		[JsonProperty("count")]
+		[DataMember(Name ="count")]
 		public int Count;
 
-		[JsonProperty("me")]
+		[DataMember(Name ="me")]
 		public bool Me;
 
-		[JsonProperty("emoji")]
+		[DataMember(Name ="emoji")]
 		public DiscordEmoji Emoji;
 	}
 }
