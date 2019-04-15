@@ -59,7 +59,7 @@ namespace Miki.Discord.Gateway
 			_isRunning = false;
 		}
 
-		public async Task OnPacketReceivedAsync(GatewayMessage text, Memory<byte> _)
+		public async Task OnPacketReceivedAsync(GatewayMessage text)
 		{
 			if (text.OpCode != GatewayOpcode.Dispatch)
 			{
@@ -212,7 +212,7 @@ namespace Miki.Discord.Gateway
 		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
 		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
         public event Func<GatewayMessage, Task> OnPacketSent;
-        public event Func<GatewayMessage, Memory<byte>, Task> OnPacketReceived
+        public event Func<GatewayMessage, Task> OnPacketReceived
         {
             add { _connection.OnPacketReceived += value; }
             remove { _connection.OnPacketReceived -= value; }

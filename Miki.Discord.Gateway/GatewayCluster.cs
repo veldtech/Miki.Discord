@@ -180,6 +180,6 @@ namespace Miki.Discord.Gateway
         public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
         public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
         public event Func<GatewayMessage, Task> OnPacketSent;
-        public event Func<GatewayMessage, Memory<byte>, Task> OnPacketReceived;
+        public event Func<GatewayMessage, Task> OnPacketReceived;
     }
 }

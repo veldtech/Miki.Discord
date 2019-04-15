@@ -35,19 +35,10 @@ namespace Miki.Discord.Gateway.Connection
     {
         public event Func<Task> OnConnect;
         public event Func<Exception, Task> OnDisconnect;
-        public event Func<GatewayMessage, Memory<byte>, Task> OnPacketReceived;
+        public event Func<GatewayMessage, Task> OnPacketReceived;
 
-        private ConnectionStatus _connectionStatus = ConnectionStatus.Disconnected;
+        public ConnectionStatus ConnectionStatus { get; private set; } = ConnectionStatus.Disconnected;
 
-        public ConnectionStatus ConnectionStatus
-        {
-            get { return _connectionStatus; }
-            set
-            {
-                Log.Message(_connectionStatus + " => " + value);
-                _connectionStatus = value;
-            }
-        }
         public int ShardId => _configuration.ShardId;
 
         public string[] TraceServers { get; private set; }
@@ -191,45 +182,46 @@ namespace Miki.Discord.Gateway.Connection
                 {
                     var msg = await ReceivePacketAsync()
                         .ConfigureAwait(false);
-                    if (!msg.Message.OpCode.HasValue)
+                    if (!msg.OpCode.HasValue)
                     {
                         continue;
                     }
 
-                    switch (msg.Message.OpCode)
+                    switch (msg.OpCode)
                     {
                         case GatewayOpcode.Dispatch:
                         {
-                            _sequenceNumber = msg.Message.SequenceNumber;
+                            _sequenceNumber = msg.SequenceNumber;
 
-                            if (msg.Message.EventName == "READY")
+                            if (msg.EventName == "READY")
                             {
-                                var readyPacket = (msg.Message.Data as JToken)
+                                var readyPacket = (msg.Data as JToken)
                                     .ToObject<GatewayReadyPacket>();
                                 _sessionId = readyPacket.SessionId;
                                 TraceServers = readyPacket.TraceGuilds;
                                 _heartbeatLock.Release();
                             }
 
-                            if (msg.Message.EventName == "RESUMED")
+                            if (msg.EventName == "RESUMED")
                             {
-                                var readyPacket = (msg.Message.Data as JToken)
+                                var readyPacket = (msg.Data as JToken)
                                     .ToObject<GatewayReadyPacket>();
                                 TraceServers = readyPacket.TraceGuilds;
                                 _heartbeatLock.Release();
                             }
 
-                            Log.Debug($"    <= {msg.Message.EventName.ToString()}");
+                            Log.Debug($"    <= {msg.EventName.ToString()}");
                             if (OnPacketReceived != null)
                             {
-                                await OnPacketReceived(msg.Message, msg.Packet.Packet);
+                                await OnPacketReceived(msg);
                             }
                         }
                         break;
 
                         case GatewayOpcode.InvalidSession:
                         {
-                            var canResume = (bool)msg.Message.Data;
+                            var canResume = (msg.Data as JToken)
+                                .ToObject<bool>();
                             if (!canResume)
                             {
                                 _sequenceNumber = null;
@@ -464,7 +456,7 @@ namespace Miki.Discord.Gateway.Connection
 
             await _webSocketClient.ConnectAsync(new Uri(connectionUri), _connectionToken.Token);
             var msg = await ReceivePacketAsync();
-            return (msg.Message.Data as JToken)
+            return (msg.Data as JToken)
                 .ToObject<GatewayHelloPacket>();
         }
 
@@ -501,7 +493,7 @@ namespace Miki.Discord.Gateway.Connection
             return new WebSocketPacket(response, p);
         }
 
-        private async Task<GatewayPacket> ReceivePacketAsync()
+        private async Task<GatewayMessage> ReceivePacketAsync()
         {
             var response = await ReceivePacketBytesAsync()
                 .ConfigureAwait(false);
@@ -538,11 +530,11 @@ namespace Miki.Discord.Gateway.Connection
             {
                 var msg = (GatewayMessage)_jsonSerializer
                     .Deserialize(_uncompressStreamReader, typeof(GatewayMessage));
-                return new GatewayPacket { Message = msg, Packet = response };
+                return msg;
             }
             else
             {
-                return new GatewayPacket { };
+                return new GatewayMessage{ };
             }
         }
     }
