@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Common.Packets.Events
 {
-	public class TypingStartEventArgs
+    [DataContract]
+    public class TypingStartEventArgs
 	{
 		[DataMember(Name ="channel_id")]
 		public ulong channelId;

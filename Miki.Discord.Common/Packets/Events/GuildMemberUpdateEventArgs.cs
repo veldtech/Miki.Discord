@@ -3,7 +3,8 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Events
 {
-	public class GuildMemberUpdateEventArgs
+    [DataContract]
+    public class GuildMemberUpdateEventArgs
 	{
 		[DataMember(Name ="guild_id")]
 		public ulong GuildId;

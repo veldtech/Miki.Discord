@@ -192,7 +192,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordChannelPacket[]> GetGuildChannelPacketsAsync(ulong guildId)
 		{
-			DiscordChannelPacket[] packets = await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId));
+			DiscordChannelPacket[] packets = (await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId)))?.ToArray();
 
 			if ((packets?.Length ?? 0) == 0)
 			{
@@ -247,7 +247,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordRolePacket[]> GetRolePacketsAsync(ulong guildId)
 		{
-			DiscordRolePacket[] packets = await CacheClient.HashValuesAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId));
+			DiscordRolePacket[] packets = (await CacheClient.HashValuesAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId)))?.ToArray();
 
 			if ((packets?.Length ?? 0) == 0)
 			{

@@ -3,7 +3,8 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets.Events
 {
-	public class MessageBulkDeleteEventArgs
+    [DataContract]
+    public class MessageBulkDeleteEventArgs
 	{
 		[DataMember(Name ="guild_id")]
 		public ulong guildId;

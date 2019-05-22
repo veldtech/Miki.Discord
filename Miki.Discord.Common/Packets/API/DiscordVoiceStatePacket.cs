@@ -6,7 +6,8 @@ namespace Miki.Discord.Common.Packets
 {
 	[ProtoContract]
 	[MessagePackObject]
-	public class DiscordVoiceStatePacket
+    [DataContract]
+    public class DiscordVoiceStatePacket
 	{
 		[ProtoMember(1)]
 		[DataMember(Name ="guild_id")]

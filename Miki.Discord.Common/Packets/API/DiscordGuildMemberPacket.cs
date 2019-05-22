@@ -9,7 +9,8 @@ namespace Miki.Discord.Common.Packets
 {
 	[ProtoContract]
 	[MessagePackObject]
-	public class DiscordGuildMemberPacket
+    [DataContract]
+    public class DiscordGuildMemberPacket
 	{
         [DataMember(Name = "user")]
         [ProtoMember(1)]

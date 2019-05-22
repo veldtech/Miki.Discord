@@ -6,7 +6,8 @@ namespace Miki.Discord.Common.Packets
 {
 	[ProtoContract]
 	[MessagePackObject]
-	public class DiscordRolePacket
+    [DataContract]
+    public class DiscordRolePacket
 	{
 		[ProtoMember(1)]
 		[DataMember(Name ="id")]

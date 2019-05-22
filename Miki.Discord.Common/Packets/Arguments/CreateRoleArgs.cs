@@ -2,6 +2,7 @@
 
 namespace Miki.Discord.Common
 {
+    [DataContract]
     public class CreateRoleArgs
 	{
 		[DataMember(Name ="name")]

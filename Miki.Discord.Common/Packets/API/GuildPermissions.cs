@@ -5,7 +5,8 @@ using System.Runtime.Serialization;
 namespace Miki.Discord.Common
 {
 	[ProtoContract]
-	public class PermissionOverwrite
+    [DataContract]
+    public class PermissionOverwrite
 	{
 		[DataMember(Name ="id")]
 		[ProtoMember(1)]

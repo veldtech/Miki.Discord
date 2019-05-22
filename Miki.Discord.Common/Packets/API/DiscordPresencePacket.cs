@@ -7,7 +7,8 @@ namespace Miki.Discord.Common.Packets
 {
 	[ProtoContract]
 	[MessagePackObject]
-	public class DiscordPresencePacket
+    [DataContract]
+    public class DiscordPresencePacket
 	{
         [DataMember(Name = "user")]
         [ProtoMember(1)]
