@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Common
 {
-	public class DiscordReactionPacket
+    [DataContract]
+    public class DiscordReactionPacket
 	{
 		[DataMember(Name ="count")]
 		public int Count;

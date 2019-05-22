@@ -10,7 +10,8 @@ namespace Miki.Discord.Common
 {
 	[ProtoContract]
 	[MessagePackObject]
-	public class DiscordEmoji
+    [DataContract]
+    public class DiscordEmoji
 	{
 		[ProtoMember(1)]
 		[DataMember(Name ="id")]

@@ -3,7 +3,8 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
-	public class DiscordEmbed
+    [DataContract]
+    public class DiscordEmbed
 	{
 		[DataMember(Name ="title")]
 		public string Title { get; set; }

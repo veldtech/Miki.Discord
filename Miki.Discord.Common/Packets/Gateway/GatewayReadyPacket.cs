@@ -3,7 +3,8 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
-	public class GatewayReadyPacket
+    [DataContract]
+    public class GatewayReadyPacket
 	{
         [DataMember(Name = "v")]
         public int ProtocolVersion;

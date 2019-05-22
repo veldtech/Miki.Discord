@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Rest
 {
-	public class EmojiModifyArgs
+    [DataContract]
+    public class EmojiModifyArgs
 	{
 		[DataMember(Name ="name")]
 		public string Name { get; private set; }

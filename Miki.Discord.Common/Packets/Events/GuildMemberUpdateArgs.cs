@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Common.Events
 {
-	public class ModifyGuildMemberArgs
+    [DataContract]
+    public class ModifyGuildMemberArgs
 	{
 		[DataMember(Name ="nick")]
 		public string Nickname;

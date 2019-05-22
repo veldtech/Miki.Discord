@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Common.Packets.Events
 {
-	public class GuildEmojisUpdateEventArgs
+    [DataContract]
+    public class GuildEmojisUpdateEventArgs
 	{
 		[DataMember(Name ="guild_id")]
 		public ulong guildId;

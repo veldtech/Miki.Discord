@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Common.Events
 {
-	public class MessageDeleteArgs
+    [DataContract]
+    public class MessageDeleteArgs
 	{
 		[DataMember(Name ="id")]
 		public ulong MessageId { get; set; }

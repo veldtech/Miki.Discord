@@ -6,7 +6,8 @@ namespace Miki.Discord.Rest
     /// <summary>
     /// Data structure to create an emoji.
     /// </summary>
-	public class EmojiCreationArgs : EmojiModifyArgs
+    [DataContract]
+    public class EmojiCreationArgs : EmojiModifyArgs
 	{
 		[DataMember(Name ="image")]
 		public Stream Image { get; private set; }

@@ -7,6 +7,7 @@ using System.Text;
 namespace Miki.Discord.Common.Packets
 {
     [ProtoContract]
+    [DataContract]
     public class DiscordAttachmentPacket
     {
         [DataMember(Name ="id")]

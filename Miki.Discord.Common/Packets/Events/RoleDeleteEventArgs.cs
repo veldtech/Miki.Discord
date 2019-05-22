@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Common.Events
 {
-	public class RoleDeleteEventArgs
+    [DataContract]
+    public class RoleDeleteEventArgs
 	{
 		[DataMember(Name ="guild_id")]
 		public ulong GuildId;

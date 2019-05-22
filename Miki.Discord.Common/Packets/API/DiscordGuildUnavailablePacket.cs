@@ -2,7 +2,8 @@
 
 namespace Miki.Discord.Common.Packets
 {
-	public class DiscordGuildUnavailablePacket
+    [DataContract]
+    public class DiscordGuildUnavailablePacket
 	{
 		[DataMember(Name ="id")]
 		public ulong GuildId;

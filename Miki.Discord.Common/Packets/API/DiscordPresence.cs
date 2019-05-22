@@ -6,7 +6,8 @@ using System.Runtime.Serialization;
 namespace Miki.Discord.Common
 {
 	[ProtoContract]
-	public class DiscordPresence : IDiscordPresence
+    [DataContract]
+    public class DiscordPresence : IDiscordPresence
 	{
 		[DataMember(Name ="game")]
 		[ProtoMember(1)]

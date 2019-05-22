@@ -8,7 +8,8 @@ namespace Miki.Discord.Common
 	[Serializable]
 	[ProtoContract]
 	[MessagePackObject]
-	public class DiscordChannelPacket
+    [DataContract]
+    public class DiscordChannelPacket
 	{
         [DataMember(Name = "id")]
         [ProtoMember(1)]

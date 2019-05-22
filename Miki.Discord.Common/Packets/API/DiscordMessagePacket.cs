@@ -5,7 +5,8 @@ using System.Runtime.Serialization;
 namespace Miki.Discord.Common.Packets
 {
 	[Serializable]
-	public class DiscordMessagePacket
+    [DataContract]
+    public class DiscordMessagePacket
 	{
 		[DataMember(Name ="id")]
 		public ulong Id { get; set; }
