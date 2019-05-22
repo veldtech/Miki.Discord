@@ -9,7 +9,6 @@ namespace Miki.Discord.Common
 		[DataMember(Name ="title")]
 		public string Title { get; set; }
 
-		[DataMember(Name ="description")]
 		public string Description { get; set; }
 
 		[DataMember(Name ="color")]
@@ -31,7 +30,8 @@ namespace Miki.Discord.Common
 		public EmbedImage Image;
 	}
 
-	public class EmbedAuthor
+    [DataContract]
+    public class EmbedAuthor
 	{
 		[DataMember(Name ="name")]
 		public string Name { get; set; }
@@ -43,7 +43,8 @@ namespace Miki.Discord.Common
 		public string Url { get; set; }
 	}
 
-	public class EmbedFooter
+    [DataContract]
+    public class EmbedFooter
 	{
 		[DataMember(Name ="icon_url")]
 		public string IconUrl { get; set; }
@@ -52,13 +53,15 @@ namespace Miki.Discord.Common
 		public string Text { get; set; }
 	}
 
-	public class EmbedImage
+    [DataContract]
+    public class EmbedImage
 	{
 		[DataMember(Name ="url")]
 		public string Url { get; set; }
 	}
 
-	public class EmbedField
+    [DataContract]
+    public class EmbedField
 	{
 		[DataMember(Name ="name")]
 		public string Title { get; set; }
