@@ -174,6 +174,12 @@ namespace Miki.Discord
 				embed = embed
 			});
 
+		public async Task<IDiscordMessage> GetMessageAsync(ulong channelId, ulong messageId)
+			=> new DiscordMessage(
+				await _apiClient.GetMessageAsync(channelId, messageId),
+				this
+			);
+
 		internal async Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id, ulong? guildId)
 		{
 			DiscordChannelPacket packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId), id.ToString());
