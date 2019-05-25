@@ -7,30 +7,32 @@ namespace Miki.Discord.Common
 {
 	public interface IDiscordMessage : ISnowflake
 	{
-        /// <summary>
-        /// All attachments attached to this message.
-        /// </summary>
-        IReadOnlyList<IDiscordAttachment> Attachments { get; }
+		/// <summary>
+		/// All attachments attached to this message.
+		/// </summary>
+		IReadOnlyList<IDiscordAttachment> Attachments { get; }
 
-        /// <summary>
-        /// The creator of the message.
-        /// </summary>
-        IDiscordUser Author { get; }
+		/// <summary>
+		/// The creator of the message.
+		/// </summary>
+		IDiscordUser Author { get; }
 
-        string Content { get; }
+		string Content { get; }
 
-        /// <summary>
-        /// The channel this message was created in.
-        /// </summary>
+		ulong? GuildId { get; }
+
+		/// <summary>
+		/// The channel this message was created in.
+		/// </summary>
 		ulong ChannelId { get; }
 
-        IReadOnlyList<ulong> MentionedUserIds { get; }
+		IReadOnlyList<ulong> MentionedUserIds { get; }
 
-        DateTimeOffset Timestamp { get; }
+		DateTimeOffset Timestamp { get; }
 
-        MessageType Type { get; }
+		MessageType Type { get; }
 
-        Task CreateReactionAsync(DiscordEmoji emoji);
+		Task CreateReactionAsync(DiscordEmoji emoji);
 
 		Task DeleteReactionAsync(DiscordEmoji emoji);
 
@@ -42,9 +44,9 @@ namespace Miki.Discord.Common
 
 		Task<IDiscordMessage> EditAsync(EditMessageArgs args);
 
-        /// <summary>
-        /// Deletes this message.
-        /// </summary>
+		/// <summary>
+		/// Deletes this message.
+		/// </summary>
 		Task DeleteAsync();
 
 		Task<IDiscordTextChannel> GetChannelAsync();
