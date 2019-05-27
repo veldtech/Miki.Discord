@@ -1,14 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Miki.Discord</AssemblyName>
     <RootNamespace>Miki.Discord</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>2.6.11</Version>
+    <Version>3.0.0</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
-    <Description>Miki Discord Client</Description>
+    <Description>Abstractified wrapper over Miki.Discord components. Used as a high level client relatable to other Discord libraries.</Description>
     <PackageTags>discord, api</PackageTags>
   </PropertyGroup>
 

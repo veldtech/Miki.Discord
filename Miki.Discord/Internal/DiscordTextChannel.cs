@@ -1,4 +1,5 @@
 ﻿using Miki.Discord.Common;
+using Miki.Discord.Helpers;
 using Miki.Discord.Internal;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Miki.Discord
 
 			if (id.Length < 2)
 			{
-				await _client._apiClient.DeleteMessageAsync(Id, id[0]);
+				await _client.ApiClient.DeleteMessageAsync(Id, id[0]);
 			}
 
 			if (id.Length > 100)
@@ -32,7 +33,7 @@ namespace Miki.Discord
 				id = id.Take(100).ToArray();
 			}
 
-			await _client._apiClient.DeleteMessagesAsync(Id, id);
+			await _client.ApiClient.DeleteMessagesAsync(Id, id);
 		}
 
 		public async Task DeleteMessagesAsync(params IDiscordMessage[] messages)
@@ -42,36 +43,31 @@ namespace Miki.Discord
 
 		public async Task<IDiscordMessage> GetMessageAsync(ulong id)
 		{
-			return new DiscordMessage(await _client._apiClient.GetMessageAsync(Id, id), _client);
+			return new DiscordMessage(await _client.ApiClient.GetMessageAsync(Id, id), _client);
 		}
 
 		public async Task<IEnumerable<IDiscordMessage>> GetMessagesAsync(int amount = 100)
 		{
-			return (await _client._apiClient.GetMessagesAsync(Id, amount))
+			return (await _client.ApiClient.GetMessagesAsync(Id, amount))
 				.Select(x => new DiscordMessage(x, _client));
 		}
 
 		public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
-			=> await _client.SendFileAsync(Id, file, fileName, new MessageArgs
-			{
-				content = content,
-				tts = isTTS,
-				embed = embed
-			});
+			=> await _client.SendFileAsync(
+                Id, 
+                file, 
+                fileName, 
+                new MessageArgs(content, embed, isTTS));
 
-		public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
-		{
-			return await _client.SendMessageAsync(Id, new MessageArgs()
-			{
-				content = content,
-				tts = isTTS,
-				embed = embed
-			});
-		}
+        public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
+            => await DiscordChannelHelper.CreateMessageAsync(
+                _client, 
+                _packet, 
+                new MessageArgs(content, embed, isTTS));
 
 		public async Task TriggerTypingAsync()
 		{
-			await _client._apiClient.TriggerTypingAsync(Id);
+			await _client.ApiClient.TriggerTypingAsync(Id);
 		}
 	}
 }

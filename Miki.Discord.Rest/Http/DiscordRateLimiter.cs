@@ -3,6 +3,7 @@ using Miki.Net.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,8 +11,14 @@ namespace Miki.Discord.Rest.Http
 {
     public class DiscordRateLimiter : IRateLimiter
     {
-        ICacheClient _cache;
+        private readonly ICacheClient _cache;
 
+        const string LimitHeader = "X-RateLimit-Limit";
+        const string RemainingHeader = "X-RateLimit-Remaining";
+        const string ResetHeader = "X-RateLimit-Reset";
+        const string GlobalHeader = "X-RateLimit-Global";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetCacheKey(string route, string id)
             => $"discord:ratelimit:{route}:{id}";
 
@@ -25,34 +32,43 @@ namespace Miki.Discord.Rest.Http
             string key = GetCacheKey(requestUri.Split('/')[0], requestUri.Split('/')[1]);
 
             Ratelimit rateLimit = await _cache.GetAsync<Ratelimit>(key);
-            if (rateLimit == null)
-            {
-                return true;
-            }
-
-            bool result = !rateLimit.IsRatelimited();
             rateLimit.Remaining--;
 
             await _cache.UpsertAsync(key, rateLimit);
 
-            return result;
+            return !rateLimit.IsRatelimited();
         }
 
         public async Task OnRequestSuccessAsync(HttpResponse response)
         {
-            Uri requestUri = response.HttpResponseMessage.RequestMessage.RequestUri;
+            var httpMessage = response.HttpResponseMessage;
+
+            Uri requestUri = httpMessage.RequestMessage.RequestUri;
             string key = GetCacheKey(requestUri.AbsolutePath.Split('/')[2], requestUri.AbsolutePath.Split('/')[3]);
 
-            if (response.HttpResponseMessage.Headers.Contains("X-RateLimit-Limit"))
+            if (httpMessage.Headers.Contains(LimitHeader))
             {
                 var ratelimit = new Ratelimit();
-                ratelimit.Remaining = int.Parse(response.HttpResponseMessage.Headers.GetValues("X-RateLimit-Remaining").ToList().FirstOrDefault());
-                ratelimit.Limit = int.Parse(response.HttpResponseMessage.Headers.GetValues("X-RateLimit-Limit").ToList().FirstOrDefault());
-                ratelimit.Reset = long.Parse(response.HttpResponseMessage.Headers.GetValues("X-RateLimit-Reset").ToList().FirstOrDefault());
-                if (response.HttpResponseMessage.Headers.Contains("X-RateLimit-Global"))
+                if (httpMessage.Headers.TryGetValues(RemainingHeader, out var values))
                 {
-                    ratelimit.Global = int.Parse(response.HttpResponseMessage.Headers.GetValues("X-RateLimit-Global").ToList().FirstOrDefault());
+                    ratelimit.Remaining = int.Parse(values.FirstOrDefault());
                 }
+
+                if (httpMessage.Headers.TryGetValues(LimitHeader, out var limitValues))
+                {
+                    ratelimit.Limit = int.Parse(limitValues.FirstOrDefault());
+                }
+
+                if (httpMessage.Headers.TryGetValues(ResetHeader, out var resetValues))
+                {
+                    ratelimit.Reset = int.Parse(resetValues.FirstOrDefault());
+                }
+
+                if (httpMessage.Headers.TryGetValues(GlobalHeader, out var globalValues))
+                {
+                    ratelimit.Global = int.Parse(globalValues.FirstOrDefault());
+                }
+
                 await _cache.UpsertAsync(key, ratelimit);
             }
         }

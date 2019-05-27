@@ -1,52 +1,33 @@
-﻿using MessagePack;
-using ProtoBuf;
+﻿using ProtoBuf;
 using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
-	[ProtoContract]
-	[MessagePackObject]
     [DataContract]
     public class DiscordRolePacket
 	{
-		[ProtoMember(1)]
-		[DataMember(Name ="id")]
-		[Key(0)]
+		[DataMember(Name = "id", Order = 1)]
 		public ulong Id;
 
-		[ProtoMember(2)]
-		[DataMember(Name ="name")]
-		[Key(1)]
+		[DataMember(Name = "name", Order = 2)]
 		public string Name;
 
-		[ProtoMember(3)]
-		[DataMember(Name ="color")]
-		[Key(2)]
+		[DataMember(Name = "color", Order = 3)]
 		public int Color;
 
-		[ProtoMember(4)]
-		[DataMember(Name ="hoist")]
-		[Key(3)]
+		[DataMember(Name = "hoist", Order = 4)]
 		public bool IsHoisted;
 
-		[ProtoMember(5)]
-		[DataMember(Name ="position")]
-		[Key(4)]
+		[DataMember(Name = "position", Order = 5)]
 		public int Position;
 
-		[ProtoMember(6)]
-		[DataMember(Name ="permissions")]
-		[Key(5)]
+		[DataMember(Name = "permissions", Order = 6)]
 		public int Permissions;
 
-		[ProtoMember(7)]
-		[DataMember(Name ="managed")]
-		[Key(6)]
+		[DataMember(Name = "managed", Order = 7)]
 		public bool Managed;
 
-		[ProtoMember(8)]
-		[DataMember(Name ="mentionable")]
-		[Key(7)]
+		[DataMember(Name = "mentionable", Order = 8)]
 		public bool Mentionable;
 	}
 }

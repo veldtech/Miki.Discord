@@ -1,6 +1,7 @@
 ﻿using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Common.Packets.Arguments;
 using Miki.Discord.Rest;
 using System.Collections.Generic;
 using System.IO;
@@ -46,7 +47,9 @@ namespace Miki.Discord.Common
 
 		Task<List<DiscordChannelPacket>> GetChannelsAsync(ulong guildId);
 
-		Task<DiscordGuildPacket> GetGuildAsync(ulong guildId);
+        Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync();
+
+        Task<DiscordGuildPacket> GetGuildAsync(ulong guildId);
 
 		Task<DiscordGuildMemberPacket> GetGuildUserAsync(ulong userId, ulong guildId);
 
@@ -63,6 +66,8 @@ namespace Miki.Discord.Common
 		Task<DiscordUserPacket> GetUserAsync(ulong userId);
 
 		Task ModifyGuildMemberAsync(ulong guildId, ulong userId, ModifyGuildMemberArgs packet);
+
+        Task ModifySelfAsync(UserModifyArgs args);
 
 		Task RemoveGuildBanAsync(ulong guildId, ulong userId);
 

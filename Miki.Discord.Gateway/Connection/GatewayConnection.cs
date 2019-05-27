@@ -262,7 +262,7 @@ namespace Miki.Discord.Gateway.Connection
                 _ = HandleGatewayErrorsAsync(c)
                     .ConfigureAwait(false);
             }
-            catch (TaskCanceledException _)
+            catch (TaskCanceledException)
             {
                 return;
             }

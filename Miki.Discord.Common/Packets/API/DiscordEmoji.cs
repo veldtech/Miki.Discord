@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using Miki.Discord.Common.Packets;
+﻿using Miki.Discord.Common.Packets;
 using ProtoBuf;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,44 +7,29 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
-	[ProtoContract]
-	[MessagePackObject]
     [DataContract]
     public class DiscordEmoji
 	{
-		[ProtoMember(1)]
-		[DataMember(Name ="id")]
-		[Key(0)]
+		[DataMember(Name = "id", Order = 1)]
 		public ulong? Id { get; set; }
 
-		[ProtoMember(2)]
-		[DataMember(Name ="name")]
-		[Key(1)]
+		[DataMember(Name = "name", Order = 2)]
 		public string Name { get; set; }
 
 		[ProtoMember(3)]
-		[DataMember(Name ="roles")]
-		[Key(2)]
+		[DataMember(Name = "roles", Order = 3)]
 		public List<ulong> WhitelistedRoles { get; set; }
 
-		[ProtoMember(4)]
-		[DataMember(Name ="user")]
-		[Key(3)]
+		[DataMember(Name = "user", Order = 4)]
 		public DiscordUserPacket Creator { get; set; }
 
-		[ProtoMember(5)]
-		[Key(4)]
-		[DataMember(Name ="require_colons")]
+		[DataMember(Name ="require_colons", Order = 5)]
 		public bool? RequireColons { get; set; }
 
-		[ProtoMember(6)]
-		[Key(5)]
-		[DataMember(Name ="managed")]
+		[DataMember(Name ="managed", Order = 6)]
 		public bool? Managed { get; set; }
 
-		[ProtoMember(7)]
-		[Key(6)]
-		[DataMember(Name ="animated")]
+		[DataMember(Name = "animated", Order = 7)]
 		public bool? Animated { get; set; }
 
 		public static bool TryParse(string text, out DiscordEmoji emoji)

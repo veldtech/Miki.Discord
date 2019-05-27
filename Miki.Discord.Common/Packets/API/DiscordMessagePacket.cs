@@ -8,38 +8,41 @@ namespace Miki.Discord.Common.Packets
     [DataContract]
     public class DiscordMessagePacket
 	{
-		[DataMember(Name ="id")]
+		[DataMember(Name = "id")]
 		public ulong Id { get; set; }
 
-		[DataMember(Name ="type")]
+        [DataMember(Name = "channel_id")]
+        public ulong ChannelId { get; set; }
+
+        [DataMember(Name = "guild_id")]
+        public ulong? GuildId { get; set; }
+
+        [DataMember(Name = "author")]
+        public DiscordUserPacket Author { get; set; }
+
+        [DataMember(Name = "member")]
+        public DiscordGuildMemberPacket Member { get; set; }
+
+        [DataMember(Name = "type")]
 		public MessageType Type { get; set; }
 
-		[DataMember(Name ="content")]
+		[DataMember(Name = "content")]
 		public string Content { get; set; }
 
-		[DataMember(Name ="channel_id")]
-		public ulong ChannelId { get; set; }
-
-		[DataMember(Name ="author")]
-		public DiscordUserPacket Author { get; set; }
-
-		[DataMember(Name ="timestamp")]
+		[DataMember(Name = "timestamp")]
 		public DateTimeOffset Timestamp { get; set; }
 
-		[DataMember(Name ="tts")]
+		[DataMember(Name = "tts")]
 		public bool IsTTS { get; set; }
 
-		[DataMember(Name ="mention_everyone")]
+		[DataMember(Name = "mention_everyone")]
 		public bool MentionsEveryone { get; set; }
 
-		[DataMember(Name ="mentions")]
+		[DataMember(Name = "mentions")]
 		public List<DiscordUserPacket> Mentions { get; set; }
 
-        [DataMember(Name ="attachments")]
+        [DataMember(Name = "attachments")]
         public List<DiscordAttachmentPacket> Attachments { get; set; }
-
-		[DataMember(Name ="guild_id")]
-		public ulong? GuildId { get; set; }
 	}
 
 	public enum MessageType

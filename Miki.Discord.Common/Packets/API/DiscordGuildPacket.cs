@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using ProtoBuf;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,120 +6,75 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
-	[ProtoContract]
-	[MessagePackObject]
     [DataContract]
     public class DiscordGuildPacket
 	{
-        [DataMember(Name = "id")]
-        [ProtoMember(1)]
-		[Key(0)]
+        [DataMember(Name = "id", Order = 1)]
 		public ulong Id;
-        [DataMember(Name = "name")]
-        [ProtoMember(2)]
-		[Key(1)]
+
+        [DataMember(Name = "name", Order = 2)]
 		public string Name;
 
-        [DataMember(Name = "icon")]
-        [ProtoMember(3)]
-		[Key(2)]
+        [DataMember(Name = "icon", Order = 3)]
 		public string Icon;
 
-        [DataMember(Name = "splash")]
-        [ProtoMember(4)]
-		[Key(3)]
+        [DataMember(Name = "splash", Order = 4)]
 		public string Splash;
 
-        [DataMember(Name = "owner_id")]
-        [ProtoMember(5)]
-		[Key(4)]
+        [DataMember(Name = "owner_id", Order = 5)]
 		public ulong OwnerId;
 
-        [DataMember(Name = "region")]
-        [ProtoMember(6)]
-		[Key(5)]
+        [DataMember(Name = "region", Order = 6)]
 		public string Region;
 
-        [DataMember(Name = "afk_channel_id")]
-        [ProtoMember(7)]
-		[Key(6)]
+        [DataMember(Name = "afk_channel_id", Order = 7)]
 		public ulong? AfkChannelId;
 
-        [DataMember(Name = "afk_timeout")]
-        [ProtoMember(8)]
-		[Key(7)]
+        [DataMember(Name = "afk_timeout", Order = 8)]
 		public int? AfkTimeout;
 
-        [DataMember(Name = "embed_enabled")]
-        [ProtoMember(9)]
-		[Key(8)]
+        [DataMember(Name = "embed_enabled", Order = 9)]
 		public bool EmbedEnabled;
 
-        [DataMember(Name = "embed_channel_id")]
-        [ProtoMember(10)]
-		[Key(9)]
+        [DataMember(Name = "embed_channel_id", Order = 10)]
 		public ulong? EmbedChannelId;
 
-        [DataMember(Name = "verification_level")]
-        [ProtoMember(11)]
-		[Key(10)]
+        [DataMember(Name = "verification_level", Order = 11)]
 		public int VerificationLevel;
 
-        [DataMember(Name = "default_message_notifications")]
-        [ProtoMember(12)]
-		[Key(11)]
+        [DataMember(Name = "default_message_notifications", Order = 12)]
 		public int DefaultMessageNotifications;
 
-        [DataMember(Name = "explicit_content_filter")]
-        [ProtoMember(13)]
-		[Key(12)]
+        [DataMember(Name = "explicit_content_filter", Order = 13)]
 		public int ExplicitContentFilter;
 
-        [DataMember(Name = "roles")]
-        [ProtoMember(14)]
-		[Key(13)]
+        [DataMember(Name = "roles", Order = 14)]
 		public List<DiscordRolePacket> Roles = new List<DiscordRolePacket>();
 
-        [DataMember(Name = "emojis")]
-        [ProtoMember(15)]
-		[Key(14)]
+        [DataMember(Name = "emojis", Order = 15)]
 		public DiscordEmoji[] Emojis;
 
-        [DataMember(Name = "features")]
-        [ProtoMember(16)]
-		[Key(15)]
+        [DataMember(Name = "features", Order = 16)]
 		public List<string> Features;
 
-        [DataMember(Name = "mfa_level")]
-        [ProtoMember(17)]
-		[Key(16)]
+        [DataMember(Name = "mfa_level", Order = 17)]
 		public int MFALevel;
 
-        [DataMember(Name = "application_id")]
-        [ProtoMember(18)]
-		[Key(17)]
+        [DataMember(Name = "application_id", Order = 18)]
 		public ulong? ApplicationId;
 
-        [DataMember(Name = "widget_enabled")]
-        [ProtoMember(19)]
-		[Key(18)]
+        [DataMember(Name = "widget_enabled", Order = 19)]
 		public bool? WidgetEnabled;
 
-        [DataMember(Name = "widget_channel_id")]
-        [ProtoMember(20)]
-		[Key(19)]
+        [DataMember(Name = "widget_channel_id", Order = 20)]
 		public ulong? WidgetChannelId;
 
-        [DataMember(Name = "system_channel_id")]
-        [ProtoMember(21)]
-		[Key(20)]
+        [DataMember(Name = "system_channel_id", Order = 21)]
 		public ulong? SystemChannelId;
 
-		[ProtoMember(22)]
-		[Key(21)]
 		public long CreatedAt;
 
-        [DataMember(Name = "joined_at")]
+        [DataMember(Name = "joined_at", Order = 22)]
         internal string _createdAt
 		{
 			get
@@ -135,46 +89,31 @@ namespace Miki.Discord.Common.Packets
 			}
 		}
 
-        [DataMember(Name = "large")]
-        [ProtoMember(23)]
-		[Key(22)]
+        [DataMember(Name = "large", Order = 23)]
 		public bool? IsLarge;
 
-        [DataMember(Name = "unavailable")]
-        [ProtoMember(24)]
-		[Key(23)]
+        [DataMember(Name = "unavailable", Order = 24)]
 		public bool? Unavailable;
 
-        [DataMember(Name = "member_count")]
-        [ProtoMember(25)]
-		[Key(24)]
+        [DataMember(Name = "member_count", Order = 25)]
 		public int? MemberCount;
 
         [DataMember(Name = "voice_states")]
-        [IgnoreMember]
 		public List<DiscordVoiceStatePacket> VoiceStates;
 
         [DataMember(Name = "members")]
-        [IgnoreMember]
 		public List<DiscordGuildMemberPacket> Members = new List<DiscordGuildMemberPacket>();
 
         [DataMember(Name = "channels")]
-        [IgnoreMember]
 		public List<DiscordChannelPacket> Channels = new List<DiscordChannelPacket>();
 
         [DataMember(Name = "presences")]
-        //[ProtoMember(27)]
-        [IgnoreMember]
 		public List<DiscordPresencePacket> Presences = new List<DiscordPresencePacket>();
 
-        [DataMember(Name = "owner")]
-        [ProtoMember(26)]
-		[Key(25)]
+        [DataMember(Name = "owner", Order = 26)]
 		public bool? IsOwner;
 
-        [DataMember(Name = "permissions")]
-        [ProtoMember(27)]
-		[Key(26)]
+        [DataMember(Name = "permissions", Order = 27)]
 		public int? Permissions;
 
 		public void OverwriteContext(DiscordGuildPacket guild)

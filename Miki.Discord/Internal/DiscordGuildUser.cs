@@ -11,13 +11,11 @@ namespace Miki.Discord.Internal
 	{
 		private DiscordGuildMemberPacket _packet;
 		private DiscordClient _client;
-		private IDiscordGuild _guild;
 
-		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client, IDiscordGuild guild)
+		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client)
 		{
 			_packet = packet;
 			_client = client;
-			_guild = guild;
 		}
 
 		public ulong Id
@@ -55,7 +53,7 @@ namespace Miki.Discord.Internal
 
 		public async Task AddRoleAsync(IDiscordRole role)
 		{
-			await _client._apiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await _client.ApiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
@@ -68,27 +66,29 @@ namespace Miki.Discord.Internal
 			=> await _client.GetUserPresence(_packet.User.Id);
 
 		public async Task<IDiscordGuild> GetGuildAsync()
-			=> _guild ?? await _client.GetGuildAsync(_packet.GuildId);
+			=> await _client.GetGuildAsync(_packet.GuildId);
 
 		public async Task KickAsync(string reason = null)
 		{
-			await _client._apiClient.RemoveGuildMemberAsync(GuildId, Id, reason);
+			await _client.ApiClient.RemoveGuildMemberAsync(GuildId, Id, reason);
 		}
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
 		{
-			await _client._apiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await _client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public async Task<bool> HasPermissionsAsync(GuildPermission permissions)
 		{
-			GuildPermission p = await _guild.GetPermissionsAsync(this);
+            var guild = await GetGuildAsync();
+			GuildPermission p = await guild.GetPermissionsAsync(this);
 			return p.HasFlag(permissions);
 		}
 
 		public async Task<int> GetHierarchyAsync()
-		{
-			return (await _guild.GetRolesAsync())
+        {
+            var guild = await GetGuildAsync();
+            return (await guild.GetRolesAsync())
 				.Where(x => RoleIds.Contains(x.Id))
 				.Max(x => x.Position);
 		}

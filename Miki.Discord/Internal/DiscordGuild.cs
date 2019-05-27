@@ -1,5 +1,6 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,8 +9,8 @@ namespace Miki.Discord.Internal
 {
 	public class DiscordGuild : IDiscordGuild
 	{
-		private DiscordGuildPacket _packet;
-		private DiscordClient _client;
+		private readonly DiscordGuildPacket _packet;
+		private readonly DiscordClient _client;
 
 		public DiscordGuild(DiscordGuildPacket packet, DiscordClient client)
 		{
@@ -43,7 +44,7 @@ namespace Miki.Discord.Internal
 
 		public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{
-			await _client._apiClient.AddGuildBanAsync(Id, user.Id, pruneDays, reason);
+			await _client.ApiClient.AddGuildBanAsync(Id, user.Id, pruneDays, reason);
 		}
 
 		public async Task<IDiscordRole> CreateRoleAsync(CreateRoleArgs roleParams = null)
@@ -77,13 +78,13 @@ namespace Miki.Discord.Internal
 		public async Task<IDiscordGuildUser> GetMemberAsync(ulong id)
 		{
 			DiscordGuildMemberPacket guildMemberPacket = await _client.GetGuildMemberPacketAsync(id, Id);
-			return new DiscordGuildUser(guildMemberPacket, _client, this);
+			return new DiscordGuildUser(guildMemberPacket, _client);
 		}
 
 		public async Task<IDiscordGuildUser[]> GetMembersAsync()
 		{
 			return (await _client.CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(Id)))
-				.Select(x => new DiscordGuildUser(x, _client, this))
+				.Select(x => new DiscordGuildUser(x, _client))
 				.ToArray();
 		}
 
@@ -131,11 +132,24 @@ namespace Miki.Discord.Internal
 
 		public async Task<IDiscordGuildUser> GetSelfAsync()
 		{
-			IDiscordUser user = await _client.GetCurrentUserAsync();
+			IDiscordUser user = await _client.GetSelfAsync();
+
+            if(user == null)
+            {
+                throw new InvalidOperationException("Could not find self user");
+            }
+
 			return await GetMemberAsync(user.Id);
 		}
 
-		public async Task RemoveBanAsync(IDiscordGuildUser user)
-			=> await _client._apiClient.RemoveGuildBanAsync(Id, user.Id);
-	}
+        public async Task RemoveBanAsync(IDiscordGuildUser user)
+        {
+            if(user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            await _client.ApiClient.RemoveGuildBanAsync(Id, user.Id);
+        }
+    }
 }

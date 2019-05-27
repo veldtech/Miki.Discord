@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.1.9</Version>
+    <Version>3.0.0</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Discord gateway implementation</Description>
@@ -19,12 +19,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="Miki.Net.Websockets" Version="1.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj" />
-    <ProjectReference Include="..\..\Miki.Net.WebSockets\Miki.Net.Websockets\Miki.Net.Websockets.csproj" />
     <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
   </ItemGroup>
 

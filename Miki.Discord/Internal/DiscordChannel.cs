@@ -26,11 +26,13 @@ namespace Miki.Discord.Internal
 			=> _packet.Id;
 
 		public bool IsNsfw
-			=> _packet?.IsNsfw.GetValueOrDefault(false) ?? false;
+			=> _packet?.IsNsfw
+                .GetValueOrDefault(false) 
+                    ?? false;
 
 		public async Task DeleteAsync()
 		{
-			await _client._apiClient.DeleteChannelAsync(Id);
+			await _client.ApiClient.DeleteChannelAsync(Id);
 		}
 
 		public Task ModifyAsync(object todo)

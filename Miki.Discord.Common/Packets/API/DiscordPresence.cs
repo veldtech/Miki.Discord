@@ -29,11 +29,11 @@ namespace Miki.Discord.Common
 		public DiscordPresence(DiscordPresencePacket packet)
 		{
 			Activity = packet.Game;
-			Status = Utils.ParseEnum<UserStatus>(packet.Status);
+			Status = SystemUtils.ParseEnum<UserStatus>(packet.Status);
 		}
 	}
 
-	public static class Utils
+	public static class SystemUtils
 	{
 		public static T ParseEnum<T>(string enumValue, bool ignoreCase = true) where T : struct
 		{

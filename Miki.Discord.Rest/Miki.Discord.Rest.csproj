@@ -7,7 +7,7 @@
     <Company>Velddev</Company>
     <Product>Miki.Discord.Rest</Product>
     <Authors>Velddev</Authors>
-    <Version>2.6.5</Version>
+    <Version>2.6.6</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -14,6 +14,9 @@ using Miki.Net.Http;
 using System.Net.Http;
 using Miki.Discord.Rest.Http;
 using Miki.Discord.Rest.Exceptions;
+using Miki.Discord.Common.Packets.Arguments;
+using Miki.Discord.Rest.Converters;
+using Miki.Discord.Common.Utils;
 
 namespace Miki.Discord.Rest
 {
@@ -27,24 +30,32 @@ namespace Miki.Discord.Rest
 
         private readonly JsonSerializerSettings serializer;
 
+        private readonly DiscordToken _token;
+
         /// <summary>
         /// Creates a new Discord API instance.
         /// </summary>
         /// <param name="token"></param>
         /// <param name="cache"></param>
         public DiscordApiClient(
-            string token, 
+            DiscordToken token, 
             ICacheClient cache)
         {
+            _token = token;
+
             RestClient = new HttpClientFactory()
                 .HasBaseUri(DiscordUtils.DiscordUrl + DiscordUtils.BaseUrl)
                 .WithRateLimiter(new DiscordRateLimiter(cache))
                 .CreateNew()
-                .SetAuthorization("Bot", token);
+                .SetAuthorization(token.GetOAuthType(), token.Token);
 
             serializer = new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore,
+                Converters = new List<JsonConverter>
+                {
+                    new UserAvatarConverter()
+                }
             };
         }
 
@@ -298,6 +309,14 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<List<DiscordChannelPacket>>(response.Body);
         }
 
+        public async Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync()
+        {
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.UserMeChannels());
+            HandleErrors(response);
+            return JsonConvert.DeserializeObject<List<DiscordChannelPacket>>(response.Body);
+        }
+
         public async Task<DiscordEmoji> GetEmojiAsync(
             ulong guildId, 
             ulong emojiId)
@@ -398,6 +417,21 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<DiscordUserPacket>(response.Body);
         }
 
+        public async Task ModifySelfAsync(
+            UserModifyArgs args)
+        {
+            if(args.Avatar.Type == ImageType.WEBP)
+            {
+                throw new InvalidDataException("Can't upload WEBP images.");
+            }
+
+            var json = JsonConvert.SerializeObject(args, serializer);
+            var response = await RestClient.PatchAsync(
+                DiscordApiRoutes.UserMe(),
+                json);
+            HandleErrors(response);
+        }
+
         public async Task ModifyGuildMemberAsync(
             ulong guildId, 
             ulong userId, 
@@ -457,7 +491,7 @@ namespace Miki.Discord.Rest
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            args.embed = new DiscordEmbed
+            args.Embed = new DiscordEmbed
             {
                 Image = new EmbedImage
                 {
@@ -467,9 +501,9 @@ namespace Miki.Discord.Rest
 
             List<MultiformItem> items = new List<MultiformItem>();
 
-            if (!string.IsNullOrEmpty(args.content))
+            if (!string.IsNullOrEmpty(args.Content))
             {
-                var content = new StringContent(args.content);
+                var content = new StringContent(args.Content);
                 items.Add(new MultiformItem { Name = "content", Content = content });
             }
 

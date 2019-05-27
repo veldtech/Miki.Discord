@@ -1,64 +1,40 @@
-﻿using MessagePack;
-using ProtoBuf;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
 	[Serializable]
-	[ProtoContract]
-	[MessagePackObject]
     [DataContract]
     public class DiscordChannelPacket
 	{
-        [DataMember(Name = "id")]
-        [ProtoMember(1)]
-		[Key(0)]
+        [DataMember(Name = "id", Order = 1)]
 		public ulong Id { get; set; }
 
-        [DataMember(Name = "type")]
-        [ProtoMember(2)]
-		[Key(1)]
+        [DataMember(Name = "type", Order = 2)]
 		public ChannelType Type { get; set; }
 
-        [DataMember(Name = "created_at")]
-        [ProtoMember(3)]
-		[Key(2)]
+        [DataMember(Name = "created_at", Order = 3)]
 		public long CreatedAt { get; set; }
 
-        [DataMember(Name = "name")]
-        [ProtoMember(4)]
-		[Key(3)]
+        [DataMember(Name = "name", Order = 4)]
 		public string Name { get; set; }
 
-        [DataMember(Name = "guild_id")]
-        [ProtoMember(5)]
-		[Key(4)]
+        [DataMember(Name = "guild_id", Order = 5)]
 		public ulong? GuildId { get; set; }
 
-        [DataMember(Name = "position")]
-        [ProtoMember(6)]
-		[Key(5)]
+        [DataMember(Name = "position", Order = 6)]
 		public int? Position { get; set; }
 
-        [DataMember(Name = "permission_overwrites")]
-        [ProtoMember(7)]
-		[Key(6)]
+        [DataMember(Name = "permission_overwrites", Order = 7)]
 		public PermissionOverwrite[] PermissionOverwrites { get; set; }
 
-        [DataMember(Name = "parent_id")]
-        [ProtoMember(8)]
-		[Key(7)]
+        [DataMember(Name = "parent_id", Order = 8)]
 		public ulong? ParentId { get; set; }
 
-        [DataMember(Name = "nsfw")]
-        [ProtoMember(9)]
-		[Key(8)]
+        [DataMember(Name = "nsfw", Order = 9)]
 		public bool? IsNsfw { get; set; }
 
-        [DataMember(Name = "topic")]
-        [ProtoMember(10)]
-		[Key(9)]
+        [DataMember(Name = "topic", Order = 10)]
 		public string Topic { get; set; }
 	}
 

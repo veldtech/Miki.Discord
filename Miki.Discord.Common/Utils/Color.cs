@@ -47,5 +47,10 @@
 		{
 			return $"#{R.ToString("X2")}{G.ToString("X2")}{B.ToString("X2")}";
 		}
-	}
+
+        public static bool operator==(Color c, int value)
+            => value == c._value;
+        public static bool operator !=(Color c, int value)
+            => value != c._value;
+    }
 }

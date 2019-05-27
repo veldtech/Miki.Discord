@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.9.0</Version>
+    <Version>3.0.0</Version>
     <Copyright>Velddev</Copyright>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>velddev.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-    <Description>Common type and helper library for Miki.Discord libraries</Description>
+    <Description>Common type and helper library for Miki.Discord.* libraries</Description>
     <PackageLicenseExpression />
     <Authors>Velddev</Authors>
     <Product>Miki</Product>
@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="1.7.3.4" />
     <PackageReference Include="protobuf-net" Version="2.3.17" />
     <PackageReference Include="System.Memory" Version="4.5.2" />
   </ItemGroup>

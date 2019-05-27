@@ -1,39 +1,26 @@
-﻿using MessagePack;
-using ProtoBuf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
-	[ProtoContract]
-	[MessagePackObject]
     [DataContract]
     public class DiscordGuildMemberPacket
 	{
-        [DataMember(Name = "user")]
-        [ProtoMember(1)]
-		[Key(0)]
+        [DataMember(Name = "user", Order = 1)]
 		public DiscordUserPacket User { get; set; }
 
-		[ProtoMember(2)]
-        [DataMember(Name = "guild_id")]
-        [Key(1)]
+        [DataMember(Name = "guild_id", Order = 2)]
 		public ulong GuildId { get; set; }
 
-		[ProtoMember(3)]
-        [DataMember(Name = "nick")]
-        [Key(2)]
+        [DataMember(Name = "nick", Order = 3)]
 		public string Nickname { get; set; }
 
-		[ProtoMember(4)]
-        [DataMember(Name = "roles")]
-        [Key(3)]
+        [DataMember(Name = "roles", Order = 4)]
 		public List<ulong> Roles { get; set; } = new List<ulong>();
 
-		[ProtoMember(5)]
-		[Key(4)]
+        [DataMember(Order = 5)]
 		public long JoinedAt { get; set; }
 
         [DataMember(Name = "joined_at")]
@@ -58,14 +45,10 @@ namespace Miki.Discord.Common.Packets
 			}
 		}
 
-		[ProtoMember(6)]
-        [DataMember(Name = "deaf")]
-        [Key(5)]
+        [DataMember(Name = "deaf", Order = 6)]
 		public bool Deafened { get; set; }
 
-		[ProtoMember(7)]
-        [DataMember(Name = "mute")]
-        [Key(6)]
+        [DataMember(Name = "mute", Order = 7)]
 		public bool Muted { get; set; }
 	}
 }
