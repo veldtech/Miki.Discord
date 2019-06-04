@@ -28,7 +28,7 @@ namespace Miki.Discord.Common
 
         DateTimeOffset Timestamp { get; }
 
-        MessageType Type { get; }
+        DiscordMessageType Type { get; }
 
         Task CreateReactionAsync(DiscordEmoji emoji);
 

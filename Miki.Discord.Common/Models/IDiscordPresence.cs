@@ -4,7 +4,7 @@ namespace Miki.Discord.Common
 {
 	public interface IDiscordPresence
 	{
-		Activity Activity { get; }
+		DiscordActivity Activity { get; }
 		UserStatus Status { get; }
 	}
 }

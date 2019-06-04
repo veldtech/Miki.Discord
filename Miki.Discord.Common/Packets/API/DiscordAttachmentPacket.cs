@@ -1,41 +1,32 @@
-﻿using ProtoBuf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
 namespace Miki.Discord.Common.Packets
 {
-    [ProtoContract]
     [DataContract]
     public class DiscordAttachmentPacket
     {
-        [DataMember(Name ="id")]
-        [ProtoMember(1)]
+        [DataMember(Name = "id", Order = 1)]
         public ulong Id { get; set; }
 
-        [DataMember(Name ="filename")]
-        [ProtoMember(2)]
+        [DataMember(Name = "filename", Order = 2)]
         public string FileName { get; set; }
 
-        [DataMember(Name ="size")]
-        [ProtoMember(3)]
+        [DataMember(Name = "size", Order = 3)]
         public int Size { get; set; }
 
-        [DataMember(Name ="url")]
-        [ProtoMember(4)]
+        [DataMember(Name = "url", Order = 4)]
         public string Url { get; set; }
 
-        [DataMember(Name ="proxy_url")]
-        [ProtoMember(5)]
+        [DataMember(Name = "proxy_url", Order = 5)]
         public string ProxyUrl { get; set; }
 
-        [DataMember(Name ="height")]
-        [ProtoMember(6)]
+        [DataMember(Name = "height", Order = 6)]
         public int? Height { get; set; }
 
-        [DataMember(Name ="width")]
-        [ProtoMember(7)]
+        [DataMember(Name = "width", Order = 7)]
         public int? Width { get; set; }
 
     }

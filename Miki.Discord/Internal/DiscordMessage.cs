@@ -55,7 +55,7 @@ namespace Miki.Discord.Internal
 		public ulong Id
 			=> _packet.Id;
 
-		public MessageType Type
+		public DiscordMessageType Type
 			=> _packet.Type;
 
 		public async Task<IDiscordMessage> EditAsync(EditMessageArgs args)

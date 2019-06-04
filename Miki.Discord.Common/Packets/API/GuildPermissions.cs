@@ -1,27 +1,21 @@
-﻿using ProtoBuf;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
-	[ProtoContract]
     [DataContract]
     public class PermissionOverwrite
 	{
 		[DataMember(Name ="id")]
-		[ProtoMember(1)]
 		public ulong Id;
 
 		[DataMember(Name ="type")]
-		[ProtoMember(2)]
 		public string Type;
 
 		[DataMember(Name ="allow")]
-		[ProtoMember(3)]
 		public GuildPermission AllowedPermissions;
 
 		[DataMember(Name ="deny")]
-		[ProtoMember(4)]
 		public GuildPermission DeniedPermissions;
 	}
 

@@ -98,10 +98,14 @@ namespace Miki.Discord
 				.Select(x => new DiscordRole(x, this))
 				.ToList();
 
-		public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
-			=> (await GetGuildChannelPacketsAsync(guildId))
-				.Select(x => ResolveChannel(x) as IDiscordGuildChannel)
-				.ToList();
+        public async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
+        {
+            var channelPackets = await GetGuildChannelPacketsAsync(guildId);
+
+            var channels = channelPackets.Select(x => ResolveChannel(x) as IDiscordGuildChannel);
+
+            return channels.ToList();
+        }
 
 		public async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
 		{
@@ -204,7 +208,7 @@ namespace Miki.Discord
 
 		internal async Task<DiscordChannelPacket[]> GetGuildChannelPacketsAsync(ulong guildId)
 		{
-			var packets = await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey());
+			var packets = await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId));
 
 			if (!packets.Any())
 			{
@@ -337,6 +341,7 @@ namespace Miki.Discord
 						return new DiscordGuildTextChannel(packet, this);
 					}
 
+                    case ChannelType.CATEGORY:
 					case ChannelType.GUILDVOICE:
 					default:
 					{

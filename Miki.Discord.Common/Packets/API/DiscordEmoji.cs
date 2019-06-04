@@ -1,5 +1,4 @@
 ﻿using Miki.Discord.Common.Packets;
-using ProtoBuf;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -16,7 +15,6 @@ namespace Miki.Discord.Common
 		[DataMember(Name = "name", Order = 2)]
 		public string Name { get; set; }
 
-		[ProtoMember(3)]
 		[DataMember(Name = "roles", Order = 3)]
 		public List<ulong> WhitelistedRoles { get; set; }
 

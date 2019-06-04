@@ -1,46 +1,35 @@
-﻿using ProtoBuf;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {
-	[ProtoContract]
     [DataContract]
     public class DiscordVoiceStatePacket
 	{
-		[ProtoMember(1)]
-		[DataMember(Name ="guild_id")]
+		[DataMember(Name ="guild_id", Order = 1)]
 		public ulong? GuildId { get; set; }
 
-		[ProtoMember(2)]
-		[DataMember(Name ="channel_id")]
+		[DataMember(Name ="channel_id", Order = 2)]
 		public ulong ChannelId { get; set; }
 
-		[ProtoMember(3)]
-		[DataMember(Name ="user_id")]
+		[DataMember(Name ="user_id", Order = 3)]
 		public ulong UserId { get; set; }
 
-		[ProtoMember(4)]
-		[DataMember(Name ="session_id")]
+		[DataMember(Name ="session_id", Order = 4)]
 		public string SessionId { get; set; }
 
-		[ProtoMember(5)]
-		[DataMember(Name ="deaf")]
+		[DataMember(Name ="deaf", Order = 5)]
 		public bool Deafened { get; set; }
 
-		[ProtoMember(6)]
-		[DataMember(Name ="mute")]
+		[DataMember(Name ="mute", Order = 6)]
 		public bool Muted { get; set; }
 
-		[ProtoMember(7)]
-		[DataMember(Name ="self_deaf")]
+		[DataMember(Name ="self_deaf", Order = 7)]
 		public bool SelfDeafened { get; set; }
 
-		[ProtoMember(8)]
-		[DataMember(Name ="self_mute")]
+		[DataMember(Name ="self_mute", Order = 8)]
 		public bool SelfMuted { get; set; }
 
-		[ProtoMember(9)]
-		[DataMember(Name ="suppress")]
+		[DataMember(Name ="suppress", Order = 9)]
 		public bool Suppressed { get; set; }
 	}
 }

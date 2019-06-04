@@ -14,7 +14,7 @@ namespace Miki.Discord.Common.Packets
 		public List<ulong> RoleIds { get; set; }
 
         [DataMember(Name = "game", Order = 3)]
-		public Activity Game { get; set; }
+		public DiscordActivity Game { get; set; }
 
         [DataMember(Name = "guild_id", Order = 4)]
 		public ulong? GuildId { get; set; }
@@ -30,7 +30,7 @@ namespace Miki.Discord.Common.Packets
 		public int? Since { get; set; }
 
         [DataMember(Name = "game", Order = 2)]
-        public Activity Game { get; set; }
+        public DiscordActivity Game { get; set; }
 
         [DataMember(Name = "status", Order = 3)]
 		public string Status { get; set; }
@@ -40,7 +40,7 @@ namespace Miki.Discord.Common.Packets
 	}
 
     [DataContract]
-	public class Activity
+	public class DiscordActivity
 	{
         [DataMember(Name = "name", Order = 1)]
 		public string Name { get; set; }

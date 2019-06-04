@@ -72,6 +72,12 @@ namespace Miki.Discord.Common.Packets
         [DataMember(Name = "system_channel_id", Order = 21)]
 		public ulong? SystemChannelId;
 
+        [DataMember(Name = "premium_tier", Order = 22)]
+        public int PremiumTier;
+
+        [DataMember(Name = "premium_subscription_count", Order = 23)]
+        public int PremiumSubscriberCount;
+
 		public long CreatedAt;
 
         [DataMember(Name = "joined_at", Order = 22)]

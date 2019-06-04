@@ -148,31 +148,26 @@ namespace Miki.Discord.Caching.Stages
 		{
             guild.Members.RemoveAll(x => x == null);
 
-			await Task.WhenAll(
+            await Task.WhenAll(
 				_cache.HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild),
-				_cache.HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id),
-					guild.Channels.Select(x =>
-					{
-						x.GuildId = guild.Id;
-						return new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x);
-					}).ToArray()
-				),
-					_cache.HashUpsertAsync(CacheUtils.GuildMembersKey(guild.Id), guild.Members.Select(x =>
-					{
-						x.GuildId = guild.Id;
-						return new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x);
-					}).ToArray()
-				),
-					_cache.HashUpsertAsync(CacheUtils.GuildRolesKey(guild.Id), guild.Roles.Select(x =>
-					{
-						return new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x);
-					}).ToArray()
-				),
-					_cache.HashUpsertAsync(CacheUtils.UsersCacheKey, guild.Members.Select(x =>
-					{
-						return new KeyValuePair<string, DiscordUserPacket>(x.User.Id.ToString(), x.User);
-					}).ToArray()
-				)
+				_cache.HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), guild.Channels.Select(x =>
+                {
+                    x.GuildId = guild.Id;
+                    return new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x);
+                })),
+				_cache.HashUpsertAsync(CacheUtils.GuildMembersKey(guild.Id), guild.Members.Select(x =>
+				{
+					x.GuildId = guild.Id;
+					return new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x);
+				})),
+				_cache.HashUpsertAsync(CacheUtils.GuildRolesKey(guild.Id), guild.Roles.Select(x =>
+				{
+					return new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x);
+				})),
+				_cache.HashUpsertAsync(CacheUtils.UsersCacheKey, guild.Members.Select(x =>
+				{
+					return new KeyValuePair<string, DiscordUserPacket>(x.User.Id.ToString(), x.User);
+				}))
 			);
 		}
 

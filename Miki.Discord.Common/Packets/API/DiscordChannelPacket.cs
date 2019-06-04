@@ -40,7 +40,7 @@ namespace Miki.Discord.Common
 
 	public enum ChannelType
 	{
-		GUILDTEXT,
+		GUILDTEXT = 0,
 		DM,
 		GUILDVOICE,
 		GROUPDM,

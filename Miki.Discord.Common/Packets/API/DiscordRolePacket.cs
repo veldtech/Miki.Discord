@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Packets
 {

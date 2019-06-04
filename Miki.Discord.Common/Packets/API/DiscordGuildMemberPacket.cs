@@ -50,5 +50,30 @@ namespace Miki.Discord.Common.Packets
 
         [DataMember(Name = "mute", Order = 7)]
 		public bool Muted { get; set; }
-	}
+
+        [DataMember(Order = 8)]
+        public long PremiumSince { get; set; }
+
+        [DataMember(Name = "premium_since")]
+        internal string _premium_since
+        {
+            get
+            {
+                return new DateTime(PremiumSince).ToString("MM-dd-yyyyTHH:mm:ss.fffffffzzz");
+            }
+
+            set
+            {
+                if (DateTime.TryParseExact(value, "MM-dd-yyyyTHH:mm:ss.fffffffzzz", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime d))
+                {
+                    PremiumSince = d.Ticks;
+                }
+
+                if (DateTime.TryParse(value, out DateTime e))
+                {
+                    PremiumSince = e.Ticks;
+                }
+            }
+        }
+    }
 }
