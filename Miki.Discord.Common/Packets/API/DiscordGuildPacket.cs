@@ -70,13 +70,6 @@ namespace Miki.Discord.Common.Packets
 		public ulong? WidgetChannelId;
 
         [DataMember(Name = "system_channel_id", Order = 21)]
-		public ulong? SystemChannelId;
-
-        [DataMember(Name = "premium_tier", Order = 22)]
-        public int PremiumTier;
-
-        [DataMember(Name = "premium_subscription_count", Order = 23)]
-        public int PremiumSubscriberCount;
 
 		public long CreatedAt;
 
@@ -122,7 +115,15 @@ namespace Miki.Discord.Common.Packets
         [DataMember(Name = "permissions", Order = 27)]
 		public int? Permissions;
 
-		public void OverwriteContext(DiscordGuildPacket guild)
+        public ulong? SystemChannelId;
+
+        [DataMember(Name = "premium_tier", Order = 28)]
+        public int PremiumTier;
+
+        [DataMember(Name = "premium_subscription_count", Order = 29)]
+        public int PremiumSubscriberCount;
+
+        public void OverwriteContext(DiscordGuildPacket guild)
 		{
 			Name = guild.Name;
 			Icon = guild.Icon;
