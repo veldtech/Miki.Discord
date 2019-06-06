@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Miki.Discord.Caching\Miki.Discord.Caching.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Gateway\Miki.Discord.Gateway.csproj" />
     <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
     <ProjectReference Include="..\Miki.Discord.Tests.Dummy\Miki.Discord.Tests.Dummy.csproj" />
     <ProjectReference Include="..\Miki.Discord\Miki.Discord.csproj" />

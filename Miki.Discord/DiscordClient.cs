@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Discord.Common.Extensions;
 
 namespace Miki.Discord
 {
@@ -388,100 +389,66 @@ namespace Miki.Discord
 
 		private async Task OnGuildMemberDelete(ulong guildId, DiscordUserPacket packet)
 		{
-			if (GuildMemberDelete != null)
-			{
-				IDiscordGuild guild = await GetGuildAsync(guildId);
-				DiscordGuildMemberPacket member = await GetGuildMemberPacketAsync(packet.Id, guildId);
+			IDiscordGuild guild = await GetGuildAsync(guildId);
+			DiscordGuildMemberPacket member = await GetGuildMemberPacketAsync(packet.Id, guildId);
 
-				await GuildMemberDelete(
-					new DiscordGuildUser(member, this)
-				);
-			}
+			await GuildMemberDelete.InvokeAsync(
+				new DiscordGuildUser(member, this)
+			);
 		}
 
-		private async Task OnGuildMemberCreate(DiscordGuildMemberPacket packet)
-		{
-			if (GuildMemberCreate != null)
-			{
-				IDiscordGuild guild = await GetGuildAsync(packet.GuildId);
+		private Task OnGuildMemberCreate(DiscordGuildMemberPacket packet)
+        {
+            return GuildMemberCreate.InvokeAsync(
+                new DiscordGuildUser(packet, this)
+            );
+        }
 
-				await GuildMemberCreate(
-					new DiscordGuildUser(packet, this)
-				);
-			}
+		private Task OnMessageCreate(DiscordMessagePacket packet)
+		{
+			return MessageCreate.InvokeAsync(new DiscordMessage(packet, this));
 		}
 
-		private async Task OnMessageCreate(DiscordMessagePacket packet)
+		private Task OnMessageUpdate(DiscordMessagePacket packet)
 		{
-			if (MessageCreate != null)
-			{
-				await MessageCreate(new DiscordMessage(packet, this));
-			}
-		}
-
-		private async Task OnMessageUpdate(DiscordMessagePacket packet)
-		{
-			if (MessageUpdate != null)
-			{
-				await MessageUpdate(new DiscordMessage(packet, this));
-			}
+            return MessageUpdate.InvokeAsync(new DiscordMessage(packet, this));
 		}
 
 		private async Task OnGuildJoin(DiscordGuildPacket guild)
 		{
-			DiscordGuild g = new DiscordGuild(guild, this);
+			var g = new DiscordGuild(guild, this);
 
 			if (!await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString()))
 			{
-				if (GuildJoin != null)
-				{
-					await GuildJoin(g);
-				}
+				await GuildJoin.InvokeAsync(g);
 			}
 			else
-			{
-				if (GuildAvailable != null)
-				{
-					await GuildAvailable(g);
-				}
-			}
+            {
+                await GuildAvailable.InvokeAsync(g);
+            }
 		}
 
-		private async Task OnGuildLeave(DiscordGuildUnavailablePacket guild)
-		{
+		private Task OnGuildLeave(DiscordGuildUnavailablePacket guild)
+        {
             if (guild.IsUnavailable.GetValueOrDefault(false))
             {
-                if (GuildUnavailable != null)
-                {
-                    await GuildUnavailable(guild.GuildId);
-                }
+                return GuildUnavailable.InvokeAsync(guild.GuildId);
             }
-            else
-            {
-                if (GuildLeave != null)
-                {
-                    await GuildLeave(guild.GuildId);
-                }
-            }
-		}
+
+            return GuildLeave.InvokeAsync(guild.GuildId);
+        }
 
 		private async Task OnUserUpdate(DiscordPresencePacket user)
 		{
-			if (UserUpdate != null)
-			{
-				await UserUpdate(
-					await GetUserAsync(user.User.Id),
-					new DiscordUser(user.User, this)
-				);
-			}
+			await UserUpdate.InvokeAsync(
+				await GetUserAsync(user.User.Id),
+				new DiscordUser(user.User, this)
+			);
 		}
 
 		private async Task OnReady(GatewayReadyPacket readyPacket)
 		{
-			if (Ready != null)
-			{
-				await Ready(readyPacket);
-			}
+			await Ready.InvokeAsync(readyPacket);
 		}
 	}
 }

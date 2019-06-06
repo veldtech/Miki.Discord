@@ -147,13 +147,13 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnGuildMemberRemove(guild.Id, user);
 
-			DiscordGuildMemberPacket[] g = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
+			DiscordGuildMemberPacket[] g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
 
 			Assert.Empty(g);
 
 			await gateway.OnGuildMemberAdd(member);
 
-			 g = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
+			 g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
 
 			Assert.NotEmpty(g);
 
@@ -165,7 +165,7 @@ namespace Miki.Discord.Tests
 				User = user
 			});
 
-			g = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
+			g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
 
 			Assert.NotEmpty(g);
 			Assert.Equal("new nick", g[0].Nickname);
@@ -184,7 +184,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelUpdate(channel);
 
-			DiscordChannelPacket[] channels = await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guild.Id));
+			DiscordChannelPacket[] channels = (await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guild.Id))).ToArray();
 		
 			Assert.NotEmpty(channels);
 
