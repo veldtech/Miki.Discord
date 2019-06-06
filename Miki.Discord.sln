@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Dummy", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Performance", "Miki.Discord.Tests.Performance\Miki.Discord.Tests.Performance.csproj", "{C5BABE08-66DA-403E-8BD9-4562D4EA1031}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Example", "..\Miki.Discord.Example\Miki.Discord.Example\Miki.Discord.Example.csproj", "{19AF63D3-77FD-4C56-9A53-75123257AAF9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway", "Miki.Discord.Gateway\Miki.Discord.Gateway.csproj", "{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}"
 EndProject
 Global
@@ -55,10 +53,6 @@ Global
 		{C5BABE08-66DA-403E-8BD9-4562D4EA1031}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5BABE08-66DA-403E-8BD9-4562D4EA1031}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5BABE08-66DA-403E-8BD9-4562D4EA1031}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19AF63D3-77FD-4C56-9A53-75123257AAF9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
