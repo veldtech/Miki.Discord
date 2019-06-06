@@ -11,6 +11,7 @@
     <DelaySign>false</DelaySign>
     <PackageTags>Discord Gateway Miki</PackageTags>
     <Product>Miki</Product>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
