@@ -33,15 +33,13 @@ namespace Miki.Discord.Tests
 		public Caching()
 		{
 			gateway = new DummyGateway();
-
-			ResetObjects();
 		}
 
-		void ResetObjects()
+		public async Task ResetObjectsAsync()
 		{
 			pool = new InMemoryCachePool(new ProtobufSerializer());
 
-			client = pool.GetAsync().Result as IExtendedCacheClient;
+			client = (IExtendedCacheClient) await pool.GetAsync();
 
 			new BasicCacheStage().Initialize(gateway, client);
 
@@ -109,15 +107,14 @@ namespace Miki.Discord.Tests
 				Roles = new List<DiscordRolePacket>(),
 			};
 
-			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
-			(pool.GetAsync().Result as IExtendedCacheClient).HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild).GetAwaiter().GetResult();
+			((IExtendedCacheClient) await pool.GetAsync()).HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
+            ((IExtendedCacheClient) await pool.GetAsync()).HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild).GetAwaiter().GetResult();
 		}
 
 		[Fact]
 		public async Task UserUpdateAsync()
 		{
-			ResetObjects();
-
+			await ResetObjectsAsync();
 			await gateway.OnGuildMemberRemove(guild.Id, member.User);
 
 			var m = await client.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id), member.User.Id.ToString());
@@ -142,10 +139,9 @@ namespace Miki.Discord.Tests
 
 		[Fact]
 		public async Task GuildMemberAsync()
-		{
-			ResetObjects();
-
-			await gateway.OnGuildMemberRemove(guild.Id, user);
+        {
+            await ResetObjectsAsync();
+            await gateway.OnGuildMemberRemove(guild.Id, user);
 
 			DiscordGuildMemberPacket[] g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
 
@@ -174,9 +170,9 @@ namespace Miki.Discord.Tests
 		[Fact]
         public async Task ChannelAsync()
         {
-			ResetObjects();
+            await ResetObjectsAsync();
 
-			Assert.True(channel.IsNsfw);
+            Assert.True(channel.IsNsfw);
 			Assert.Equal("test channel", channel.Name);
 
 			channel.IsNsfw = false;
@@ -230,9 +226,9 @@ namespace Miki.Discord.Tests
 		[Fact]
 		public async Task GuildAsync()
 		{
-			ResetObjects();
+            await ResetObjectsAsync();
 
-			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
+            await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
 			{
 				GuildId = guild.Id,
 				IsUnavailable = true
@@ -278,10 +274,10 @@ namespace Miki.Discord.Tests
 
 		[Fact]
 		public async Task RoleAsync()
-		{
-			ResetObjects();
+        {
+            await ResetObjectsAsync();
 
-			await gateway.OnGuildRoleCreate(guild.Id, role);
+            await gateway.OnGuildRoleCreate(guild.Id, role);
 
 			var updatedRole = await client.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guild.Id), role.Id.ToString());
 

@@ -39,7 +39,7 @@ namespace Miki.Discord.Tests
 		public int MemberCount;
 
 		[GlobalSetup]
-		public void Setup()
+		public async Task Setup()
 		{
 			Random r = new Random();
 
@@ -90,7 +90,7 @@ namespace Miki.Discord.Tests
 			pool = new StackExchangeCachePool(new LZ4MsgPackSerializer(), "localhost");
 			gateway = new DummyGateway();
 
-			client = pool.GetAsync().Result as IExtendedCacheClient;
+			client = (IExtendedCacheClient) await pool.GetAsync();
 
 			new BasicCacheStage().Initialize(gateway, client);
 
