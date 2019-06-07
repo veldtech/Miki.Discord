@@ -10,6 +10,8 @@
     <Company>Velddev</Company>
     <Description>Abstractified wrapper over Miki.Discord components. Used as a high level client relatable to other Discord libraries.</Description>
     <PackageTags>discord, api</PackageTags>
+    <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

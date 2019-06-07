@@ -12,6 +12,8 @@
     <PackageTags>Discord Gateway Miki</PackageTags>
     <Product>Miki</Product>
     <LangVersion>7.1</LangVersion>
+    <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

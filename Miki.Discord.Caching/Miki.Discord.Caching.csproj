@@ -6,6 +6,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>3.0.0</Version>
     <Authors>Velddev</Authors>
+    <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

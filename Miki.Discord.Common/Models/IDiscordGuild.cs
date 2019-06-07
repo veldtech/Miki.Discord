@@ -5,16 +5,34 @@ namespace Miki.Discord.Common
 {
 	public interface IDiscordGuild : ISnowflake
 	{
+        /// <summary>
+        /// Display name of the guild.
+        /// </summary>
 		string Name { get; }
 
+        /// <summary>
+        /// A Discord CDN URL pointing to the guild's icon.
+        /// </summary>
 		string IconUrl { get; }
 
+        /// <summary>
+        /// Snowflake referring to the current owner of the guild.
+        /// </summary>
 		ulong OwnerId { get; }
 
+        /// <summary>
+        /// Current amount of members in the guild.
+        /// </summary>
 		int MemberCount { get; }
 
+        /// <summary>
+        /// Current amount of members that are nitro boosting this server.
+        /// </summary>
         int PremiumSubscriberCount { get; }
 
+        /// <summary>
+        /// Current premium tier.
+        /// </summary>
         int PremiumTier { get; }
 
 		GuildPermission Permissions { get; }
@@ -40,9 +58,9 @@ namespace Miki.Discord.Common
 		Task<IDiscordGuildUser[]> GetMembersAsync();
 
 		/// <summary>
-		/// Updates the guild member from the current updated cache and returns it
+		/// Gets the <see cref="IDiscordGuildUser"/> that fits with the current snowflake.
 		/// </summary>
-		/// <param name="id">specified guildmember id</param>
+		/// <param name="id">Specified <seealso cref="ISnowflake"/> pointing to a <seealso cref="IDiscordGuildUser"/>.</param>
 		/// <returns></returns>
 		Task<IDiscordGuildUser> GetMemberAsync(ulong id);
 
