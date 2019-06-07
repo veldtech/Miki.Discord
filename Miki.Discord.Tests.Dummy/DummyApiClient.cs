@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Miki.Discord.Common.Packets.Arguments;
 
 namespace Miki.Discord.Mocking
 {
@@ -51,11 +52,6 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task DeleteAllReactions(ulong channelId, ulong messageId)
-		{
-			throw new NotImplementedException();
-		}
-
 		public Task DeleteChannelAsync(ulong channelId)
 		{
 			throw new NotImplementedException();
@@ -72,11 +68,6 @@ namespace Miki.Discord.Mocking
 		}
 
 		public Task DeleteMessagesAsync(ulong channelId, ulong[] messages)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task DeleteReaction(ulong channelId, ulong messageId, ulong userId, DiscordEmoji emoji)
 		{
 			throw new NotImplementedException();
 		}
@@ -116,7 +107,12 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task<DiscordUserPacket> GetCurrentUserAsync()
+        public Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DiscordUserPacket> GetCurrentUserAsync()
 		{
 			throw new NotImplementedException();
 		}
@@ -146,17 +142,7 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId)
-		{
-			throw new NotImplementedException();
-		}
-
 		public Task<List<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, ulong emojiId)
 		{
 			throw new NotImplementedException();
 		}
@@ -186,7 +172,12 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task RemoveGuildBanAsync(ulong guildId, ulong userId)
+        public Task ModifySelfAsync(UserModifyArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveGuildBanAsync(ulong guildId, ulong userId)
 		{
 			throw new NotImplementedException();
 		}

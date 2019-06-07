@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Events;
@@ -13,40 +14,45 @@ namespace Miki.Discord.Gateway
 {
     public partial class GatewayCluster : IGateway
     {
-        public Dictionary<int, GatewayShard> Shards { get; set; } = new Dictionary<int, GatewayShard>();
+        public Dictionary<int, IGateway> Shards { get; set; } = new Dictionary<int, IGateway>();
 
-        public GatewayCluster(string token)
-        {
-
-        }
         /// <summary>
         /// Spawn all shards in a single cluster
         /// </summary>
         /// <param name="properties">general gateway properties</param>
-        /// <param name="shards">Which shards should this cluster spawn</param>
         public GatewayCluster(GatewayProperties properties)
+            : this(properties, p => new GatewayShard(p))
         {
-            for (int i = 0; i < properties.ShardCount; i++)
-            {
-                Shards.Add(i, new GatewayShard(new GatewayProperties
-                {
-                    WebSocketClientFactory = properties.WebSocketClientFactory,
-                    Encoding = properties.Encoding,
-                    Compressed = properties.Compressed,
-                    Ratelimiter = properties.Ratelimiter,
-                    ShardCount = properties.ShardCount,
-                    ShardId = i,
-                    Token = properties.Token,
-                    Version = properties.Version
-                }));
-            }
+
         }
+
         /// <summary>
         /// Used to spawn specific shards only
         /// </summary>
         /// <param name="properties">general gateway properties</param>
         /// <param name="shards">Which shards should this cluster spawn</param>
         public GatewayCluster(GatewayProperties properties, IEnumerable<int> shards)
+            : this(properties, shards, p => new GatewayShard(p))
+        {
+        }
+
+        /// <summary>
+        /// Spawn all shards in a single cluster
+        /// </summary>
+        /// <param name="properties">general gateway properties</param>
+        /// <param name="gatewayFactory">The gateway factory</param>
+        public GatewayCluster(GatewayProperties properties, Func<GatewayProperties, IGateway> gatewayFactory)
+            : this(properties, Enumerable.Range(0, properties.ShardCount), gatewayFactory)
+        {
+        }
+
+        /// <summary>
+        /// Used to spawn specific shards only
+        /// </summary>
+        /// <param name="properties">general gateway properties</param>
+        /// <param name="shards">Which shards should this cluster spawn</param>
+        /// <param name="gatewayFactory">The gateway factory</param>
+        public GatewayCluster(GatewayProperties properties, IEnumerable<int> shards, Func<GatewayProperties, IGateway> gatewayFactory)
         {
             if(shards == null)
             {
@@ -55,7 +61,7 @@ namespace Miki.Discord.Gateway
 
             foreach(var i in shards)
             {
-                Shards.Add(i, new GatewayShard(new GatewayProperties
+                var shardProperties = new GatewayProperties
                 {
                     WebSocketClientFactory = properties.WebSocketClientFactory,
                     Encoding = properties.Encoding,
@@ -65,7 +71,9 @@ namespace Miki.Discord.Gateway
                     ShardId = i,
                     Token = properties.Token,
                     Version = properties.Version
-                }));
+                };
+
+                Shards.Add(i, gatewayFactory(shardProperties));
             }
         }
 

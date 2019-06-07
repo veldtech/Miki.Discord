@@ -22,8 +22,6 @@ namespace Miki.Discord.Tests
 		[Fact]
 		public void IsRatelimited()
 		{
-			var p = _pool.GetAsync().Result;
-
 			var rateLimit = new Ratelimit();
 
 			rateLimit.Remaining = 5;
