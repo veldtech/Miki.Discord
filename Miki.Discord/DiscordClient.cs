@@ -1,77 +1,205 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Internal;
 
 namespace Miki.Discord
 {
-    public class DiscordClient : BaseDiscordClient
+    public partial class DiscordClient : BaseDiscordClient
     {
-        private readonly ConcurrentDictionary<ulong, bool> _seenGuilds = new ConcurrentDictionary<ulong, bool>();
-
-        public DiscordClient(DiscordClientConfigurations config) : base(config)
+        public DiscordClient(DiscordClientConfigurations config) 
+            : this(config.ApiClient, config.Gateway, config.CacheClient)
         {
         }
 
-        protected override Task<DiscordUserPacket> GetCurrentUserPacketAsync()
+        public DiscordClient(IApiClient apiClient, IGateway gateway, IExtendedCacheClient cacheClient) 
+            : base(apiClient, gateway)
         {
-            return ApiClient.GetCurrentUserAsync();
+            CacheClient = cacheClient;
         }
 
-        protected override Task<DiscordUserPacket> GetUserPacketAsync(ulong id)
-        {
-            return ApiClient.GetUserAsync(id);
-        }
+        public IExtendedCacheClient CacheClient { get; }
 
-        protected override async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
+        protected override async Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id, ulong? guildId = null)
         {
-            var guild = await ApiClient.GetGuildAsync(id);
+            var packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(
+                CacheUtils.ChannelsKey(guildId),
+                id.ToString());
 
-            if (!_seenGuilds.ContainsKey(id))
+            if (packet == null)
             {
-                _seenGuilds.AddOrUpdate(id, true, (_, b) => b);
+                packet = await ApiClient.GetChannelAsync(id);
+                if (packet != null)
+                {
+                    await CacheClient.HashUpsertAsync(
+                        CacheUtils.ChannelsKey(),
+                        id.ToString(),
+                        packet);
+                }
             }
-
-            return guild;
+            return packet;
         }
 
-        protected override Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId)
+        protected override async Task<bool> IsGuildNewAsync(ulong guildId)
         {
-            return ApiClient.GetGuildUserAsync(userId, guildId);
+            return !await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey, guildId.ToString());
         }
 
         protected override async Task<IReadOnlyList<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId)
         {
-            return (await ApiClient.GetGuildAsync(guildId)).Members;
+            IReadOnlyList<DiscordGuildMemberPacket> packets = (await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId)))?.ToArray();
+
+            if (packets == null || packets.Count == 0)
+            {
+                packets = (await ApiClient.GetGuildAsync(guildId)).Members;
+
+                if (packets.Count > 0)
+                {
+                    await CacheClient.HashUpsertAsync(
+                        CacheUtils.ChannelsKey(guildId),
+                        packets.Select(x => new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x)
+                    ).ToArray());
+                }
+            }
+
+            return packets;
         }
 
-        protected override Task<IReadOnlyList<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId)
+        protected override async Task<IReadOnlyList<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId)
         {
-            return ApiClient.GetChannelsAsync(guildId);
+            IReadOnlyList<DiscordChannelPacket> packets = 
+                (await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId)))?.ToArray();
+
+            if (packets == null || packets.Count == 0)
+            {
+                packets = await ApiClient.GetChannelsAsync(guildId);
+
+                if (packets.Any())
+                {
+                    await CacheClient.HashUpsertAsync(
+                        CacheUtils.ChannelsKey(guildId),
+                        packets.Select(x => new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x))
+                    );
+                }
+            }
+
+            return packets.ToArray();
         }
 
-        protected override Task<IReadOnlyList<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
+        protected override async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId)
         {
-            return ApiClient.GetRolesAsync(guildId);
+            DiscordGuildMemberPacket packet = await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId), userId.ToString());
+
+            if (packet == null)
+            {
+                packet = await ApiClient.GetGuildUserAsync(userId, guildId);
+
+                if (packet != null)
+                {
+                    packet.GuildId = guildId;
+
+                    await CacheClient.HashUpsertAsync(CacheUtils.GuildMembersKey(guildId), userId.ToString(), packet);
+                }
+            }
+
+            return packet;
         }
 
-        protected override Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
+        protected override async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
         {
-            return ApiClient.GetRoleAsync(roleId, guildId);
+            DiscordRolePacket packet = await CacheClient.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
+
+            if (packet == null)
+            {
+                packet = await ApiClient.GetRoleAsync(roleId, guildId);
+
+                if (packet != null)
+                {
+                    await CacheClient.HashUpsertAsync(CacheUtils.GuildRolesKey(guildId), roleId.ToString(), packet);
+                }
+            }
+
+            return packet;
         }
 
-        protected override Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id, ulong? guildId = null)
+        protected override async Task<IReadOnlyList<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
         {
-            return ApiClient.GetChannelAsync(id);
+            IReadOnlyList<DiscordRolePacket> packets = (await CacheClient.HashValuesAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId)))?.ToArray();
+
+            if (packets == null || packets.Count == 0)
+            {
+                packets = await ApiClient.GetRolesAsync(guildId);
+
+                if (packets.Count > 0)
+                {
+                    await CacheClient.HashUpsertAsync(
+                        CacheUtils.ChannelsKey(guildId),
+                        packets.Select(x => new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x)
+                    ).ToArray());
+                }
+            }
+
+            return packets;
         }
 
-        protected override Task<bool> IsGuildNewAsync(ulong guildId)
+        protected override async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
         {
-            return Task.FromResult(!_seenGuilds.ContainsKey(guildId));
+            DiscordGuildPacket packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey, id.ToString());
+
+            if (packet == null)
+            {
+                packet = await ApiClient.GetGuildAsync(id);
+
+                if (packet != null)
+                {
+                    await CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey, id.ToString(), packet);
+                }
+            }
+
+            return packet;
+        }
+
+        protected override async Task<DiscordUserPacket> GetUserPacketAsync(ulong id)
+        {
+            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, id.ToString());
+
+            if (packet == null)
+            {
+                packet = await ApiClient.GetUserAsync(id);
+                if (packet != null)
+                {
+                    await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, id.ToString(), packet);
+                }
+            }
+
+            return packet;
+        }
+
+        protected override async Task<DiscordUserPacket> GetCurrentUserPacketAsync()
+        {
+            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, "me");
+
+            if (packet == null)
+            {
+                packet = await ApiClient.GetCurrentUserAsync();
+                if (packet != null)
+                {
+                    await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, "me", packet);
+                }
+            }
+
+            return packet;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            DetachHandlers();
         }
     }
 }

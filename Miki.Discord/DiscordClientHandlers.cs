@@ -8,9 +8,9 @@ using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 
-namespace Miki.Discord.Caching
+namespace Miki.Discord
 {
-    public partial class CachedDiscordClient
+    public partial class DiscordClient
     {
         private void AttachHandlers()
         {

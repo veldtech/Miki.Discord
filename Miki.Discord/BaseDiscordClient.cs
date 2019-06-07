@@ -24,10 +24,10 @@ namespace Miki.Discord
         /// </summary>
         public IGateway Gateway { get; }
 
-		protected BaseDiscordClient(DiscordClientConfigurations config)
+		protected BaseDiscordClient(IApiClient apiClient, IGateway gateway)
 		{
-			ApiClient = config.ApiClient;
-			Gateway = config.Gateway;
+			ApiClient = apiClient;
+			Gateway = gateway;
 
 			Gateway.OnMessageCreate += OnMessageCreate;
 			Gateway.OnMessageUpdate += OnMessageUpdate;
