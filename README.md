@@ -1,7 +1,11 @@
-<div style="text-align: center;">
-  <h1>Miki.Discord</h1>
+
+<p align="center">
+  <img src="https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png"/>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/nuget/dt/Miki.Discord.svg"/>
   <a href="https://www.nuget.org/packages/Miki.Discord">
-    <img src="https://img.shields.io/nuget/dt/Miki.Discord.svg"/>
+    
   </a>
   <a href="https://discord.gg/XpG4kwE">
     <img src="https://img.shields.io/discord/259343729586864139.svg?logo=discord"/>
@@ -9,4 +13,4 @@
   <a>
     <img src="https://dev.azure.com/mikibot/Miki/_apis/build/status/Mikibot.Miki.Discord?branchName=master"/>
   </a>
-</div>
+</p>
