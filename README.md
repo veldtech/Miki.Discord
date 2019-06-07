@@ -1,4 +1,4 @@
-<p align="center">
+<div style="text-align: center;">
   <h1>Miki.Discord</h1>
   <a href="https://www.nuget.org/packages/Miki.Discord">
     <img src="https://img.shields.io/nuget/dt/Miki.Discord.svg"/>
@@ -9,4 +9,4 @@
   <a>
     <img src="https://dev.azure.com/mikibot/Miki/_apis/build/status/Mikibot.Miki.Discord?branchName=master"/>
   </a>
-</p>
+</div>
