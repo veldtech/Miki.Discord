@@ -13,7 +13,6 @@ namespace Miki.Discord.Internal
         public DiscordUser()
         {
         }
-
         public DiscordUser(DiscordUserPacket packet, DiscordClient client)
         {
             _client = client;

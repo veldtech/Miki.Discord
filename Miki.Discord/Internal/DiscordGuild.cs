@@ -42,7 +42,13 @@ namespace Miki.Discord.Internal
 		public IReadOnlyCollection<IDiscordRole> Roles
 			=> _packet.Roles.Select(x => new DiscordRole(x, _client)).ToList();
 
-		public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
+        public int PremiumSubscriberCount 
+            => _packet.PremiumSubscriberCount;
+
+        public int PremiumTier 
+            => _packet.PremiumTier;
+
+        public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{
 			await _client.ApiClient.AddGuildBanAsync(Id, user.Id, pruneDays, reason);
 		}

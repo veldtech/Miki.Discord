@@ -7,34 +7,15 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
-	public class DiscordGuildUser : IDiscordGuildUser
+	public class DiscordGuildUser : DiscordUser, IDiscordGuildUser
 	{
-		private DiscordGuildMemberPacket _packet;
-		private DiscordClient _client;
+		private readonly DiscordGuildMemberPacket _packet;
 
 		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client)
+            : base(packet.User, client)
 		{
 			_packet = packet;
-			_client = client;
 		}
-
-		public ulong Id
-			=> _packet.User.Id;
-
-		public string Username
-			=> _packet.User.Username;
-
-		public string Discriminator
-			=> _packet.User.Discriminator;
-
-		public bool IsBot
-			=> _packet.User.IsBot;
-
-		public string AvatarId
-			=> _packet.User.Avatar;
-
-		public string Mention
-			=> $"<@{Id}>";
 
 		public string Nickname
 			=> _packet.Nickname;
@@ -48,22 +29,13 @@ namespace Miki.Discord.Internal
 		public DateTimeOffset JoinedAt
 			=> new DateTimeOffset(_packet.JoinedAt, new TimeSpan(0));
 
-		public DateTimeOffset CreatedAt
-			=> this.GetCreationTime();
+        public DateTimeOffset PremiumSince
+            => new DateTimeOffset(_packet.PremiumSince, new TimeSpan(0));
 
-		public async Task AddRoleAsync(IDiscordRole role)
+        public async Task AddRoleAsync(IDiscordRole role)
 		{
 			await _client.ApiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
-
-		public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
-			=> DiscordUtils.GetAvatarUrl(_packet.User, type, size);
-
-		public async Task<IDiscordTextChannel> GetDMChannelAsync()
-			=> await _client.CreateDMAsync(_packet.User.Id);
-
-		public async Task<IDiscordPresence> GetPresenceAsync()
-			=> await _client.GetUserPresence(_packet.User.Id);
 
 		public async Task<IDiscordGuild> GetGuildAsync()
 			=> await _client.GetGuildAsync(_packet.GuildId);
@@ -75,6 +47,11 @@ namespace Miki.Discord.Internal
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
 		{
+            if(role == null)
+            {
+                throw new ArgumentNullException(nameof(role));
+            }
+
 			await _client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 

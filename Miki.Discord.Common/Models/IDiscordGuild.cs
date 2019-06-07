@@ -13,6 +13,10 @@ namespace Miki.Discord.Common
 
 		int MemberCount { get; }
 
+        int PremiumSubscriberCount { get; }
+
+        int PremiumTier { get; }
+
 		GuildPermission Permissions { get; }
 
 		Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 1, string reason = null);
