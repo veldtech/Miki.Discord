@@ -11,11 +11,11 @@ namespace Miki.Discord.Internal
 	{
 		private readonly DiscordGuildMemberPacket _packet;
 
-		public DiscordGuildUser(DiscordGuildMemberPacket packet, DiscordClient client)
+		public DiscordGuildUser(DiscordGuildMemberPacket packet, IDiscordClient client)
             : base(packet.User, client)
 		{
 			_packet = packet;
-		}
+        }
 
 		public string Nickname
 			=> _packet.Nickname;
@@ -34,15 +34,15 @@ namespace Miki.Discord.Internal
 
         public async Task AddRoleAsync(IDiscordRole role)
 		{
-			await _client.ApiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await Client.ApiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public async Task<IDiscordGuild> GetGuildAsync()
-			=> await _client.GetGuildAsync(_packet.GuildId);
+			=> await Client.GetGuildAsync(_packet.GuildId);
 
 		public async Task KickAsync(string reason = null)
 		{
-			await _client.ApiClient.RemoveGuildMemberAsync(GuildId, Id, reason);
+			await Client.ApiClient.RemoveGuildMemberAsync(GuildId, Id, reason);
 		}
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
@@ -52,7 +52,7 @@ namespace Miki.Discord.Internal
                 throw new ArgumentNullException(nameof(role));
             }
 
-			await _client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
+			await Client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public async Task<bool> HasPermissionsAsync(GuildPermission permissions)

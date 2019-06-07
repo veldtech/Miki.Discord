@@ -10,7 +10,7 @@ namespace Miki.Discord.Internal
 {
 	public class DiscordGuildTextChannel : DiscordGuildChannel, IDiscordGuildChannel, IDiscordTextChannel
 	{
-		public DiscordGuildTextChannel(DiscordChannelPacket packet, DiscordClient client)
+		public DiscordGuildTextChannel(DiscordChannelPacket packet, IDiscordClient client)
 			: base(packet, client)
 		{
 		}

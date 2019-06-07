@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+    <ProjectReference Include="..\Miki.Discord\Miki.Discord.csproj" />
   </ItemGroup>
 
 </Project>

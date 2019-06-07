@@ -12,6 +12,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Miki.Net.Http;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using Miki.Discord.Rest.Http;
 using Miki.Discord.Rest.Exceptions;
 using Miki.Discord.Common.Packets.Arguments;
@@ -26,30 +27,22 @@ namespace Miki.Discord.Rest
     public class DiscordApiClient 
         : IApiClient, IGatewayApiClient, IDisposable
     {
-        public Net.Http.HttpClient RestClient { get; private set; }
-
-        private readonly JsonSerializerSettings serializer;
-
-        private readonly DiscordToken _token;
+        private readonly JsonSerializerSettings _serializer;
 
         /// <summary>
         /// Creates a new Discord API instance.
         /// </summary>
         /// <param name="token"></param>
         /// <param name="cache"></param>
-        public DiscordApiClient(
-            DiscordToken token, 
-            ICacheClient cache)
+        public DiscordApiClient(DiscordToken token, ICacheClient cache)
         {
-            _token = token;
-
             RestClient = new HttpClientFactory()
                 .HasBaseUri(DiscordUtils.DiscordUrl + DiscordUtils.BaseUrl)
                 .WithRateLimiter(new DiscordRateLimiter(cache))
                 .CreateNew()
                 .SetAuthorization(token.GetOAuthType(), token.Token);
 
-            serializer = new JsonSerializerSettings()
+            _serializer = new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 Converters = new List<JsonConverter>
@@ -58,6 +51,8 @@ namespace Miki.Discord.Rest
                 }
             };
         }
+
+        public Net.Http.HttpClient RestClient { get; }
 
         /// <summary>
         /// Adds a user to a guild's ban list.
@@ -131,7 +126,7 @@ namespace Miki.Discord.Rest
         {
             var response = await RestClient.PostAsync(
                 DiscordApiRoutes.GuildEmoji(guildId),
-                JsonConvert.SerializeObject(args, serializer)
+                JsonConvert.SerializeObject(args, _serializer)
             );
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
@@ -247,7 +242,7 @@ namespace Miki.Discord.Rest
         {
             var response = await RestClient.PatchAsync(
                 DiscordApiRoutes.GuildEmoji(guildId, emojiId),
-                JsonConvert.SerializeObject(args, serializer)
+                JsonConvert.SerializeObject(args, _serializer)
             );
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
@@ -265,7 +260,7 @@ namespace Miki.Discord.Rest
         {
             var response = await RestClient.PatchAsync(
                 DiscordApiRoutes.ChannelMessage(channelId, messageId),
-                JsonConvert.SerializeObject(args, serializer)
+                JsonConvert.SerializeObject(args, _serializer)
             );
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
@@ -300,7 +295,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<DiscordChannelPacket>(response.Body);
         }
 
-        public async Task<List<DiscordChannelPacket>> GetChannelsAsync(
+        public async Task<IReadOnlyList<DiscordChannelPacket>> GetChannelsAsync(
             ulong guildId)
         {
             var response = await RestClient.GetAsync(
@@ -309,7 +304,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<List<DiscordChannelPacket>>(response.Body);
         }
 
-        public async Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync()
+        public async Task<IReadOnlyList<DiscordChannelPacket>> GetDMChannelsAsync()
         {
             var response = await RestClient.GetAsync(
                 DiscordApiRoutes.UserMeChannels());
@@ -365,7 +360,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
         }
 
-        public async Task<List<DiscordMessagePacket>> GetMessagesAsync(
+        public async Task<IReadOnlyList<DiscordMessagePacket>> GetMessagesAsync(
             ulong channelId, 
             int amount = 100)
         {
@@ -373,10 +368,9 @@ namespace Miki.Discord.Rest
 
             qs.Add("limit", amount);
 
-            var response = await RestClient.GetAsync(
-                DiscordApiRoutes.ChannelMessages(channelId) + qs.Query);
+            var response = await RestClient.GetAsync(DiscordApiRoutes.ChannelMessages(channelId) + qs.Query);
             HandleErrors(response);
-            return JsonConvert.DeserializeObject<List<DiscordMessagePacket>>(response.Body);
+            return JsonConvert.DeserializeObject<DiscordMessagePacket[]>(response.Body);
         }
 
         public async Task<DiscordUserPacket[]> GetReactionsAsync(
@@ -400,7 +394,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<DiscordRolePacket>(response.Body);
         }
 
-        public async Task<List<DiscordRolePacket>> GetRolesAsync(
+        public async Task<IReadOnlyList<DiscordRolePacket>> GetRolesAsync(
             ulong guildId)
         {
             var response = await RestClient.GetAsync(
@@ -411,24 +405,20 @@ namespace Miki.Discord.Rest
 
         public async Task<DiscordUserPacket> GetUserAsync(ulong userId)
         {
-            var response = await RestClient.GetAsync(
-                DiscordApiRoutes.User(userId));
+            var response = await RestClient.GetAsync(DiscordApiRoutes.User(userId));
             HandleErrors(response);
             return JsonConvert.DeserializeObject<DiscordUserPacket>(response.Body);
         }
 
-        public async Task ModifySelfAsync(
-            UserModifyArgs args)
+        public async Task ModifySelfAsync(UserModifyArgs args)
         {
-            if(args.Avatar.Type == ImageType.WEBP)
+            if (args.Avatar.Type == ImageType.WEBP)
             {
                 throw new InvalidDataException("Can't upload WEBP images.");
             }
 
-            var json = JsonConvert.SerializeObject(args, serializer);
-            var response = await RestClient.PatchAsync(
-                DiscordApiRoutes.UserMe(),
-                json);
+            var json = JsonConvert.SerializeObject(args, _serializer);
+            var response = await RestClient.PatchAsync(DiscordApiRoutes.UserMe(), json);
             HandleErrors(response);
         }
 
@@ -437,10 +427,9 @@ namespace Miki.Discord.Rest
             ulong userId, 
             ModifyGuildMemberArgs packet)
         {
-            var response = await RestClient.PatchAsync(
-                DiscordApiRoutes.GuildMember(guildId, userId),
-                JsonConvert.SerializeObject(packet, serializer)
-            );
+            var json = JsonConvert.SerializeObject(packet, _serializer);
+
+            var response = await RestClient.PatchAsync(DiscordApiRoutes.GuildMember(guildId, userId), json);
             HandleErrors(response);
         }
 
@@ -530,7 +519,7 @@ namespace Miki.Discord.Rest
 
         public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
         {
-            string json = JsonConvert.SerializeObject(args, serializer);
+            string json = JsonConvert.SerializeObject(args, _serializer);
             {
                 var response = await RestClient.PostAsync(DiscordApiRoutes.ChannelMessages(channelId), json);
                 HandleErrors(response);
@@ -558,15 +547,13 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<GatewayConnectionPacket>(response.Body);
         }
 
-        private void HandleErrors(HttpResponse response)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void HandleErrors(HttpResponse response)
         {
-            if (response.Success)
+            if (!response.Success)
             {
-                return;
+                throw new DiscordRestException(JsonConvert.DeserializeObject<DiscordRestError>(response.Body));
             }
-
-            DiscordRestError error = JsonConvert.DeserializeObject<DiscordRestError>(response.Body);
-            throw new DiscordRestException(error);
         }
     }
 }

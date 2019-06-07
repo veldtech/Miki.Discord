@@ -10,7 +10,7 @@ namespace Miki.Discord.Internal
 {
     class DiscordSelfUser : DiscordUser, IDiscordSelfUser
     {
-        public DiscordSelfUser(DiscordUserPacket user, DiscordClient client)
+        public DiscordSelfUser(DiscordUserPacket user, IDiscordClient client)
             : base(user, client)
         { }
 
@@ -23,7 +23,7 @@ namespace Miki.Discord.Internal
         {
             var args = new UserModifyArgs();
             modifyArgs(args);
-            await _client.ApiClient.ModifySelfAsync(args);
+            await Client.ApiClient.ModifySelfAsync(args);
         }
     }
 }

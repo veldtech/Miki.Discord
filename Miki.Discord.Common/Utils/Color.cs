@@ -2,20 +2,24 @@
 {
 	public class Color
 	{
-		public uint Value => _value;
 
-		public byte R => (byte)(_value >> 16);
-		public byte G => (byte)(_value >> 8);
-		public byte B => (byte)(_value);
-
-		private readonly uint _value;
-
-		public Color(uint baseValue)
+        public Color(uint baseValue)
 		{
-			_value = baseValue;
-		}
+			Value = baseValue;
+            R = (byte) (baseValue >> 16);
+            G = (byte) (Value >> 8);
+            B = (byte) Value;
+        }
 
-		public Color(byte r, byte g, byte b)
+        public uint Value { get; }
+
+        public byte R { get; }
+
+        public byte G { get; }
+
+        public byte B { get; }
+
+        public Color(byte r, byte g, byte b)
 			: this(((uint)r << 16) | ((uint)g << 8) | (uint)b)
 		{
 		}
@@ -49,8 +53,26 @@
 		}
 
         public static bool operator==(Color c, int value)
-            => value == c._value;
+            => value == c.Value;
         public static bool operator !=(Color c, int value)
-            => value != c._value;
+            => value != c.Value;
+
+        protected bool Equals(Color other)
+        {
+            return Value == other.Value;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Color) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (int) Value;
+        }
     }
 }

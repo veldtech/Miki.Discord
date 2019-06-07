@@ -1,13 +1,9 @@
 using Miki.Cache;
 using Miki.Cache.InMemory;
-using Miki.Discord.Caching;
-using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Mocking;
 using Miki.Discord.Tests.Dummy;
 using Miki.Serialization.Protobuf;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,13 +31,10 @@ namespace Miki.Discord.Tests
 			gateway = new DummyGateway();
 		}
 
-		public async Task ResetObjectsAsync()
+		private async Task ResetObjectsAsync()
 		{
 			pool = new InMemoryCachePool(new ProtobufSerializer());
-
 			client = (IExtendedCacheClient) await pool.GetAsync();
-
-			new BasicCacheStage().Initialize(gateway, client);
 
 			role = new DiscordRolePacket
 			{

@@ -1,5 +1,4 @@
-﻿using Miki.Cache;
-using Miki.Discord.Common;
+﻿using Miki.Discord.Common;
 
 namespace Miki.Discord
 {
@@ -7,6 +6,5 @@ namespace Miki.Discord
 	{
 		public IApiClient ApiClient;
 		public IGateway Gateway;
-		public IExtendedCacheClient CacheClient;
 	}
 }

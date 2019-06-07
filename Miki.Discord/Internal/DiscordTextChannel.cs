@@ -12,7 +12,7 @@ namespace Miki.Discord
 {
 	internal class DiscordTextChannel : DiscordChannel, IDiscordTextChannel
 	{
-		public DiscordTextChannel(DiscordChannelPacket packet, DiscordClient client)
+		public DiscordTextChannel(DiscordChannelPacket packet, IDiscordClient client)
 			: base(packet, client)
 		{
 		}

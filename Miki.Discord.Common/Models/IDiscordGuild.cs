@@ -55,7 +55,7 @@ namespace Miki.Discord.Common
 
 		Task<IEnumerable<IDiscordRole>> GetRolesAsync();
 
-		Task<IDiscordGuildUser[]> GetMembersAsync();
+		Task<IReadOnlyList<IDiscordGuildUser>> GetMembersAsync();
 
 		/// <summary>
 		/// Gets the <see cref="IDiscordGuildUser"/> that fits with the current snowflake.

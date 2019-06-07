@@ -10,9 +10,9 @@ namespace Miki.Discord.Internal
 	public class DiscordMessage : IDiscordMessage
 	{
 		private readonly DiscordMessagePacket _packet;
-		private readonly DiscordClient _client;
+		private readonly IDiscordClient _client;
 
-		public DiscordMessage(DiscordMessagePacket packet, DiscordClient client)
+		public DiscordMessage(DiscordMessagePacket packet, IDiscordClient client)
 		{
 			_packet = packet;
 			_client = client;
