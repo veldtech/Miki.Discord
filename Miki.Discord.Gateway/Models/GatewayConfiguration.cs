@@ -50,7 +50,7 @@ namespace Miki.Discord.Gateway
         /// <summary>
         /// The gateway factory used for spawning shards in <see cref="GatewayCluster"/>.
         /// </summary>
-        public Func<GatewayProperties, IGateway> GatewayFactory = p => new GatewayCluster(p);
+        public Func<GatewayProperties, IGateway> GatewayFactory = p => new GatewayShard(p);
 
         public IGatewayRatelimiter Ratelimiter = new DefaultGatewayRatelimiter();
 
