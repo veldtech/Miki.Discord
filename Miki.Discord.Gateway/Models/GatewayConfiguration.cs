@@ -3,6 +3,7 @@ using Miki.Discord.Gateway.Connection;
 using Miki.Discord.Gateway.Ratelimiting;
 using Miki.Net.WebSockets;
 using System;
+using Miki.Discord.Common;
 
 namespace Miki.Discord.Gateway
 {
@@ -45,6 +46,11 @@ namespace Miki.Discord.Gateway
 		public int ShardId;
 
         public Func<IWebSocketClient> WebSocketClientFactory = () => new BasicWebSocketClient();
+
+        /// <summary>
+        /// The gateway factory used for spawning shards in <see cref="GatewayCluster"/>.
+        /// </summary>
+        public Func<GatewayProperties, IGateway> GatewayFactory = p => new GatewayCluster(p);
 
         public IGatewayRatelimiter Ratelimiter = new DefaultGatewayRatelimiter();
 
