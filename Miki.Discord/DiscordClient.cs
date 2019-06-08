@@ -21,6 +21,7 @@ namespace Miki.Discord
             : base(apiClient, gateway)
         {
             CacheClient = cacheClient;
+            AttachHandlers();
         }
 
         public IExtendedCacheClient CacheClient { get; }
