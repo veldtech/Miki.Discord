@@ -108,10 +108,13 @@ namespace Miki.Discord
             return channels.ToList();
         }
 
-		public async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
+        public Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
+            => GetChannelAsync<IDiscordChannel>(id, guildId);
+		public async Task<T> GetChannelAsync<T>(ulong id, ulong? guildId = null)
+            where T : class, IDiscordChannel
 		{
 			var channel = await GetChannelPacketAsync(id, guildId);
-			return ResolveChannel(channel);
+			return ResolveChannel(channel) as T;
 		}
 
 		public async Task<IDiscordSelfUser> GetSelfAsync()
