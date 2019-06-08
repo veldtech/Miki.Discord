@@ -206,5 +206,19 @@ namespace Miki.Discord.Mocking
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public Task<int> GetPruneCountAsync(ulong guildId, int days)
+        {
+            return Task.FromResult(days);
+        }
+
+        public Task<int?> PruneGuildMembersAsync(ulong guildId, int days, bool computePrunedCount)
+        {
+            if(computePrunedCount)
+            {
+                return Task.FromResult<int?>(days);
+            }
+            return Task.FromResult<int?>(null);
+        }
+    }
 }
