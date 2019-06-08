@@ -11,7 +11,8 @@ namespace Miki.Discord.Rest.Converters
     {
         public override UserAvatar ReadJson(JsonReader reader, Type objectType, UserAvatar existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            // Never need to be read.
+            throw new NotSupportedException();
         }
 
         public override void WriteJson(JsonWriter writer, UserAvatar value, JsonSerializer serializer)

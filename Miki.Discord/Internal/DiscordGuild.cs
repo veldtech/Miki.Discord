@@ -87,12 +87,11 @@ namespace Miki.Discord.Internal
 			return new DiscordGuildUser(guildMemberPacket, _client);
 		}
 
-		public async Task<IDiscordGuildUser[]> GetMembersAsync()
+		public async Task<IEnumerable<IDiscordGuildUser>> GetMembersAsync()
 		{
-			return (await _client.CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(Id)))
-				.Select(x => new DiscordGuildUser(x, _client))
-				.ToArray();
-		}
+            return (await _client.CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(Id)))
+                .Select(x => new DiscordGuildUser(x, _client));
+        }
 
 		public async Task<IDiscordGuildUser> GetOwnerAsync()
 			=> await GetMemberAsync(OwnerId);
@@ -130,7 +129,12 @@ namespace Miki.Discord.Internal
 			return permissions;
 		}
 
-		public async Task<IDiscordRole> GetRoleAsync(ulong id)
+        public Task<int> GetPruneCountAsync(int days)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IDiscordRole> GetRoleAsync(ulong id)
 			=> await _client.GetRoleAsync(Id, id);
 
 		public async Task<IEnumerable<IDiscordRole>> GetRolesAsync()
@@ -147,6 +151,12 @@ namespace Miki.Discord.Internal
 
 			return await GetMemberAsync(user.Id);
 		}
+
+        public Task<int?> PruneMembersAsync(int days, bool computeCount = false)
+        {
+            throw new NotSupportedException();
+            //await _client.ApiClient(Id, days, computeCount);
+        }
 
         public async Task RemoveBanAsync(IDiscordGuildUser user)
         {

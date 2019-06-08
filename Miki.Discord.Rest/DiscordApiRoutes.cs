@@ -66,12 +66,18 @@ namespace Miki.Discord.Rest
             ulong roleId)
 			=> $"{GuildMember(guildId, userId)}/roles/{roleId}";
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static string GuildPrune(
+            ulong guildId)
+            => $"{Guild(guildId)}/prune";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string GuildRoles(
             ulong guildId)
 			=> $"{Guild(guildId)}/roles";
 
-		internal static string GuildRole(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static string GuildRole(
             ulong guildId, 
             ulong roleId)
 			=> $"{GuildRoles(guildId)}/{roleId}";

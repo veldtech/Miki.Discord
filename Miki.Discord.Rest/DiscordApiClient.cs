@@ -13,10 +13,10 @@ using System.Threading.Tasks;
 using Miki.Net.Http;
 using System.Net.Http;
 using Miki.Discord.Rest.Http;
-using Miki.Discord.Rest.Exceptions;
 using Miki.Discord.Common.Packets.Arguments;
 using Miki.Discord.Rest.Converters;
 using Miki.Discord.Common.Utils;
+using Miki.Discord.Rest.Exceptions;
 
 namespace Miki.Discord.Rest
 {
@@ -379,6 +379,25 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<List<DiscordMessagePacket>>(response.Body);
         }
 
+        public async Task<int> GetPruneCountAsync(
+            ulong guildId,
+            int days)
+        {
+            if (days <= 0)
+            {
+                throw new InvalidOperationException(
+                    $"Parameter '{nameof(days)}' cannot be lower than 1.");
+            }
+
+            QueryString qs = new QueryString();
+            qs.Add("days", days);
+
+            var response = await RestClient.GetAsync(
+                DiscordApiRoutes.GuildPrune(guildId) + qs.Query);
+            HandleErrors(response);
+            return JsonConvert.DeserializeObject<DiscordPruneObject>(response.Body).Pruned;
+        }
+
         public async Task<DiscordUserPacket[]> GetReactionsAsync(
             ulong channelId, 
             ulong messageId, 
@@ -442,6 +461,32 @@ namespace Miki.Discord.Rest
                 JsonConvert.SerializeObject(packet, serializer)
             );
             HandleErrors(response);
+        }
+
+        public async Task<int?> PruneGuildAsync(
+            ulong guildId, 
+            int days, 
+            bool computePruneCount = false)
+        {
+            if(days <= 0)
+            {
+                throw new InvalidOperationException(
+                    $"Parameter '{nameof(days)}' cannot be lower than 1.");
+            }
+
+            QueryString qs = new QueryString();
+            qs.Add("days", days);
+            qs.Add("compute_prune_count", computePruneCount);
+
+            var response = await RestClient.PostAsync(
+                DiscordApiRoutes.GuildPrune(
+                    guildId) + qs.Query);
+            HandleErrors(response);
+            if(computePruneCount)
+            {
+                return JsonConvert.DeserializeObject<DiscordPruneObject>(response.Body).Pruned;
+            }
+            return null;
         }
 
         public async Task RemoveGuildBanAsync(
