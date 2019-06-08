@@ -7,15 +7,13 @@ namespace Miki.Discord.Internal
 {
     public class DiscordUser : IDiscordUser
     {
-        protected readonly DiscordClient _client;
-        protected readonly DiscordUserPacket _user;
+        private readonly DiscordUserPacket _user;
 
-        public DiscordUser()
+        protected readonly IDiscordClient Client;
+
+        public DiscordUser(DiscordUserPacket packet, IDiscordClient client)
         {
-        }
-        public DiscordUser(DiscordUserPacket packet, DiscordClient client)
-        {
-            _client = client;
+            Client = client;
             _user = packet;
         }
 
@@ -41,19 +39,19 @@ namespace Miki.Discord.Internal
             => $"<@{Id}>";
 
         public async Task<IDiscordPresence> GetPresenceAsync()
-            => await _client.GetUserPresence(Id);
+            => await Client.GetUserPresence(Id);
 
         public DateTimeOffset CreatedAt
             => this.GetCreationTime();
 
         public async Task<IDiscordTextChannel> GetDMChannelAsync()
         {
-            var currentUser = await _client.GetSelfAsync();
+            var currentUser = await Client.GetSelfAsync();
             if(Id == currentUser.Id)
             {
                 throw new InvalidOperationException("Can't create a DM channel with self.");
             }
-            return await _client.CreateDMAsync(Id);
+            return await Client.CreateDMAsync(Id);
         }
     }
 }

@@ -518,13 +518,14 @@ namespace Miki.Discord.Gateway.Connection
                 _compressedStream.Position = 0;
                 await _deflateStream.CopyToAsync(_uncompressStream);
                 _compressedStream.Position = 0;
-                _uncompressStream.Position = 0;
             }
             else
             {
                 _uncompressStream.Write(response.Packet.ToArray(), 0, response.Response.Count);
                 _uncompressStream.SetLength(response.Response.Count);
             }
+
+            _uncompressStream.Position = 0;
 
             if (_configuration.Encoding == GatewayEncoding.Json)
             {

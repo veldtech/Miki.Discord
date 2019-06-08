@@ -1,16 +1,13 @@
 using Miki.Cache;
 using Miki.Cache.InMemory;
-using Miki.Discord.Caching;
-using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Mocking;
 using Miki.Discord.Tests.Dummy;
 using Miki.Serialization.Protobuf;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Discord.Mocking;
 using Xunit;
 
 namespace Miki.Discord.Tests
@@ -20,7 +17,7 @@ namespace Miki.Discord.Tests
 	/// </summary>
     public class Caching
     {
-		readonly DummyGateway gateway;
+		DummyGateway gateway;
 		ICachePool pool;
 		IExtendedCacheClient client;
 
@@ -29,21 +26,25 @@ namespace Miki.Discord.Tests
 		DiscordGuildMemberPacket member;
 		DiscordUserPacket user;
 		DiscordRolePacket role;
+        DiscordClient discordClient;
 
 		public Caching()
 		{
-			gateway = new DummyGateway();
 		}
 
-		public async Task ResetObjectsAsync()
-		{
-			pool = new InMemoryCachePool(new ProtobufSerializer());
-
+		private async Task ResetObjectsAsync()
+        {
+            gateway = new DummyGateway();
+            pool = new InMemoryCachePool(new ProtobufSerializer());
 			client = (IExtendedCacheClient) await pool.GetAsync();
+            discordClient = new DiscordClient(new DiscordClientConfigurations
+            {
+                ApiClient = new DummyApiClient(),
+                Gateway = gateway,
+                CacheClient = client
+            });
 
-			new BasicCacheStage().Initialize(gateway, client);
-
-			role = new DiscordRolePacket
+            role = new DiscordRolePacket
 			{
 				Color = 2342,
 				Id = 999,
@@ -105,7 +106,11 @@ namespace Miki.Discord.Tests
 				Presences = new List<DiscordPresencePacket>(),
 				Region = "lul region",
 				Roles = new List<DiscordRolePacket>(),
-			};
+                Emojis = new[]
+                {
+                    new DiscordEmoji() 
+                }
+            };
 
 			((IExtendedCacheClient) await pool.GetAsync()).HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
             ((IExtendedCacheClient) await pool.GetAsync()).HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild).GetAwaiter().GetResult();
@@ -199,8 +204,8 @@ namespace Miki.Discord.Tests
 				Name = "another channel",
 				Type = ChannelType.GUILDTEXT,
 				IsNsfw = false,
-				Topic = "lol this is a channel",
-			};
+				Topic = "lol this is a channel"
+            };
 
 			await gateway.OnChannelCreate(otherChannel);
 

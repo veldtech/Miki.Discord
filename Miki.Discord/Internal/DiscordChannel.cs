@@ -7,13 +7,13 @@ namespace Miki.Discord.Internal
 	public class DiscordChannel : IDiscordChannel
 	{
 		protected DiscordChannelPacket _packet;
-		protected DiscordClient _client;
+		protected IDiscordClient _client;
 
 		public DiscordChannel()
 		{
 		}
 
-		public DiscordChannel(DiscordChannelPacket packet, DiscordClient client)
+		public DiscordChannel(DiscordChannelPacket packet, IDiscordClient client)
 		{
 			_packet = packet;
 			_client = client;

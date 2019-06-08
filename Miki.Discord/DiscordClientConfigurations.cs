@@ -7,6 +7,6 @@ namespace Miki.Discord
 	{
 		public IApiClient ApiClient;
 		public IGateway Gateway;
-		public IExtendedCacheClient CacheClient;
-	}
+        public IExtendedCacheClient CacheClient;
+    }
 }

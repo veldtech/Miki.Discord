@@ -44,7 +44,8 @@ namespace Miki.Discord.Rest.Http
             var httpMessage = response.HttpResponseMessage;
 
             Uri requestUri = httpMessage.RequestMessage.RequestUri;
-            string key = GetCacheKey(requestUri.AbsolutePath.Split('/')[2], requestUri.AbsolutePath.Split('/')[3]);
+            string[] paths = requestUri.AbsolutePath.Split('/');
+            string key = GetCacheKey(paths[2], paths[3]);
 
             if (httpMessage.Headers.Contains(LimitHeader))
             {

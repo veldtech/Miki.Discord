@@ -10,7 +10,7 @@ namespace Miki.Discord.Internal
 {
 	public class DiscordGuildTextChannel : DiscordGuildChannel, IDiscordGuildChannel, IDiscordTextChannel
 	{
-		public DiscordGuildTextChannel(DiscordChannelPacket packet, DiscordClient client)
+		public DiscordGuildTextChannel(DiscordChannelPacket packet, IDiscordClient client)
 			: base(packet, client)
 		{
 		}
@@ -29,6 +29,8 @@ namespace Miki.Discord.Internal
 
             if (id.Length > 100)
             {
+                // TODO: Remove the messages in batches.
+                // Note: Before we can implement this we have to implement the ratelimit queue.
                 id = id.Take(100).ToArray();
             }
 

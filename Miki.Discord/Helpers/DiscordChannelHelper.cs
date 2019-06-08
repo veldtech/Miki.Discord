@@ -11,7 +11,7 @@ namespace Miki.Discord.Helpers
     public static class DiscordChannelHelper
     {
         public static async Task<DiscordMessage> CreateMessageAsync(
-            DiscordClient client, 
+            IDiscordClient client, 
             DiscordChannelPacket channel, 
             MessageArgs args)
         {

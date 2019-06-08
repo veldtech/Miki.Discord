@@ -18,9 +18,10 @@ namespace Miki.Discord.Tests
             // Create the cluster and add the events.
             var gatewayProperties = new GatewayProperties
             {
-                ShardCount = 2
+                ShardCount = 2,
+                GatewayFactory = _ => new DummyGateway()
             };
-            var gatewayCluster = new GatewayCluster(gatewayProperties, _ => new DummyGateway());
+            var gatewayCluster = new GatewayCluster(gatewayProperties);
 
             Assert.Equal(2, gatewayCluster.Shards.Count);
 

@@ -9,13 +9,15 @@ namespace Miki.Discord.Internal
 {
 	public class DiscordGuild : IDiscordGuild
 	{
-		private readonly DiscordGuildPacket _packet;
-		private readonly DiscordClient _client;
+		private readonly DiscordGuildPacketRoot _packet;
+		private readonly IDiscordClient _client;
 
-		public DiscordGuild(DiscordGuildPacket packet, DiscordClient client)
+		public DiscordGuild(DiscordGuildPacketRoot packet, IDiscordClient client)
 		{
-			_packet = packet;
+			_packet = new DiscordGuildPacketRoot();
 			_client = client;
+
+            _packet.OverwriteContext(packet);
 		}
 
 		public string Name
@@ -35,12 +37,6 @@ namespace Miki.Discord.Internal
 
 		public GuildPermission Permissions
 			=> (GuildPermission)_packet.Permissions.GetValueOrDefault(0);
-
-		public IReadOnlyCollection<IDiscordGuildChannel> Channels
-			=> _packet.Channels.Select(x => new DiscordGuildChannel(x, _client)).ToList();
-
-		public IReadOnlyCollection<IDiscordRole> Roles
-			=> _packet.Roles.Select(x => new DiscordRole(x, _client)).ToList();
 
         public int PremiumSubscriberCount 
             => _packet.PremiumSubscriberCount;
@@ -64,31 +60,25 @@ namespace Miki.Discord.Internal
 			return await _client.GetChannelsAsync(Id);
 		}
 
-		public IDiscordChannel GetDefaultChannel()
-		{
-			return Channels.FirstOrDefault(x => x.Id == _packet.SystemChannelId);
-		}
-
 		public Task<IDiscordChannel> GetDefaultChannelAsync()
 		{
 			if (!_packet.SystemChannelId.HasValue)
 			{
-				return null;
+				return Task.FromResult<IDiscordChannel>(null);
 			}
+
 			return _client.GetChannelAsync(_packet.SystemChannelId.Value, Id);
 		}
 
-		public async Task<IDiscordGuildUser> GetMemberAsync(ulong id)
+		public Task<IDiscordGuildUser> GetMemberAsync(ulong id)
 		{
-			DiscordGuildMemberPacket guildMemberPacket = await _client.GetGuildMemberPacketAsync(id, Id);
-			return new DiscordGuildUser(guildMemberPacket, _client);
+			return _client.GetGuildUserAsync(id, Id);
 		}
 
-		public async Task<IEnumerable<IDiscordGuildUser>> GetMembersAsync()
-		{
-            return (await _client.CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(Id)))
-                .Select(x => new DiscordGuildUser(x, _client));
-        }
+		public Task<IEnumerable<IDiscordGuildUser>> GetMembersAsync()
+        {
+            return _client.GetGuildUsersAsync(Id);
+		}
 
 		public Task<IDiscordGuildUser> GetOwnerAsync()
 			=> GetMemberAsync(OwnerId);

@@ -10,9 +10,9 @@ namespace Miki.Discord.Internal
 	public class DiscordMessage : IDiscordMessage
 	{
 		private readonly DiscordMessagePacket _packet;
-		private readonly DiscordClient _client;
+		private readonly IDiscordClient _client;
 
-		public DiscordMessage(DiscordMessagePacket packet, DiscordClient client)
+		public DiscordMessage(DiscordMessagePacket packet, IDiscordClient client)
 		{
 			_packet = packet;
 			_client = client;
@@ -70,7 +70,7 @@ namespace Miki.Discord.Internal
             return channel as IDiscordTextChannel;
         }
 
-		public async Task<IReadOnlyList<IDiscordUser>> GetReactionsAsync(DiscordEmoji emoji)
+		public async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(DiscordEmoji emoji)
 			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji);
 
 		public async Task CreateReactionAsync(DiscordEmoji emoji)

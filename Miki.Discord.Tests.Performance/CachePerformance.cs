@@ -1,8 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Miki.Cache;
 using Miki.Cache.StackExchange;
-using Miki.Discord.Caching;
-using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Mocking;
@@ -30,6 +28,7 @@ namespace Miki.Discord.Tests
 		DiscordGuildMemberPacket member;
 		DiscordUserPacket user;
 		DiscordRolePacket role;
+        DiscordClient discordClient;
 		Common.Events.GuildMemberUpdateEventArgs updateMember;
 
 		[Params(1000, 10000)]
@@ -38,7 +37,7 @@ namespace Miki.Discord.Tests
 		[Params(16, 256, 2048, 10000)]
 		public int MemberCount;
 
-		[GlobalSetup]
+        [GlobalSetup]
 		public async Task Setup()
 		{
 			Random r = new Random();
@@ -90,9 +89,14 @@ namespace Miki.Discord.Tests
 			pool = new StackExchangeCachePool(new LZ4MsgPackSerializer(), "localhost");
 			gateway = new DummyGateway();
 
-			client = (IExtendedCacheClient) await pool.GetAsync();
+            discordClient = new DiscordClient(new DiscordClientConfigurations
+            {
+                ApiClient = new DummyApiClient(),
+                Gateway = gateway,
+                CacheClient = client
+            });
 
-			new BasicCacheStage().Initialize(gateway, client);
+            client = (IExtendedCacheClient) await pool.GetAsync();
 
 			role = new DiscordRolePacket
 			{
