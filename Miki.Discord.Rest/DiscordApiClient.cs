@@ -489,7 +489,7 @@ namespace Miki.Discord.Rest
             HandleErrors(response);
         }
 
-        public async Task<int?> PruneGuildAsync(
+        public async Task<int?> PruneGuildMembersAsync(
             ulong guildId, 
             int days, 
             bool computePruneCount = false)
