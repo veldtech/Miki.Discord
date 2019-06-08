@@ -19,7 +19,7 @@ namespace Miki.Discord.Internal
 		{
 			if (id.Length == 0)
 			{
-				throw new ArgumentNullException();
+				throw new ArgumentNullException(nameof(id));
 			}
 
 			if (id.Length < 2)
@@ -27,10 +27,10 @@ namespace Miki.Discord.Internal
 				await _client.ApiClient.DeleteMessageAsync(Id, id[0]);
 			}
 
-			if (id.Length > 100)
-			{
-				id = id.Take(100).ToArray();
-			}
+            if (id.Length > 100)
+            {
+                id = id.Take(100).ToArray();
+            }
 
 			await _client.ApiClient.DeleteMessagesAsync(Id, id);
 		}
