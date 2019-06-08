@@ -128,16 +128,14 @@ namespace Miki.Discord
             ulong guildId)
         {
             return (await GetRolePacketsAsync(guildId))
-                .Select(x => new DiscordRole(x, this))
-                .ToList();
+                .Select(x => new DiscordRole(x, this));
         }
 
         public virtual async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
         {
             var channelPackets = await GetGuildChannelPacketsAsync(guildId);
-            var channels = channelPackets.Select(x => ResolveChannel(x) as IDiscordGuildChannel);
 
-            return channels.ToList();
+            return channelPackets.Select(x => ResolveChannel(x) as IDiscordGuildChannel);
         }
 
 		public virtual async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
@@ -182,8 +180,7 @@ namespace Miki.Discord
         public async Task<IEnumerable<IDiscordGuildUser>> GetGuildUsersAsync(ulong guildId)
         {
             return (await GetGuildMembersPacketAsync(guildId))
-                .Select(x => new DiscordGuildUser(x, this))
-                .ToList();
+                .Select(x => new DiscordGuildUser(x, this));
         }
 
         public virtual async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
@@ -194,7 +191,7 @@ namespace Miki.Discord
 			{
 				return users.Select(
 					x => new DiscordUser(x, this)
-				).ToList();
+				);
 			}
 
 			return new List<IDiscordUser>();
@@ -242,10 +239,12 @@ namespace Miki.Discord
 					return new DiscordGuildTextChannel(packet, this);
 
                 case ChannelType.CATEGORY:
-				case ChannelType.GUILDVOICE:
+                case ChannelType.GUILDVOICE:
+                    return new DiscordGuildChannel(packet, this);
+
                 case ChannelType.DM:
                 case ChannelType.GROUPDM:
-					return new DiscordGuildChannel(packet, this);
+                    return new DiscordTextChannel(packet, this);
 
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -45,9 +45,9 @@ namespace Miki.Discord.Common
 
 		Task<DiscordChannelPacket> GetChannelAsync(ulong channelId);
 
-		Task<IReadOnlyList<DiscordChannelPacket>> GetChannelsAsync(ulong guildId);
+		Task<IEnumerable<DiscordChannelPacket>> GetChannelsAsync(ulong guildId);
 
-        Task<IReadOnlyList<DiscordChannelPacket>> GetDMChannelsAsync();
+        Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync();
 
         Task<DiscordGuildPacket> GetGuildAsync(ulong guildId);
 
@@ -55,7 +55,7 @@ namespace Miki.Discord.Common
 
 		Task<DiscordMessagePacket> GetMessageAsync(ulong channelId, ulong messageId);
 
-		Task<IReadOnlyList<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100);
+		Task<IEnumerable<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100);
 
         Task<int> GetPruneCountAsync(ulong guildId, int days);
 
@@ -63,7 +63,7 @@ namespace Miki.Discord.Common
 
 		Task<DiscordRolePacket> GetRoleAsync(ulong roleId, ulong guildId);
 
-		Task<IReadOnlyList<DiscordRolePacket>> GetRolesAsync(ulong guildId);
+		Task<IEnumerable<DiscordRolePacket>> GetRolesAsync(ulong guildId);
 
 		Task<DiscordUserPacket> GetUserAsync(ulong userId);
 

@@ -102,12 +102,12 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task<IReadOnlyList<DiscordChannelPacket>> GetChannelsAsync(ulong guildId)
+		public Task<IEnumerable<DiscordChannelPacket>> GetChannelsAsync(ulong guildId)
 		{
 			throw new NotImplementedException();
 		}
 
-        public Task<IReadOnlyList<DiscordChannelPacket>> GetDMChannelsAsync()
+        public Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync()
         {
             throw new NotImplementedException();
         }
@@ -142,7 +142,7 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task<IReadOnlyList<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100)
+		public Task<IEnumerable<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100)
 		{
 			throw new NotImplementedException();
 		}
@@ -157,7 +157,7 @@ namespace Miki.Discord.Mocking
 			throw new NotImplementedException();
 		}
 
-		public Task<IReadOnlyList<DiscordRolePacket>> GetRolesAsync(ulong guildId)
+		public Task<IEnumerable<DiscordRolePacket>> GetRolesAsync(ulong guildId)
 		{
 			throw new NotImplementedException();
 		}

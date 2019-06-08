@@ -307,7 +307,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<DiscordChannelPacket>(response.Body);
         }
 
-        public async Task<IReadOnlyList<DiscordChannelPacket>> GetChannelsAsync(
+        public async Task<IEnumerable<DiscordChannelPacket>> GetChannelsAsync(
             ulong guildId)
         {
             var response = await RestClient.GetAsync(
@@ -317,7 +317,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<List<DiscordChannelPacket>>(response.Body);
         }
 
-        public async Task<IReadOnlyList<DiscordChannelPacket>> GetDMChannelsAsync()
+        public async Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync()
         {
             var response = await RestClient.GetAsync(
                 DiscordApiRoutes.UserMeChannels())
@@ -379,7 +379,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
         }
 
-        public async Task<IReadOnlyList<DiscordMessagePacket>> GetMessagesAsync(
+        public async Task<IEnumerable<DiscordMessagePacket>> GetMessagesAsync(
             ulong channelId, 
             int amount = 100)
         {
@@ -437,7 +437,7 @@ namespace Miki.Discord.Rest
             return JsonConvert.DeserializeObject<DiscordRolePacket>(response.Body);
         }
 
-        public async Task<IReadOnlyList<DiscordRolePacket>> GetRolesAsync(
+        public async Task<IEnumerable<DiscordRolePacket>> GetRolesAsync(
             ulong guildId)
         {
             var response = await RestClient.GetAsync(

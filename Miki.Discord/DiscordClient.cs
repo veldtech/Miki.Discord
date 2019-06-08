@@ -53,7 +53,8 @@ namespace Miki.Discord
 
         protected override async Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId)
         {
-            IReadOnlyList<DiscordGuildMemberPacket> packets = (await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId)))?.ToArray();
+            IReadOnlyList<DiscordGuildMemberPacket> packets =
+                (await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId)))?.ToArray();
 
             if (packets == null || packets.Count == 0)
             {
@@ -64,7 +65,7 @@ namespace Miki.Discord
                     await CacheClient.HashUpsertAsync(
                         CacheUtils.ChannelsKey(guildId),
                         packets.Select(x => new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x)
-                        ).ToArray());
+                        ));
                 }
             }
 
@@ -73,12 +74,14 @@ namespace Miki.Discord
 
         protected override async Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId)
         {
-            IReadOnlyList<DiscordChannelPacket> packets = 
+            IReadOnlyList<DiscordChannelPacket> packets =
                 (await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId)))?.ToArray();
 
             if (packets == null || packets.Count == 0)
             {
-                packets = await ApiClient.GetChannelsAsync(guildId);
+                var result = await ApiClient.GetChannelsAsync(guildId);
+
+                packets = result as IReadOnlyList<DiscordChannelPacket> ?? result.ToArray();
 
                 if (packets.Any())
                 {
@@ -89,12 +92,13 @@ namespace Miki.Discord
                 }
             }
 
-            return packets.ToArray();
+            return packets;
         }
 
         protected override async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId)
         {
-            DiscordGuildMemberPacket packet = await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId), userId.ToString());
+            DiscordGuildMemberPacket packet =
+                await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId), userId.ToString());
 
             if (packet == null)
             {
@@ -113,7 +117,8 @@ namespace Miki.Discord
 
         protected override async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
         {
-            DiscordRolePacket packet = await CacheClient.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
+            DiscordRolePacket packet =
+                await CacheClient.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
 
             if (packet == null)
             {
@@ -130,18 +135,21 @@ namespace Miki.Discord
 
         protected override async Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
         {
-            IReadOnlyList<DiscordRolePacket> packets = (await CacheClient.HashValuesAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId)))?.ToArray();
+            IReadOnlyList<DiscordRolePacket> packets =
+                (await CacheClient.HashValuesAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId)))?.ToArray();
 
             if (packets == null || packets.Count == 0)
             {
-                packets = await ApiClient.GetRolesAsync(guildId);
+                var result = await ApiClient.GetRolesAsync(guildId);
+
+                packets = result as IReadOnlyList<DiscordRolePacket> ?? result.ToArray();
 
                 if (packets.Count > 0)
                 {
                     await CacheClient.HashUpsertAsync(
                         CacheUtils.ChannelsKey(guildId),
                         packets.Select(x => new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x)
-                    ).ToArray());
+                    ));
                 }
             }
 

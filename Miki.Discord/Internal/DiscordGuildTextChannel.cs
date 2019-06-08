@@ -29,6 +29,8 @@ namespace Miki.Discord.Internal
 
             if (id.Length > 100)
             {
+                // TODO: Remove the messages in batches.
+                // Note: Before we can implement this we have to implement the ratelimit queue.
                 id = id.Take(100).ToArray();
             }
 
