@@ -49,11 +49,11 @@ namespace Miki.Discord
 
         protected abstract Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId);
 
-        protected abstract Task<IReadOnlyList<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId);
+        protected abstract Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId);
 
-        protected abstract Task<IReadOnlyList<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId);
+        protected abstract Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId);
 
-        protected abstract Task<IReadOnlyList<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId);
+        protected abstract Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId);
 
         protected abstract Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId);
 
@@ -124,7 +124,7 @@ namespace Miki.Discord
             return new DiscordRole(await GetRolePacketAsync(roleId, guildId), this);
         }
 
-        public virtual async Task<IReadOnlyList<IDiscordRole>> GetRolesAsync(
+        public virtual async Task<IEnumerable<IDiscordRole>> GetRolesAsync(
             ulong guildId)
         {
             return (await GetRolePacketsAsync(guildId))
@@ -132,7 +132,7 @@ namespace Miki.Discord
                 .ToList();
         }
 
-        public virtual async Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
+        public virtual async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
         {
             var channelPackets = await GetGuildChannelPacketsAsync(guildId);
             var channels = channelPackets.Select(x => ResolveChannel(x) as IDiscordGuildChannel);
@@ -145,9 +145,16 @@ namespace Miki.Discord
 			var channel = await GetChannelPacketAsync(id, guildId);
 
 			return ResolveChannel(channel);
-		}
+        }
 
-		public virtual async Task<IDiscordSelfUser> GetSelfAsync()
+        public virtual async Task<T> GetChannelAsync<T>(ulong id, ulong? guildId = null) where T : class, IDiscordChannel
+        {
+            var channel = await GetChannelPacketAsync(id, guildId);
+
+            return ResolveChannel(channel) as T;
+        }
+
+        public virtual async Task<IDiscordSelfUser> GetSelfAsync()
 		{
 			return new DiscordSelfUser(
 				await GetCurrentUserPacketAsync(),
@@ -172,14 +179,14 @@ namespace Miki.Discord
 			);
 		}
 
-        public async Task<IReadOnlyList<IDiscordGuildUser>> GetGuildUsersAsync(ulong guildId)
+        public async Task<IEnumerable<IDiscordGuildUser>> GetGuildUsersAsync(ulong guildId)
         {
             return (await GetGuildMembersPacketAsync(guildId))
                 .Select(x => new DiscordGuildUser(x, this))
                 .ToList();
         }
 
-        public virtual async Task<IReadOnlyList<IDiscordUser>> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+        public virtual async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
 		{
 			var users = await ApiClient.GetReactionsAsync(channelId, messageId, emoji);
 

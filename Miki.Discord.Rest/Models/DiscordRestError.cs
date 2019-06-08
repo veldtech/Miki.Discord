@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Miki.Discord.Rest.Exceptions
+namespace Miki.Discord.Rest
 {
     public class DiscordRestError
     {

@@ -51,7 +51,7 @@ namespace Miki.Discord
             return !await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey, guildId.ToString());
         }
 
-        protected override async Task<IReadOnlyList<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId)
+        protected override async Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId)
         {
             IReadOnlyList<DiscordGuildMemberPacket> packets = (await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId)))?.ToArray();
 
@@ -64,14 +64,14 @@ namespace Miki.Discord
                     await CacheClient.HashUpsertAsync(
                         CacheUtils.ChannelsKey(guildId),
                         packets.Select(x => new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x)
-                    ).ToArray());
+                        ).ToArray());
                 }
             }
 
             return packets;
         }
 
-        protected override async Task<IReadOnlyList<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId)
+        protected override async Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId)
         {
             IReadOnlyList<DiscordChannelPacket> packets = 
                 (await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId)))?.ToArray();
@@ -128,7 +128,7 @@ namespace Miki.Discord
             return packet;
         }
 
-        protected override async Task<IReadOnlyList<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
+        protected override async Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
         {
             IReadOnlyList<DiscordRolePacket> packets = (await CacheClient.HashValuesAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId)))?.ToArray();
 

@@ -43,11 +43,13 @@ namespace Miki.Discord
 
         Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId);
 
-        Task<IReadOnlyList<IDiscordRole>> GetRolesAsync(ulong guildId);
+        Task<IEnumerable<IDiscordRole>> GetRolesAsync(ulong guildId);
 
-        Task<IReadOnlyList<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId);
+        Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId);
 
         Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null);
+
+        Task<T> GetChannelAsync<T>(ulong id, ulong? guildId = null) where T : class, IDiscordChannel;
 
         Task<IDiscordSelfUser> GetSelfAsync();
 
@@ -55,9 +57,9 @@ namespace Miki.Discord
 
         Task<IDiscordGuildUser> GetGuildUserAsync(ulong id, ulong guildId);
 
-        Task<IReadOnlyList<IDiscordGuildUser>> GetGuildUsersAsync(ulong guildId);
+        Task<IEnumerable<IDiscordGuildUser>> GetGuildUsersAsync(ulong guildId);
 
-        Task<IReadOnlyList<IDiscordUser>> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji);
+        Task<IEnumerable<IDiscordUser>> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji);
 
         Task<IDiscordUser> GetUserAsync(ulong id);
 

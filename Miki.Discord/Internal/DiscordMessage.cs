@@ -70,7 +70,7 @@ namespace Miki.Discord.Internal
             return channel as IDiscordTextChannel;
         }
 
-		public async Task<IReadOnlyList<IDiscordUser>> GetReactionsAsync(DiscordEmoji emoji)
+		public async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(DiscordEmoji emoji)
 			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji);
 
 		public async Task CreateReactionAsync(DiscordEmoji emoji)
