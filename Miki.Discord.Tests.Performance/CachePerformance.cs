@@ -91,7 +91,7 @@ namespace Miki.Discord.Tests
 
             discordClient = new DiscordClient(new DiscordClientConfigurations
             {
-                ApiClient = new DummyApiClient(),
+                ApiClient = new DefaultDummyApiClient(),
                 Gateway = gateway,
                 CacheClient = client
             });
