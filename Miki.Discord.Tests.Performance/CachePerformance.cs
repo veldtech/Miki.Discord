@@ -57,7 +57,7 @@ namespace Miki.Discord.Tests
 				EmbedEnabled = false,
 				Emojis = new DiscordEmoji[]
 					{ new DiscordEmoji(), new DiscordEmoji(), new DiscordEmoji() },
-				Channels = new List<DiscordChannelPacket>(),
+				Channels = new List<Common.DiscordChannelPacket>(),
 				Members = new List<DiscordGuildMemberPacket>(),
 				ExplicitContentFilter = 2,
 				Icon = "meme",
