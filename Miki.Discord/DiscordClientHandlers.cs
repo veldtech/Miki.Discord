@@ -80,17 +80,17 @@ namespace Miki.Discord
             }
         }
 
-        private Task OnRoleDelete(ulong guildId, ulong roleId)
+        private async Task OnRoleDelete(ulong guildId, ulong roleId)
         {
-            return CacheClient.HashDeleteAsync(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
+            await CacheClient.HashDeleteAsync(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
         }
 
-        private Task OnRoleCreate(ulong guildId, DiscordRolePacket role)
+        private async Task OnRoleCreate(ulong guildId, DiscordRolePacket role)
         {
-            return CacheClient.HashUpsertAsync(CacheUtils.GuildRolesKey(guildId), role.Id.ToString(), role);
+            await CacheClient.HashUpsertAsync(CacheUtils.GuildRolesKey(guildId), role.Id.ToString(), role);
         }
 
-        private Task OnReady(GatewayReadyPacket ready)
+        private async Task OnReady(GatewayReadyPacket ready)
         {
             KeyValuePair<string, DiscordGuildPacket>[] readyPackets = new KeyValuePair<string, DiscordGuildPacket>[ready.Guilds.Count()];
 
@@ -99,7 +99,7 @@ namespace Miki.Discord
                 readyPackets[i] = new KeyValuePair<string, DiscordGuildPacket>(ready.Guilds[i].Id.ToString(), ready.Guilds[i]);
             }
 
-            return Task.WhenAll(
+            await Task.WhenAll(
                 CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey, readyPackets),
                 CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, "me", ready.CurrentUser),
                 CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, ready.CurrentUser.Id.ToString(), ready.CurrentUser)
@@ -143,19 +143,19 @@ namespace Miki.Discord
             await CacheClient.HashUpsertAsync(CacheUtils.GuildMembersKey(member.GuildId), member.User.Id.ToString(), m);
         }
 
-        private Task OnGuildMemberRemove(ulong guildId, DiscordUserPacket user)
+        private async Task OnGuildMemberRemove(ulong guildId, DiscordUserPacket user)
         {
-            return CacheClient.HashDeleteAsync(CacheUtils.GuildMembersKey(guildId), user.Id.ToString());
+            await CacheClient.HashDeleteAsync(CacheUtils.GuildMembersKey(guildId), user.Id.ToString());
         }
 
-        private Task OnGuildMemberAdd(DiscordGuildMemberPacket member)
+        private async Task OnGuildMemberAdd(DiscordGuildMemberPacket member)
         {
-            return CacheClient.HashUpsertAsync(CacheUtils.GuildMembersKey(member.GuildId), member.User.Id.ToString(), member);
+            await CacheClient.HashUpsertAsync(CacheUtils.GuildMembersKey(member.GuildId), member.User.Id.ToString(), member);
         }
 
-        private Task OnGuildDelete(DiscordGuildUnavailablePacket unavailableGuild)
+        private async Task OnGuildDelete(DiscordGuildUnavailablePacket unavailableGuild)
         {
-            return CacheClient.HashDeleteAsync(CacheUtils.GuildsCacheKey, unavailableGuild.GuildId.ToString());
+            await CacheClient.HashDeleteAsync(CacheUtils.GuildsCacheKey, unavailableGuild.GuildId.ToString());
         }
 
         private async Task OnGuildUpdate(DiscordGuildPacket arg1)
@@ -174,11 +174,11 @@ namespace Miki.Discord
             await CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild);
         }
 
-        private Task OnGuildCreate(DiscordGuildPacket guild)
+        private async Task OnGuildCreate(DiscordGuildPacket guild)
         {
             guild.Members.RemoveAll(x => x == null);
 
-            return Task.WhenAll(
+            await Task.WhenAll(
                 CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild),
                 CacheClient.HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), guild.Channels.Select(x =>
                 {
@@ -201,14 +201,14 @@ namespace Miki.Discord
             );
         }
 
-        private Task OnChannelCreate(DiscordChannelPacket channel)
+        private async Task OnChannelCreate(DiscordChannelPacket channel)
         {
-            return CacheClient.HashUpsertAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString(), channel);
+            await CacheClient.HashUpsertAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString(), channel);
         }
 
-        private Task OnChannelDelete(DiscordChannelPacket channel)
+        private async Task OnChannelDelete(DiscordChannelPacket channel)
         {
-            return CacheClient.HashDeleteAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString());
+            await CacheClient.HashDeleteAsync(CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString());
         }
     }
 }

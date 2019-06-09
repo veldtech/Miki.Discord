@@ -9,15 +9,13 @@ namespace Miki.Discord.Internal
 {
 	public class DiscordGuild : IDiscordGuild
 	{
-		private readonly DiscordGuildPacketRoot _packet;
+		private readonly DiscordGuildPacket _packet;
 		private readonly IDiscordClient _client;
 
-		public DiscordGuild(DiscordGuildPacketRoot packet, IDiscordClient client)
+		public DiscordGuild(DiscordGuildPacket packet, IDiscordClient client)
 		{
-			_packet = new DiscordGuildPacketRoot();
+			_packet = packet;
 			_client = client;
-
-            _packet.OverwriteContext(packet);
 		}
 
 		public string Name

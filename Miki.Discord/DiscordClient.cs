@@ -122,7 +122,8 @@ namespace Miki.Discord
 
             if (packet == null)
             {
-                packet = await ApiClient.GetRoleAsync(roleId, guildId);
+                packet = (await ApiClient.GetRolesAsync(guildId))
+                    .FirstOrDefault(x => x.Id == roleId);
 
                 if (packet != null)
                 {
