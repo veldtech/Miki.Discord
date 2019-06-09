@@ -14,9 +14,12 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Bson;
 using System.Collections.Generic;
-using Miki.Discord.Common.Converters;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Extensions;
+using Miki.Discord.Common.Packets;
+using Miki.Serialization;
 
 namespace Miki.Discord.Gateway.Connection
 {
@@ -35,7 +38,7 @@ namespace Miki.Discord.Gateway.Connection
     {
         public event Func<Task> OnConnect;
         public event Func<Exception, Task> OnDisconnect;
-        public event Func<GatewayMessage, Task> OnPacketReceived;
+        public event Func<IGatewayMessage, Task> OnPacketReceived;
 
         public ConnectionStatus ConnectionStatus { get; private set; } = ConnectionStatus.Disconnected;
 
@@ -62,7 +65,7 @@ namespace Miki.Discord.Gateway.Connection
         private MemoryStream _uncompressStream;
         private StreamReader _uncompressStreamReader;
         private DeflateStream _deflateStream;
-        private JsonSerializer _jsonSerializer;
+        private ISerializer _jsonSerializer;
 
         public bool IsRunning => _runTask != null && !_connectionToken.IsCancellationRequested;
 
@@ -81,16 +84,7 @@ namespace Miki.Discord.Gateway.Connection
             _uncompressStream = new MemoryStream();
             _uncompressStreamReader = new StreamReader(_uncompressStream, Encoding.UTF8);
             _deflateStream = new DeflateStream(_compressedStream, CompressionMode.Decompress);
-            
-            _jsonSerializer = JsonSerializer.Create(new
-                JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter>
-                {
-                    new GatewayMessageConverter()
-                }
-            });
-
+            _jsonSerializer = configuration.JsonSerializer;
             _webSocketClient = configuration.WebSocketClientFactory();
             _configuration = configuration;
         }
@@ -180,73 +174,57 @@ namespace Miki.Discord.Gateway.Connection
             {
                 while (!_connectionToken.IsCancellationRequested)
                 {
-                    var msg = await ReceivePacketAsync()
-                        .ConfigureAwait(false);
-                    if (!msg.OpCode.HasValue)
+                    var data = await ReceivePacketAsync().ConfigureAwait(false);
+
+                    var sw = Stopwatch.StartNew();
+                    if (!TryReadMessage(data, out var message))
                     {
+                        // TODO: Log the bytes?
+                        Log.Warning("Received a message that could not be read by the gateway.");
                         continue;
                     }
+                    Log.Debug($"Parse time: {sw.Elapsed.TotalMilliseconds:0.00} ms");
 
-                    switch (msg.OpCode)
+                    switch (message.OpCode)
                     {
                         case GatewayOpcode.Dispatch:
-                        {
-                            _sequenceNumber = msg.SequenceNumber;
+                            _sequenceNumber = message.SequenceNumber;
 
-                            if (msg.EventName == "READY")
+                            if (message.EventName == "READY")
                             {
-                                var readyPacket = (msg.Data as JToken)
-                                    .ToObject<GatewayReadyPacket>();
+                                var readyPacket = (GatewayReadyPacket) message.Data;
                                 _sessionId = readyPacket.SessionId;
                                 TraceServers = readyPacket.TraceGuilds;
                                 _heartbeatLock.Release();
                             }
-
-                            if (msg.EventName == "RESUMED")
+                            else if (message.EventName == "RESUMED")
                             {
-                                var readyPacket = (msg.Data as JToken)
-                                    .ToObject<GatewayReadyPacket>();
+                                var readyPacket = (GatewayReadyPacket) message.Data;
                                 TraceServers = readyPacket.TraceGuilds;
                                 _heartbeatLock.Release();
                             }
 
-                            Log.Debug($"    <= {msg.EventName.ToString()}");
-                            if (OnPacketReceived != null)
-                            {
-                                await OnPacketReceived(msg);
-                            }
-                        }
-                        break;
-
+                            Log.Debug($"    <= {message.EventName}");
+                            await OnPacketReceived.InvokeAsync(message);
+                            break;
+                        case GatewayOpcode.Heartbeat:
+                            await SendHeartbeatAsync();
+                            break;
                         case GatewayOpcode.InvalidSession:
-                        {
-                            var canResume = (msg.Data as JToken)
-                                .ToObject<bool>();
+                            var canResume = (bool)message.Data;
+
                             if (!canResume)
                             {
                                 _sequenceNumber = null;
                             }
-                            var _ = Task.Run(() => ReconnectAsync());
-                        }
-                        break;
 
-                        case GatewayOpcode.Reconnect:
-                        {
-                            var _ = Task.Run(() => ReconnectAsync());
-                        }
-                        break;
-
-                        case GatewayOpcode.Heartbeat:
-                        {
-                            await SendHeartbeatAsync();
-                        }
-                        break;
-
+                            _ = Task.Run(() => ReconnectAsync());
+                            break;
+                        case GatewayOpcode.Hello:
+                            break;
                         case GatewayOpcode.HeartbeatAcknowledge:
-                        {
                             _heartbeatLock.Release();
-                        }
-                        break;
+                            break;
                     }
                 }
             }
@@ -272,6 +250,93 @@ namespace Miki.Discord.Gateway.Connection
                 Log.Error(e);
                 await Task.Delay(5000);
                 _ = ReconnectAsync();
+            }
+        }
+
+        public bool TryReadMessage(byte[] data, out IGatewayMessage message)
+        {
+            var identifier = GatewayMessageIdentifier.Read(data);
+
+            if (!identifier.OpCode.HasValue)
+            {
+                message = null;
+                return false;
+            }
+
+            if (identifier.OpCode == GatewayOpcode.InvalidSession)
+            {
+                message = _jsonSerializer.Deserialize<GatewayMessage<bool>>(data);
+                return true;
+            }
+
+            if (identifier.OpCode == GatewayOpcode.Hello)
+            {
+                message = _jsonSerializer.Deserialize<GatewayMessage<GatewayHelloPacket>>(data);
+                return true;
+            }
+
+            if (identifier.OpCode != GatewayOpcode.Dispatch)
+            {
+                message = new GatewayMessage
+                {
+                    OpCode = identifier.OpCode.Value
+                };
+                return true;
+            }
+
+            switch (identifier.EventName)
+            {
+                case "READY":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<GatewayReadyPacket>>(data);
+                    return true;
+
+                case "RESUMED":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<GatewayReadyPacket>>(data);
+                    return true;
+
+                case "GUILD_CREATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordGuildPacket>>(data);
+                    return true;
+
+                case "GUILD_ROLE_UPDATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<RoleEventArgs>>(data);
+                    return true;
+
+                case "GUILD_MEMBER_UPDATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<GuildMemberUpdateEventArgs>>(data);
+                    return true;
+
+                case "GUILD_UPDATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordGuildPacket>>(data);
+                    return true;
+
+                case "GUILD_DELETE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordGuildUnavailablePacket>>(data);
+                    return true;
+
+                case "MESSAGE_CREATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordMessagePacket>>(data);
+                    return true;
+
+                case "PRESENCE_UPDATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordPresencePacket>>(data);
+                    return true;
+
+                case "CHANNEL_CREATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordChannelPacket>>(data);
+                    return true;
+
+                case "CHANNEL_UPDATE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordChannelPacket>>(data);
+                    return true;
+
+                case "CHANNEL_DELETE":
+                    message = _jsonSerializer.Deserialize<GatewayMessage<DiscordChannelPacket>>(data);
+                    return true;
+
+                default:
+                    message = null;
+                    return false;
             }
         }
 
@@ -409,9 +474,9 @@ namespace Miki.Discord.Gateway.Connection
             }
         }
 
-        public async Task SendCommandAsync(GatewayOpcode opcode, object data, CancellationToken token = default)
+        public async Task SendCommandAsync<T>(GatewayOpcode opcode, T data, CancellationToken token = default)
         {
-            GatewayMessage msg = new GatewayMessage
+            var msg = new GatewayMessage<T>
             {
                 OpCode = opcode,
                 Data = data,
@@ -421,7 +486,7 @@ namespace Miki.Discord.Gateway.Connection
             await SendCommandAsync(msg, token)
                 .ConfigureAwait(false);
         }
-        private async Task SendCommandAsync(GatewayMessage msg, CancellationToken token)
+        private async Task SendCommandAsync<T>(GatewayMessage<T> msg, CancellationToken token)
         {
             var json = JsonConvert.SerializeObject(msg);
 
@@ -434,7 +499,7 @@ namespace Miki.Discord.Gateway.Connection
 
         private async Task SendHeartbeatAsync()
         {
-            GatewayMessage msg = new GatewayMessage
+            var msg = new GatewayMessage<int?>
             {
                 OpCode = GatewayOpcode.Heartbeat,
                 Data = _sequenceNumber
@@ -456,8 +521,15 @@ namespace Miki.Discord.Gateway.Connection
 
             await _webSocketClient.ConnectAsync(new Uri(connectionUri), _connectionToken.Token);
             var msg = await ReceivePacketAsync();
-            return (msg.Data as JToken)
-                .ToObject<GatewayHelloPacket>();
+
+            if (!TryReadMessage(msg, out var message))
+            {
+                // TODO: Log the bytes?
+                Log.Warning("Received a message that could not be read by the gateway.");
+                return null;
+            }
+
+            return message.Data as GatewayHelloPacket;
         }
 
         private async Task<WebSocketPacket> ReceivePacketBytesAsync()
@@ -493,7 +565,7 @@ namespace Miki.Discord.Gateway.Connection
             return new WebSocketPacket(response, p);
         }
 
-        private async Task<GatewayMessage> ReceivePacketAsync()
+        private async Task<byte[]> ReceivePacketAsync()
         {
             var response = await ReceivePacketBytesAsync()
                 .ConfigureAwait(false);
@@ -527,23 +599,13 @@ namespace Miki.Discord.Gateway.Connection
 
             _uncompressStream.Position = 0;
 
-            if (_configuration.Encoding == GatewayEncoding.Json)
+            if (_configuration.Encoding != GatewayEncoding.Json)
             {
-                var msg = (GatewayMessage)_jsonSerializer
-                    .Deserialize(_uncompressStreamReader, typeof(GatewayMessage));
-                return msg;
+                throw new NotSupportedException();
             }
-            else
-            {
-                return new GatewayMessage{ };
-            }
-        }
-    }
 
-    public struct GatewayPacket
-    {
-        public GatewayMessage Message;
-        public WebSocketPacket Packet;
+            return _uncompressStream.ToArray();
+        }
     }
 
 	public struct WebSocketPacket

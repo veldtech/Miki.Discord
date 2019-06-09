@@ -5,7 +5,6 @@ using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest.Arguments;
 using Miki.Rest;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +17,7 @@ using Miki.Discord.Common.Packets.Arguments;
 using Miki.Discord.Rest.Converters;
 using Miki.Discord.Common.Utils;
 using Miki.Discord.Rest.Exceptions;
+using Newtonsoft.Json;
 
 namespace Miki.Discord.Rest
 {
@@ -25,7 +25,7 @@ namespace Miki.Discord.Rest
     /// A client for Discord's API. Used to perform calls to their RESTful API.
     /// </summary>
     public class DiscordApiClient 
-        : IApiClient, IGatewayApiClient, IDisposable
+        : IApiClient, IDisposable
     {
         private readonly JsonSerializerSettings _serializer;
 
@@ -600,13 +600,11 @@ namespace Miki.Discord.Rest
         public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
         {
             string json = JsonConvert.SerializeObject(args, _serializer);
-            {
-                var response = await RestClient.PostAsync(
-                    DiscordApiRoutes.ChannelMessages(channelId), json)
-                    .ConfigureAwait(false);
-                HandleErrors(response);
-                return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
-            }
+            var response = await RestClient.PostAsync(
+                DiscordApiRoutes.ChannelMessages(channelId), json)
+                .ConfigureAwait(false);
+            HandleErrors(response);
+            return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
         }
 
         public async Task TriggerTypingAsync(ulong channelId)

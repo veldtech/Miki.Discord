@@ -48,7 +48,8 @@ namespace Miki.Discord.Gateway
                     ShardCount = properties.ShardCount,
                     ShardId = i,
                     Token = properties.Token,
-                    Version = properties.Version
+                    Version = properties.Version,
+                    JsonSerializer = properties.JsonSerializer
                 };
 
                 Shards.Add(i, properties.GatewayFactory(shardProperties));
@@ -165,7 +166,7 @@ namespace Miki.Discord.Gateway
         public Func<GatewayReadyPacket, Task> OnReady { get; set; }
         public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
         public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
-        public event Func<GatewayMessage, Task> OnPacketSent;
-        public event Func<GatewayMessage, Task> OnPacketReceived;
+        public event Func<IGatewayMessage, Task> OnPacketSent;
+        public event Func<IGatewayMessage, Task> OnPacketReceived;
     }
 }

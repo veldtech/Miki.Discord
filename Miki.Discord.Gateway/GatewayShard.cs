@@ -60,55 +60,55 @@ namespace Miki.Discord.Gateway
 			_isRunning = false;
 		}
 
-		public Task OnPacketReceivedAsync(GatewayMessage text)
+		public Task OnPacketReceivedAsync(IGatewayMessage text)
 		{
-			if (text.OpCode != GatewayOpcode.Dispatch || !(text.Data is JToken token))
+			if (text.OpCode != GatewayOpcode.Dispatch)
             {
                 return Task.CompletedTask;
             }
 
             switch (text.EventName)
-			{
+            {
                 case "READY":
-                    return OnReady.InvokeAsync(token.ToObject<GatewayReadyPacket>());
+                    return OnReady.InvokeAsync((GatewayReadyPacket)text.Data);
 
-				case "GUILD_CREATE":
-					return OnGuildCreate.InvokeAsync(token.ToObject<DiscordGuildPacket>());
+                case "GUILD_CREATE":
+                    return OnGuildCreate.InvokeAsync((DiscordGuildPacket)text.Data);
 
                 case "GUILD_ROLE_UPDATE":
-                    var role = token.ToObject<RoleEventArgs>();
+                    var role = (RoleEventArgs)text.Data;
 
                     return OnGuildRoleUpdate.InvokeAsync(role.GuildId, role.Role);
 
                 case "GUILD_MEMBER_UPDATE":
-                    return OnGuildMemberUpdate.InvokeAsync(token.ToObject<GuildMemberUpdateEventArgs>());
+                    return OnGuildMemberUpdate.InvokeAsync((GuildMemberUpdateEventArgs)text.Data);
 
                 case "GUILD_UPDATE":
-					return OnGuildUpdate.InvokeAsync(token.ToObject<DiscordGuildPacket>());
+                    return OnGuildUpdate.InvokeAsync((DiscordGuildPacket)text.Data);
 
-				case "GUILD_DELETE":
-					return OnGuildDelete.InvokeAsync(token.ToObject<DiscordGuildUnavailablePacket>());
+                case "GUILD_DELETE":
+                    return OnGuildDelete.InvokeAsync((DiscordGuildUnavailablePacket)text.Data);
 
-				case "MESSAGE_CREATE":
-					return OnMessageCreate.InvokeAsync(token.ToObject<DiscordMessagePacket>());
+                case "MESSAGE_CREATE":
+                    return OnMessageCreate.InvokeAsync((DiscordMessagePacket)text.Data);
 
-				case "PRESENCE_UPDATE":
-					return OnPresenceUpdate.InvokeAsync(token.ToObject<DiscordPresencePacket>());
+                case "PRESENCE_UPDATE":
+                    return OnPresenceUpdate.InvokeAsync((DiscordPresencePacket)text.Data);
 
-				case "CHANNEL_CREATE":
-					return OnChannelCreate.InvokeAsync(token.ToObject<DiscordChannelPacket>());
+                case "CHANNEL_CREATE":
+                    return OnChannelCreate.InvokeAsync((DiscordChannelPacket)text.Data);
 
-				case "CHANNEL_UPDATE":
-					return OnChannelUpdate.InvokeAsync(token.ToObject<DiscordChannelPacket>());
+                case "CHANNEL_UPDATE":
+                    return OnChannelUpdate.InvokeAsync((DiscordChannelPacket)text.Data);
 
-				case "CHANNEL_DELETE":
-					return OnChannelDelete.InvokeAsync(token.ToObject<DiscordChannelPacket>());
+                case "CHANNEL_DELETE":
+                    return OnChannelDelete.InvokeAsync((DiscordChannelPacket)text.Data);
 
                 default:
                     Log.Debug($"{text.EventName} is not implemented.");
                     return Task.CompletedTask;
-			}
-		}
+            }
+        }
 
 		public async Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
 		{
@@ -149,8 +149,8 @@ namespace Miki.Discord.Gateway
 		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
 		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
 		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
-        public event Func<GatewayMessage, Task> OnPacketSent;
-        public event Func<GatewayMessage, Task> OnPacketReceived
+        public event Func<IGatewayMessage, Task> OnPacketSent;
+        public event Func<IGatewayMessage, Task> OnPacketReceived
         {
             add => _connection.OnPacketReceived += value;
             remove => _connection.OnPacketReceived -= value;

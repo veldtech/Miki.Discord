@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Miki.Discord.Rest
 {
     public class DiscordRestError
     {
-        [JsonProperty("code")]
+        [DataMember(Name = "code")]
         public int Code { get; set; }
 
-        [JsonProperty("message")]
+        [DataMember(Name = "message")]
         public string Message { get; set; }
 
         public override string ToString()

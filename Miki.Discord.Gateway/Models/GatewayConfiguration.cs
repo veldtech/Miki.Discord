@@ -4,6 +4,7 @@ using Miki.Discord.Gateway.Ratelimiting;
 using Miki.Net.WebSockets;
 using System;
 using Miki.Discord.Common;
+using Miki.Serialization;
 
 namespace Miki.Discord.Gateway
 {
@@ -53,6 +54,8 @@ namespace Miki.Discord.Gateway
         public Func<GatewayProperties, IGateway> GatewayFactory = p => new GatewayShard(p);
 
         public IGatewayRatelimiter Ratelimiter = new DefaultGatewayRatelimiter();
+
+        public ISerializer JsonSerializer;
 
         /// <summary>
         /// Allow events other than dispatch to be received in raw events?

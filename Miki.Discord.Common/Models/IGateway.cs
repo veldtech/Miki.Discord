@@ -45,8 +45,8 @@ namespace Miki.Discord.Common
 
 		Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
 
-        event Func<GatewayMessage, Task> OnPacketSent;
-        event Func<GatewayMessage, Task> OnPacketReceived;
+        event Func<IGatewayMessage, Task> OnPacketSent;
+        event Func<IGatewayMessage, Task> OnPacketReceived;
         #endregion
 
         Task RestartAsync();

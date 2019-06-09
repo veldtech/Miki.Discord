@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.1</TargetFrameworks>
     <Version>3.0.0</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
@@ -11,7 +11,7 @@
     <DelaySign>false</DelaySign>
     <PackageTags>Discord Gateway Miki</PackageTags>
     <Product>Miki</Product>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.2</LangVersion>
     <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
     <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
   </PropertyGroup>
@@ -23,7 +23,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Miki.Net.Websockets" Version="1.1.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
