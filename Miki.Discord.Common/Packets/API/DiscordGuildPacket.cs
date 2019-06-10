@@ -75,9 +75,10 @@ namespace Miki.Discord.Common.Packets
         [DataMember(Name = "system_channel_id", Order = 21)]
         public ulong? SystemChannelId;
 
+        [DataMember(Order = 22)]
         public long CreatedAt;
 
-        [DataMember(Name = "joined_at", Order = 22)]
+        [DataMember(Name = "joined_at")]
         internal string _createdAt
         {
             get
