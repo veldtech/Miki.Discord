@@ -37,10 +37,12 @@ namespace Miki.Discord.Internal
 			=> (GuildPermission)_packet.Permissions.GetValueOrDefault(0);
 
         public int PremiumSubscriberCount 
-            => _packet.PremiumSubscriberCount;
+            => _packet.PremiumSubscriberCount
+                .GetValueOrDefault(0);
 
         public int PremiumTier 
-            => _packet.PremiumTier;
+            => _packet.PremiumTier
+                .GetValueOrDefault(0);
 
         public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{

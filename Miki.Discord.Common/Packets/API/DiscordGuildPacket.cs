@@ -108,10 +108,10 @@ namespace Miki.Discord.Common.Packets
         public int? Permissions;
 
         [DataMember(Name = "premium_tier", Order = 28)]
-        public int PremiumTier;
+        public int? PremiumTier;
 
         [DataMember(Name = "premium_subscription_count", Order = 29)]
-        public int PremiumSubscriberCount;
+        public int? PremiumSubscriberCount;
 
         [DataMember(Name = "voice_states")]
         public List<DiscordVoiceStatePacket> VoiceStates;
