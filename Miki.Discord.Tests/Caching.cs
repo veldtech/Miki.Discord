@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Miki.Discord.Mocking;
 using Xunit;
 using System;
+using System.Globalization;
 
 namespace Miki.Discord.Tests
 {
@@ -324,5 +325,28 @@ namespace Miki.Discord.Tests
             Assert.Equal(DiscordUtils.GetAvatarUrl(guild.Id, guild.Icon), guildObject.IconUrl);
             Assert.Equal(guild.MemberCount, guildObject.MemberCount);
         }
-	}
+
+        [Fact]
+        public async Task CultureChanged()
+        {
+            await ResetObjectsAsync();
+
+            var now = DateTime.ParseExact("01/01/2019 00:00:00", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).Ticks;
+
+            CultureInfo.CurrentCulture = new CultureInfo("nl-NL");
+
+            var guildPacket = new DiscordGuildPacket
+            {
+                CreatedAt = now
+            };
+
+            await client.UpsertAsync("guild", guildPacket);
+
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
+
+            var cachedGuild = await client.GetAsync<DiscordGuildPacket>("guild");
+
+            Assert.Equal(now, cachedGuild.CreatedAt);
+        }
+    }
 }

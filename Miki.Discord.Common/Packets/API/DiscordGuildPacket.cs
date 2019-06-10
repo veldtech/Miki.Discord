@@ -75,19 +75,20 @@ namespace Miki.Discord.Common.Packets
         [DataMember(Name = "system_channel_id", Order = 21)]
         public ulong? SystemChannelId;
 
+        [DataMember(Order = 22)]
         public long CreatedAt;
 
-        [DataMember(Name = "joined_at", Order = 22)]
+        [DataMember(Name = "joined_at")]
         internal string _createdAt
         {
             get
             {
-                return new DateTime(CreatedAt).ToString("MM/dd/yyyy HH:mm:ss");
+                return new DateTime(CreatedAt).ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
             }
 
             set
             {
-                var d = DateTime.ParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None);
+                var d = DateTime.ParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
                 CreatedAt = d.Ticks;
             }
         }
