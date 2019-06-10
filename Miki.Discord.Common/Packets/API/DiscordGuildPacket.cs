@@ -82,12 +82,12 @@ namespace Miki.Discord.Common.Packets
         {
             get
             {
-                return new DateTime(CreatedAt).ToString("MM/dd/yyyy HH:mm:ss");
+                return new DateTime(CreatedAt).ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
             }
 
             set
             {
-                var d = DateTime.ParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.CurrentCulture, DateTimeStyles.None);
+                var d = DateTime.ParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
                 CreatedAt = d.Ticks;
             }
         }
