@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Miki.Discord.Mocking;
 using Xunit;
+using System;
+using System.Globalization;
 
 namespace Miki.Discord.Tests
 {
@@ -28,10 +30,6 @@ namespace Miki.Discord.Tests
 		DiscordRolePacket role;
         DiscordClient discordClient;
 
-		public Caching()
-		{
-		}
-
 		private async Task ResetObjectsAsync()
         {
             gateway = new DummyGateway();
@@ -39,7 +37,7 @@ namespace Miki.Discord.Tests
 			client = (IExtendedCacheClient) await pool.GetAsync();
             discordClient = new DiscordClient(new DiscordClientConfigurations
             {
-                ApiClient = new DummyApiClient(),
+                ApiClient = new InvalidDummyApiClient(),
                 Gateway = gateway,
                 CacheClient = client
             });
@@ -111,9 +109,6 @@ namespace Miki.Discord.Tests
                     new DiscordEmoji() 
                 }
             };
-
-			((IExtendedCacheClient) await pool.GetAsync()).HashUpsertAsync(CacheUtils.ChannelsKey(guild.Id), channel.Id.ToString(), channel).GetAwaiter().GetResult();
-            ((IExtendedCacheClient) await pool.GetAsync()).HashUpsertAsync(CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild).GetAwaiter().GetResult();
 		}
 
 		[Fact]
@@ -222,8 +217,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnChannelDelete(otherChannel);
 			otherAddedChannel = await client.HashGetAsync<DiscordChannelPacket>(
-				CacheUtils.ChannelsKey(guild.Id), otherAddedChannel.Id.ToString()
-				);
+				CacheUtils.ChannelsKey(guild.Id), otherAddedChannel.Id.ToString());
 
 			Assert.Null(otherAddedChannel);
 		}
@@ -308,5 +302,51 @@ namespace Miki.Discord.Tests
 
 			Assert.Null(updatedRole);
 		}
-	}
+
+        [Fact]
+        public async Task GuildOperations()
+        {
+            await ResetObjectsAsync();
+
+            await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
+            {
+                GuildId = guild.Id,
+                IsUnavailable = false
+            });
+
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await discordClient.GetGuildAsync(guild.Id));
+
+            await gateway.OnGuildCreate(guild);
+
+            var guildObject = await discordClient.GetGuildAsync(guild.Id);
+
+            Assert.Equal(guild.Id, guildObject.Id);
+            Assert.Equal(DiscordUtils.GetAvatarUrl(guild.Id, guild.Icon), guildObject.IconUrl);
+            Assert.Equal(guild.MemberCount, guildObject.MemberCount);
+        }
+
+        [Fact]
+        public async Task CultureChanged()
+        {
+            await ResetObjectsAsync();
+
+            var now = DateTime.ParseExact("01/01/2019 00:00:00", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).Ticks;
+
+            CultureInfo.CurrentCulture = new CultureInfo("nl-NL");
+
+            var guildPacket = new DiscordGuildPacket
+            {
+                CreatedAt = now
+            };
+
+            await client.UpsertAsync("guild", guildPacket);
+
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
+
+            var cachedGuild = await client.GetAsync<DiscordGuildPacket>("guild");
+
+            Assert.Equal(now, cachedGuild.CreatedAt);
+        }
+    }
 }

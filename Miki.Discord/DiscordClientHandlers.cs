@@ -80,14 +80,14 @@ namespace Miki.Discord
             }
         }
 
-        private Task OnRoleDelete(ulong guildId, ulong roleId)
+        private async Task OnRoleDelete(ulong guildId, ulong roleId)
         {
-            return CacheClient.HashDeleteAsync(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
+            await CacheClient.HashDeleteAsync(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
         }
 
-        private Task OnRoleCreate(ulong guildId, DiscordRolePacket role)
+        private async Task OnRoleCreate(ulong guildId, DiscordRolePacket role)
         {
-            return CacheClient.HashUpsertAsync(CacheUtils.GuildRolesKey(guildId), role.Id.ToString(), role);
+            await CacheClient.HashUpsertAsync(CacheUtils.GuildRolesKey(guildId), role.Id.ToString(), role);
         }
 
         private Task OnReady(GatewayReadyPacket ready)
