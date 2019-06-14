@@ -24,6 +24,11 @@ namespace Miki.Discord.Common
         /// </summary>
 		ulong ChannelId { get; }
 
+        /// <summary>
+        /// The guild this message was created in.
+        /// </summary>
+        ulong? GuildId { get; }
+
         IReadOnlyList<ulong> MentionedUserIds { get; }
 
         DateTimeOffset Timestamp { get; }

@@ -45,7 +45,10 @@ namespace Miki.Discord.Internal
 		public ulong ChannelId
 			=> _packet.ChannelId;
 
-		public IReadOnlyList<ulong> MentionedUserIds
+        public ulong? GuildId
+            => _packet.GuildId;
+
+        public IReadOnlyList<ulong> MentionedUserIds
 			=> _packet.Mentions.Select(x => x.Id)
                 .ToList();
 
