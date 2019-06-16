@@ -99,7 +99,6 @@ namespace Miki.Discord.Gateway
                 shard.OnReady += OnReady;
                 shard.OnTypingStart += OnTypingStart;
                 shard.OnUserUpdate += OnUserUpdate;
-                shard.OnPacketReceived += OnPacketReceived;
 
                 await shard.StartAsync()
                     .ConfigureAwait(false);
@@ -133,7 +132,6 @@ namespace Miki.Discord.Gateway
                 shard.OnReady -= OnReady;
                 shard.OnTypingStart -= OnTypingStart;
                 shard.OnUserUpdate -= OnUserUpdate;
-                shard.OnPacketReceived -= OnPacketReceived;
 
                 await shard.StopAsync()
                     .ConfigureAwait(false);
@@ -165,8 +163,6 @@ namespace Miki.Discord.Gateway
         public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
         public Func<GatewayReadyPacket, Task> OnReady { get; set; }
         public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
-        public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
-        public event Func<IGatewayMessage, Task> OnPacketSent;
-        public event Func<IGatewayMessage, Task> OnPacketReceived;
+        public Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
     }
 }

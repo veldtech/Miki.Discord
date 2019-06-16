@@ -6,9 +6,9 @@ namespace Miki.Discord.Common.Packets
     public class GuildIdUserArgs
 	{
 		[DataMember(Name ="user")]
-		public DiscordUserPacket user;
+		public DiscordUserPacket User;
 
 		[DataMember(Name ="guild_id")]
-		public ulong guildId;
+		public ulong GuildId;
 	}
 }

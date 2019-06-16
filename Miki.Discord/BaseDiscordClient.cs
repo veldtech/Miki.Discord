@@ -317,11 +317,11 @@ namespace Miki.Discord
             return GuildLeave.InvokeAsync(guild.GuildId);
         }
 
-		private async Task OnUserUpdate(DiscordPresencePacket user)
+		private async Task OnUserUpdate(DiscordUserPacket user)
 		{
 			await UserUpdate.InvokeAsync(
-				await GetUserAsync(user.User.Id),
-				new DiscordUser(user.User, this)
+				await GetUserAsync(user.Id),
+				new DiscordUser(user, this)
 			);
 		}
 

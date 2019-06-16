@@ -55,7 +55,7 @@ namespace Miki.Discord.Gateway
 
         public IGatewayRatelimiter Ratelimiter = new DefaultGatewayRatelimiter();
 
-        public ISerializer JsonSerializer;
+        public IJsonSerializer JsonSerializer;
 
         /// <summary>
         /// Allow events other than dispatch to be received in raw events?

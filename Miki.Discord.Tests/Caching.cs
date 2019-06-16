@@ -123,11 +123,7 @@ namespace Miki.Discord.Tests
 
 			user.Avatar = "new avi";
 
-			await gateway.OnUserUpdate(new DiscordPresencePacket()
-			{
-				User = user,
-				GuildId = guild.Id
-			});
+			await gateway.OnUserUpdate(user);
 
 			var x = await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id));
 

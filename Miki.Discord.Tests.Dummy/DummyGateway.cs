@@ -55,7 +55,7 @@ namespace Miki.Discord.Tests.Dummy
 
 		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
 
-		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
+		public Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
 
 		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
 

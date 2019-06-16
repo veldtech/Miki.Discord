@@ -6,9 +6,9 @@ namespace Miki.Discord.Common.Packets.Events
     public class GuildEmojisUpdateEventArgs
 	{
 		[DataMember(Name ="guild_id")]
-		public ulong guildId;
+		public ulong GuildId;
 
 		[DataMember(Name ="emojis")]
-		public DiscordEmoji[] emojis;
+		public DiscordEmoji[] Emojis;
 	}
 }

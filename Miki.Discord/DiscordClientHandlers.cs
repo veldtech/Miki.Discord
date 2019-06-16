@@ -35,7 +35,7 @@ namespace Miki.Discord
             Gateway.OnGuildRoleDelete += OnRoleDelete;
 
             Gateway.OnUserUpdate += OnUserUpdate;
-            Gateway.OnPresenceUpdate += OnUserUpdate;
+            Gateway.OnPresenceUpdate += OnPresenceUpdate;
 
             Gateway.OnReady += OnReady;
         }
@@ -63,7 +63,7 @@ namespace Miki.Discord
             Gateway.OnGuildRoleDelete -= OnRoleDelete;
 
             Gateway.OnUserUpdate -= OnUserUpdate;
-            Gateway.OnPresenceUpdate -= OnUserUpdate;
+            Gateway.OnPresenceUpdate -= OnPresenceUpdate;
 
             Gateway.OnReady -= OnReady;
         }
@@ -106,7 +106,12 @@ namespace Miki.Discord
             );
         }
 
-        private async Task OnUserUpdate(DiscordPresencePacket user)
+        private Task OnUserUpdate(DiscordUserPacket user)
+        {
+            return CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, user.Id.ToString(), user);
+        }
+
+        private async Task OnPresenceUpdate(DiscordPresencePacket user)
         {
             var tasks = new List<Task>
             {

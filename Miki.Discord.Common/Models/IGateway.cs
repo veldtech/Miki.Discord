@@ -43,10 +43,7 @@ namespace Miki.Discord.Common
 
 		Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
 
-		Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
-
-        event Func<IGatewayMessage, Task> OnPacketSent;
-        event Func<IGatewayMessage, Task> OnPacketReceived;
+		Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
         #endregion
 
         Task RestartAsync();

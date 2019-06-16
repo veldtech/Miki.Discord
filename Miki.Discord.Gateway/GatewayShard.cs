@@ -8,20 +8,24 @@ using Miki.Discord.Gateway.Connection;
 using Miki.Logging;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Miki.Discord.Common.Extensions;
+using Miki.Serialization;
 
 namespace Miki.Discord.Gateway
 {
 	public class GatewayShard : IDisposable, IGateway
-	{
+    {
+        private readonly IJsonSerializer _jsonSerializer;
         private readonly GatewayConnection _connection;
 		private readonly CancellationTokenSource _tokenSource;
 		private bool _isRunning;
 
-		public GatewayShard(GatewayProperties configuration)
-		{
+        public GatewayShard(GatewayProperties configuration)
+        {
+            _jsonSerializer = configuration.JsonSerializer;
 			_tokenSource = new CancellationTokenSource();
 			_connection = new GatewayConnection(configuration);
 		}
@@ -29,6 +33,8 @@ namespace Miki.Discord.Gateway
         public int ShardId => _connection.ShardId;
 
         public ConnectionStatus Status => _connection.ConnectionStatus;
+
+        public string[] TraceServers { get; private set; }
 
         public async Task RestartAsync()
         {
@@ -42,8 +48,9 @@ namespace Miki.Discord.Gateway
 				return;
 			}
 
-			_connection.OnPacketReceived += OnPacketReceivedAsync;
-			await _connection.StartAsync();
+            _connection.Dispatch += Dispatch;
+
+            await _connection.StartAsync();
 			_isRunning = true;
 		}
 
@@ -54,60 +61,115 @@ namespace Miki.Discord.Gateway
 				return;
 			}
 
-			_connection.OnPacketReceived -= OnPacketReceivedAsync;
-			_tokenSource.Cancel();
+            _connection.Dispatch -= Dispatch;
+            _tokenSource.Cancel();
+
 			await _connection.StopAsync();
+
 			_isRunning = false;
 		}
 
-		public Task OnPacketReceivedAsync(IGatewayMessage text)
-		{
-			if (text.OpCode != GatewayOpcode.Dispatch)
+        public Task Dispatch(GatewayMessageIdentifier identifier, byte[] data)
+        {
+            if (identifier.OpCode != GatewayOpcode.Dispatch)
             {
                 return Task.CompletedTask;
             }
 
-            switch (text.EventName)
+            switch (identifier.EventName)
             {
-                case "READY":
-                    return OnReady.InvokeAsync((GatewayReadyPacket)text.Data);
-
-                case "GUILD_CREATE":
-                    return OnGuildCreate.InvokeAsync((DiscordGuildPacket)text.Data);
-
-                case "GUILD_ROLE_UPDATE":
-                    var role = (RoleEventArgs)text.Data;
-
-                    return OnGuildRoleUpdate.InvokeAsync(role.GuildId, role.Role);
-
-                case "GUILD_MEMBER_UPDATE":
-                    return OnGuildMemberUpdate.InvokeAsync((GuildMemberUpdateEventArgs)text.Data);
-
-                case "GUILD_UPDATE":
-                    return OnGuildUpdate.InvokeAsync((DiscordGuildPacket)text.Data);
-
-                case "GUILD_DELETE":
-                    return OnGuildDelete.InvokeAsync((DiscordGuildUnavailablePacket)text.Data);
-
                 case "MESSAGE_CREATE":
-                    return OnMessageCreate.InvokeAsync((DiscordMessagePacket)text.Data);
+                    return Dispatch(OnMessageCreate, data);
+
+                case "TYPING_START":
+                    return Dispatch(OnTypingStart, data);
 
                 case "PRESENCE_UPDATE":
-                    return OnPresenceUpdate.InvokeAsync((DiscordPresencePacket)text.Data);
+                    return Dispatch(OnPresenceUpdate, data);
+
+                case "MESSAGE_UPDATE":
+                    return Dispatch(OnMessageUpdate, data);
+
+                case "MESSAGE_DELETE":
+                    return Dispatch(OnMessageDelete, data);
+
+                case "GUILD_MEMBER_ADD":
+                    return Dispatch(OnGuildMemberAdd, data);
+
+                case "GUILD_MEMBER_UPDATE":
+                    return Dispatch(OnGuildMemberUpdate, data);
+
+                case "MESSAGE_DELETE_BULK":
+                    return Dispatch(OnMessageDeleteBulk, data);
+
+                case "GUILD_EMOJIS_UPDATE":
+                    return Dispatch<GuildEmojisUpdateEventArgs>(packet => OnGuildEmojiUpdate(packet.GuildId, packet.Emojis), data);
+
+                case "GUILD_MEMBER_REMOVE":
+                    return Dispatch<GuildIdUserArgs>(packet => OnGuildMemberRemove(packet.GuildId, packet.User), data);
+
+                case "GUILD_BAN_ADD":
+                    return Dispatch<GuildIdUserArgs>(packet => OnGuildBanAdd(packet.GuildId, packet.User), data);
+
+                case "GUILD_BAN_REMOVE":
+                    return Dispatch<GuildIdUserArgs>(packet => OnGuildBanRemove(packet.GuildId, packet.User), data);
+
+                case "GUILD_CREATE":
+                    return Dispatch(OnGuildCreate, data);
+
+                case "GUILD_ROLE_CREATE":
+                    return Dispatch<RoleEventArgs>(packet => OnGuildRoleCreate(packet.GuildId, packet.Role), data);
+
+                case "GUILD_ROLE_UPDATE":
+                    return Dispatch<RoleEventArgs>(packet => OnGuildRoleUpdate(packet.GuildId, packet.Role), data);
+
+                case "GUILD_ROLE_DELETE":
+                    return Dispatch<RoleDeleteEventArgs>(packet => OnGuildRoleDelete(packet.GuildId, packet.RoleId), data);
+
+                case "GUILD_UPDATE":
+                    return Dispatch(OnGuildUpdate, data);
+
+                case "GUILD_DELETE":
+                    return Dispatch(OnGuildDelete, data);
 
                 case "CHANNEL_CREATE":
-                    return OnChannelCreate.InvokeAsync((DiscordChannelPacket)text.Data);
+                    return Dispatch(OnChannelCreate, data);
 
                 case "CHANNEL_UPDATE":
-                    return OnChannelUpdate.InvokeAsync((DiscordChannelPacket)text.Data);
+                    return Dispatch(OnChannelUpdate, data);
 
                 case "CHANNEL_DELETE":
-                    return OnChannelDelete.InvokeAsync((DiscordChannelPacket)text.Data);
+                    return Dispatch(OnChannelDelete, data);
+
+                case "USER_UPDATE":
+                    return Dispatch(OnUserUpdate, data);
+
+                case "READY":
+                {
+                    var packet = _jsonSerializer.Deserialize<GatewayMessage<GatewayReadyPacket>>(data).Data;
+                    TraceServers = packet.TraceGuilds;
+                    return OnReady.InvokeAsync(packet);
+                }
+
+                case "RESUMED":
+                {
+                    var packet = _jsonSerializer.Deserialize<GatewayMessage<GatewayReadyPacket>>(data).Data;
+                    TraceServers = packet.TraceGuilds;
+                    return OnResume.InvokeAsync(packet);
+                }
 
                 default:
-                    Log.Debug($"{text.EventName} is not implemented.");
+                    Log.Trace($"Unhandled event {identifier.EventName}");
                     return Task.CompletedTask;
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Task Dispatch<T>(Func<T, Task> func, byte[] data)
+        {
+            var packet = _jsonSerializer.Deserialize<GatewayMessage<T>>(data);
+            _connection.SequenceNumber = packet.SequenceNumber;
+            return func.InvokeAsync(packet.Data);
         }
 
 		public async Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
@@ -147,14 +209,9 @@ namespace Miki.Discord.Gateway
 		public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
 		public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
 		public Func<GatewayReadyPacket, Task> OnReady { get; set; }
-		public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
-		public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
-        public event Func<IGatewayMessage, Task> OnPacketSent;
-        public event Func<IGatewayMessage, Task> OnPacketReceived
-        {
-            add => _connection.OnPacketReceived += value;
-            remove => _connection.OnPacketReceived -= value;
-        }
+        public Func<GatewayReadyPacket, Task> OnResume { get; set; }
+        public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
+		public Func<DiscordUserPacket, Task> OnUserUpdate { get; set; }
         #endregion Events
     }
 }

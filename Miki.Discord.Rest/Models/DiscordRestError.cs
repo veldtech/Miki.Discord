@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Miki.Discord.Rest
 {
+    [DataContract]
     public class DiscordRestError
     {
         [DataMember(Name = "code")]
