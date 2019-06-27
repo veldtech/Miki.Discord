@@ -25,7 +25,8 @@ namespace Miki.Discord.Internal
 			=> _packet.Id;
 
 		public string IconUrl
-			=> DiscordUtils.GetAvatarUrl(Id, _packet.Icon);
+			=> _packet.Icon == null ? DiscordUtils.GetAvatarUrl(0) 
+                : DiscordUtils.GetAvatarUrl(Id, _packet.Icon);
 
 		public ulong OwnerId
 			=> _packet.OwnerId;
