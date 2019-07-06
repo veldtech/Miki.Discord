@@ -15,6 +15,12 @@ namespace Miki.Discord.Internal
 		public DiscordMessage(DiscordMessagePacket packet, IDiscordClient client)
 		{
 			_packet = packet;
+            if(_packet.GuildId != null
+                && _packet.Member != null)
+            {
+                _packet.Member.User = _packet.Author;
+                _packet.Member.GuildId = _packet.GuildId.Value;
+            }
 			_client = client;
 		}
 
@@ -33,7 +39,6 @@ namespace Miki.Discord.Internal
                 }
                 else
                 {
-                    _packet.Member.User = _packet.Author;
                     return new DiscordGuildUser(_packet.Member, _client);
                 }
             }

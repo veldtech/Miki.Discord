@@ -39,6 +39,8 @@ namespace Miki.Discord
 			Gateway.OnGuildMemberRemove += OnGuildMemberDelete;
 
 			Gateway.OnUserUpdate += OnUserUpdate;
+
+            Gateway.OnReady += OnReady;
 		}
 
         protected abstract Task<DiscordUserPacket> GetCurrentUserPacketAsync();
@@ -279,13 +281,13 @@ namespace Miki.Discord
 		private Task OnGuildMemberCreate(DiscordGuildMemberPacket packet)
         {
             return GuildMemberCreate.InvokeAsync(
-                new DiscordGuildUser(packet, this)
-            );
+                new DiscordGuildUser(packet, this));
         }
 
 		private Task OnMessageCreate(DiscordMessagePacket packet)
 		{
-			return MessageCreate.InvokeAsync(new DiscordMessage(packet, this));
+			return MessageCreate.InvokeAsync(
+                new DiscordMessage(packet, this));
 		}
 
 		private Task OnMessageUpdate(DiscordMessagePacket packet)
