@@ -8,7 +8,6 @@
     <Description>Discord gateway implementation</Description>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Miki.Discord.Gateway.Centralized.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
     <PackageTags>Discord Gateway Miki</PackageTags>
     <Product>Miki</Product>
     <LangVersion>7.1</LangVersion>

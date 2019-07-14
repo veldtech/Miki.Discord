@@ -7,7 +7,6 @@
     <Copyright>Velddev</Copyright>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>velddev.pfx</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
     <Description>Common type and helper library for Miki.Discord.* libraries</Description>
     <PackageLicenseExpression />
     <Authors>Velddev</Authors>
@@ -18,11 +17,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latest</LangVersion>
+    <DebugType></DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>default</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
