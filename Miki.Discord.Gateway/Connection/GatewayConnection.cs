@@ -253,7 +253,7 @@ namespace Miki.Discord.Gateway.Connection
             catch (WebSocketException w)
             {
                 Log.Error(w);
-                _ = ReconnectAsync()
+                _ = Task.Run(() => ReconnectAsync())
                     .ConfigureAwait(false);
             }
             catch (WebSocketCloseException c)
@@ -271,20 +271,20 @@ namespace Miki.Discord.Gateway.Connection
                 ConnectionStatus = ConnectionStatus.Error;
                 Log.Error(e);
                 await Task.Delay(5000);
-                _ = ReconnectAsync();
+                _ = Task.Run(() => ReconnectAsync())
+                    .ConfigureAwait(false);
             }
         }
 
-        private async Task HandleGatewayErrorsAsync(WebSocketCloseException w)
+        private Task HandleGatewayErrorsAsync(WebSocketCloseException w)
         {
             switch (w.ErrorCode)
             {
                 default:
                 {
-                    await ReconnectAsync()
-                        .ConfigureAwait(false);
+                    Log.Warning($"Connection closed with unknown error code. ({w.ErrorCode})");
+                    return Task.Run(() => ReconnectAsync());
                 }
-                break;
 
                 case 4000: // unknown error
                 case 4001: // unknown opcode
@@ -297,16 +297,13 @@ namespace Miki.Discord.Gateway.Connection
                 case 4009: // session timeout
                 {
                     _sequenceNumber = null;
-                    await ReconnectAsync()
-                        .ConfigureAwait(false);
+                    return Task.Run(() => ReconnectAsync());
                 }
-                break;
 
                 case 4010: // invalid shard
                 case 4011: // sharding required
                 {
-                    await CloseAsync()
-                        .ConfigureAwait(false);
+                    return Task.Run(() => CloseAsync());
                     throw new GatewayException("Websocket returned error that should not be resumed, nor reconnected.", w);
                 };
             }
@@ -380,7 +377,9 @@ namespace Miki.Discord.Gateway.Connection
                 .ConfigureAwait(false);
         }
 
-        public async Task ReconnectAsync(int initialDelay = 1000, bool shouldIncrease = true)
+        public async Task ReconnectAsync(
+            int initialDelay = 1000, 
+            bool shouldIncrease = true)
         {
             var delay = initialDelay;
             bool connected = false;
@@ -398,6 +397,7 @@ namespace Miki.Discord.Gateway.Connection
                 }
                 catch (Exception e)
                 {
+                    ConnectionStatus = ConnectionStatus.Error;
                     Log.Error($"Reconnection failed with reason: {e.Message}, will retry in {delay / 1000} seconds");
                     await Task.Delay(delay)
                         .ConfigureAwait(false);
