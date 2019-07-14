@@ -36,7 +36,7 @@ namespace Miki.Discord.Common.Utils
             {
                 case '@':
                 {
-                    Mention m = ParseUserMention(content.Slice(1, content.Length - 2));
+                    Mention m = ParseUserMention(content.Slice(1, content.Length - 1));
                     value = m;
                     return m.Type != MentionType.NONE;
                 }
