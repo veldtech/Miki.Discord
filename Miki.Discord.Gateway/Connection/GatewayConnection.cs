@@ -409,7 +409,10 @@ namespace Miki.Discord.Gateway.Connection
             }
         }
 
-        public async Task SendCommandAsync(GatewayOpcode opcode, object data, CancellationToken token = default)
+        public async Task SendCommandAsync(
+            GatewayOpcode opcode, 
+            object data, 
+            CancellationToken token = default)
         {
             GatewayMessage msg = new GatewayMessage
             {
