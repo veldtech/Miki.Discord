@@ -94,7 +94,7 @@ namespace Miki.Discord
 
 		public EmbedBuilder SetColor(Color color)
 		{
-			embed.Color = color?.Value ?? 0;
+			embed.Color = color.Value;
 			return this;
 		}
 

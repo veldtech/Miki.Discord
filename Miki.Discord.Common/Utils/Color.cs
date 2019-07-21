@@ -1,36 +1,29 @@
-﻿namespace Miki.Discord.Rest
+﻿using System;
+
+namespace Miki.Discord.Rest
 {
-	public class Color
+	public struct Color : IEquatable<Color>
 	{
-
-        public Color(uint baseValue)
-		{
-			Value = baseValue;
-            R = (byte) (baseValue >> 16);
-            G = (byte) (Value >> 8);
-            B = (byte) Value;
-        }
-
         public uint Value { get; }
 
-        public byte R { get; }
+        public byte R => (byte)(Value >> 16);
+        public byte G => (byte)(Value >> 8);
+        public byte B => (byte)Value;
 
-        public byte G { get; }
-
-        public byte B { get; }
-
+        public Color(uint baseValue)
+        {
+            Value = baseValue;
+        }
         public Color(byte r, byte g, byte b)
 			: this(((uint)r << 16) | ((uint)g << 8) | (uint)b)
 		{
 		}
-
 		public Color(int r, int g, int b)
 			: this(((uint)r << 16) | ((uint)g << 8) | (uint)b)
 		{
 		}
-
 		public Color(float r, float g, float b)
-			: this((byte)(r * 255), (byte)(g * 255), (byte)(b * 255))
+			: this((byte)(r * byte.MaxValue), (byte)(g * byte.MaxValue), (byte)(b * byte.MaxValue))
 		{
 		}
 
@@ -57,22 +50,34 @@
         public static bool operator !=(Color c, int value)
             => value != c.Value;
 
-        protected bool Equals(Color other)
-        {
-            return Value == other.Value;
-        }
-
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Color) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return Equals((Color)obj);
+        }
+
+        public bool Equals(Color other)
+        {
+            return other.Value == Value;
         }
 
         public override int GetHashCode()
         {
-            return (int) Value;
+            return (int)Value;
         }
     }
 }
