@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
-	class DiscordSelfUser : DiscordUser, IDiscordSelfUser
-	{
-		public DiscordSelfUser(DiscordUserPacket user, IDiscordClient client)
-			: base(user, client)
-		{ }
+    class DiscordSelfUser : DiscordUser, IDiscordSelfUser
+    {
+        public DiscordSelfUser(DiscordUserPacket user, IDiscordClient client)
+            : base(user, client)
+        { }
 
-		public Task<IDiscordChannel> GetDMChannelsAsync()
-		{
-			throw new NotImplementedException();
-		}
+        public Task<IDiscordChannel> GetDMChannelsAsync()
+        {
+            throw new NotImplementedException();
+        }
 
-		public async Task ModifyAsync(Action<UserModifyArgs> modifyArgs)
-		{
-			var args = new UserModifyArgs();
-			modifyArgs(args);
-			await Client.ApiClient.ModifySelfAsync(args);
-		}
-	}
+        public async Task ModifyAsync(Action<UserModifyArgs> modifyArgs)
+        {
+            var args = new UserModifyArgs();
+            modifyArgs(args);
+            await Client.ApiClient.ModifySelfAsync(args);
+        }
+    }
 }

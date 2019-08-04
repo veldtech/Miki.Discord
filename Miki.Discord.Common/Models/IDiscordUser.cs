@@ -3,24 +3,24 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
-	public interface IDiscordUser : ISnowflake
-	{
-		string AvatarId { get; }
+    public interface IDiscordUser : ISnowflake
+    {
+        string AvatarId { get; }
 
-		string Mention { get; }
+        string Mention { get; }
 
-		string Username { get; }
+        string Username { get; }
 
-		string Discriminator { get; }
+        string Discriminator { get; }
 
-		DateTimeOffset CreatedAt { get; }
+        DateTimeOffset CreatedAt { get; }
 
-		bool IsBot { get; }
+        bool IsBot { get; }
 
-		Task<IDiscordPresence> GetPresenceAsync();
+        Task<IDiscordPresence> GetPresenceAsync();
 
-		Task<IDiscordTextChannel> GetDMChannelAsync();
+        Task<IDiscordTextChannel> GetDMChannelAsync();
 
-		string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256);
-	}
+        string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256);
+    }
 }

@@ -4,76 +4,76 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
-	public class DiscordGuildChannel : DiscordChannel, IDiscordGuildChannel
-	{
-		public DiscordGuildChannel(DiscordChannelPacket packet, IDiscordClient client)
-			: base(packet, client)
-		{
-		}
+    public class DiscordGuildChannel : DiscordChannel, IDiscordGuildChannel
+    {
+        public DiscordGuildChannel(DiscordChannelPacket packet, IDiscordClient client)
+            : base(packet, client)
+        {
+        }
 
-		public ulong GuildId
-			=> _packet.GuildId.Value;
+        public ulong GuildId
+            => _packet.GuildId.Value;
 
-		public ChannelType Type
-			=> _packet.Type;
+        public ChannelType Type
+            => _packet.Type;
 
-		public async Task<IDiscordGuild> GetGuildAsync()
-			=> await _client.GetGuildAsync(GuildId);
+        public async Task<IDiscordGuild> GetGuildAsync()
+            => await _client.GetGuildAsync(GuildId);
 
-		public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user)
-		{
-			IDiscordGuild guild = await GetGuildAsync();
+        public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user)
+        {
+            IDiscordGuild guild = await GetGuildAsync();
 
-			GuildPermission permissions = await guild.GetPermissionsAsync(user);
+            GuildPermission permissions = await guild.GetPermissionsAsync(user);
 
-			if(permissions.HasFlag(GuildPermission.Administrator))
-			{
-				return GuildPermission.All;
-			}
+            if(permissions.HasFlag(GuildPermission.Administrator))
+            {
+                return GuildPermission.All;
+            }
 
-			if(_packet.PermissionOverwrites != null)
-			{
-				PermissionOverwrite overwriteEveryone = _packet.PermissionOverwrites
-					.FirstOrDefault(x => x.Id == GuildId) ?? null;
+            if(_packet.PermissionOverwrites != null)
+            {
+                PermissionOverwrite overwriteEveryone = _packet.PermissionOverwrites
+                    .FirstOrDefault(x => x.Id == GuildId) ?? null;
 
-				if(overwriteEveryone != null)
-				{
-					permissions &= ~overwriteEveryone.DeniedPermissions;
-					permissions |= overwriteEveryone.AllowedPermissions;
-				}
+                if(overwriteEveryone != null)
+                {
+                    permissions &= ~overwriteEveryone.DeniedPermissions;
+                    permissions |= overwriteEveryone.AllowedPermissions;
+                }
 
-				PermissionOverwrite overwrites = new PermissionOverwrite();
+                PermissionOverwrite overwrites = new PermissionOverwrite();
 
-				if(user.RoleIds != null)
-				{
-					foreach(ulong roleId in user.RoleIds)
-					{
-						PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
+                if(user.RoleIds != null)
+                {
+                    foreach(ulong roleId in user.RoleIds)
+                    {
+                        PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
 
-						if(roleOverwrites != null)
-						{
-							overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
-							overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
-						}
-					}
-				}
+                        if(roleOverwrites != null)
+                        {
+                            overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
+                            overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
+                        }
+                    }
+                }
 
-				permissions &= ~overwrites.DeniedPermissions;
-				permissions |= overwrites.AllowedPermissions;
+                permissions &= ~overwrites.DeniedPermissions;
+                permissions |= overwrites.AllowedPermissions;
 
-				PermissionOverwrite userOverwrite = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == user.Id);
+                PermissionOverwrite userOverwrite = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == user.Id);
 
-				if(userOverwrite != null)
-				{
-					permissions &= ~userOverwrite.DeniedPermissions;
-					permissions |= userOverwrite.AllowedPermissions;
-				}
-			}
+                if(userOverwrite != null)
+                {
+                    permissions &= ~userOverwrite.DeniedPermissions;
+                    permissions |= userOverwrite.AllowedPermissions;
+                }
+            }
 
-			return permissions;
-		}
+            return permissions;
+        }
 
-		public async Task<IDiscordGuildUser> GetUserAsync(ulong id)
-			=> await _client.GetGuildUserAsync(id, GuildId);
-	}
+        public async Task<IDiscordGuildUser> GetUserAsync(ulong id)
+            => await _client.GetGuildUserAsync(id, GuildId);
+    }
 }

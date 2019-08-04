@@ -2,16 +2,16 @@
 
 namespace Miki.Discord.Common
 {
-	[DataContract]
-	public class DiscordReactionPacket
-	{
-		[DataMember(Name = "count")]
-		public int Count;
+    [DataContract]
+    public class DiscordReactionPacket
+    {
+        [DataMember(Name = "count")]
+        public int Count;
 
-		[DataMember(Name = "me")]
-		public bool Me;
+        [DataMember(Name = "me")]
+        public bool Me;
 
-		[DataMember(Name = "emoji")]
-		public DiscordEmoji Emoji;
-	}
+        [DataMember(Name = "emoji")]
+        public DiscordEmoji Emoji;
+    }
 }

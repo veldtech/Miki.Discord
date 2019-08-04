@@ -2,8 +2,8 @@
 
 namespace Miki.Discord.Gateway.Ratelimiting
 {
-	public interface IGatewayRatelimiter
-	{
-		Task<bool> CanIdentifyAsync();
-	}
+    public interface IGatewayRatelimiter
+    {
+        Task<bool> CanIdentifyAsync();
+    }
 }

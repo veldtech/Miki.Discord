@@ -7,39 +7,39 @@ using Xunit;
 
 namespace Miki.Discord.Tests
 {
-	public class Ratelimits
-	{
-		private ICachePool _pool;
+    public class Ratelimits
+    {
+        private ICachePool _pool;
 
-		public Ratelimits()
-		{
-			_pool = new InMemoryCachePool(new ProtobufSerializer());
-		}
+        public Ratelimits()
+        {
+            _pool = new InMemoryCachePool(new ProtobufSerializer());
+        }
 
-		[Fact]
-		public void IsRatelimited()
-		{
-			var rateLimit = new Ratelimit();
+        [Fact]
+        public void IsRatelimited()
+        {
+            var rateLimit = new Ratelimit();
 
-			rateLimit.Remaining = 5;
-			rateLimit.Reset = (DateTimeOffset.Now + TimeSpan.FromSeconds(1)).ToUnixTimeSeconds();
+            rateLimit.Remaining = 5;
+            rateLimit.Reset = (DateTimeOffset.Now + TimeSpan.FromSeconds(1)).ToUnixTimeSeconds();
 
-			Assert.False(Ratelimit.IsRatelimited(rateLimit));
+            Assert.False(Ratelimit.IsRatelimited(rateLimit));
 
-			rateLimit.Remaining = 0;
+            rateLimit.Remaining = 0;
 
-			Assert.True(Ratelimit.IsRatelimited(rateLimit));
+            Assert.True(Ratelimit.IsRatelimited(rateLimit));
 
-			rateLimit.Global = 0;
-			rateLimit.Remaining = 3;
+            rateLimit.Global = 0;
+            rateLimit.Remaining = 3;
 
-			Assert.True(Ratelimit.IsRatelimited(rateLimit));
+            Assert.True(Ratelimit.IsRatelimited(rateLimit));
 
-			rateLimit.Global = null;
-			rateLimit.Remaining = 0;
-			rateLimit.Reset = 0;
+            rateLimit.Global = null;
+            rateLimit.Remaining = 0;
+            rateLimit.Reset = 0;
 
-			Assert.False(Ratelimit.IsRatelimited(rateLimit));
-		}
-	}
+            Assert.False(Ratelimit.IsRatelimited(rateLimit));
+        }
+    }
 }

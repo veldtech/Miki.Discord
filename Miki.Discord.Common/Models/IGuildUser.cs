@@ -1,6 +1,6 @@
 ﻿namespace Miki.Discord.Common
 {
-	internal interface IGuildUser
-	{
-	}
+    internal interface IGuildUser
+    {
+    }
 }

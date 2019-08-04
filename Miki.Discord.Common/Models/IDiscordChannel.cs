@@ -2,27 +2,27 @@
 
 namespace Miki.Discord.Common
 {
-	public interface IDiscordChannel : ISnowflake
-	{
-		bool IsNsfw { get; }
+    public interface IDiscordChannel : ISnowflake
+    {
+        bool IsNsfw { get; }
 
-		string Name { get; }
+        string Name { get; }
 
-		Task DeleteAsync();
+        Task DeleteAsync();
 
-		Task ModifyAsync(object todo);
-	}
+        Task ModifyAsync(object todo);
+    }
 
-	public interface IDiscordGuildChannel : IDiscordChannel
-	{
-		ulong GuildId { get; }
+    public interface IDiscordGuildChannel : IDiscordChannel
+    {
+        ulong GuildId { get; }
 
-		ChannelType Type { get; }
+        ChannelType Type { get; }
 
-		Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user);
+        Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user);
 
-		Task<IDiscordGuildUser> GetUserAsync(ulong id);
+        Task<IDiscordGuildUser> GetUserAsync(ulong id);
 
-		Task<IDiscordGuild> GetGuildAsync();
-	}
+        Task<IDiscordGuild> GetGuildAsync();
+    }
 }

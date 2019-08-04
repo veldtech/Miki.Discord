@@ -4,39 +4,39 @@ using Miki.Discord.Rest;
 
 namespace Miki.Discord.Internal
 {
-	public class DiscordRole : IDiscordRole
-	{
-		private DiscordRolePacket _packet;
-		private readonly IDiscordClient _client;
+    public class DiscordRole : IDiscordRole
+    {
+        private DiscordRolePacket _packet;
+        private readonly IDiscordClient _client;
 
-		public DiscordRole(DiscordRolePacket packet, IDiscordClient client)
-		{
-			_packet = packet;
-			_client = client;
-		}
+        public DiscordRole(DiscordRolePacket packet, IDiscordClient client)
+        {
+            _packet = packet;
+            _client = client;
+        }
 
-		public string Name
-			=> _packet.Name;
+        public string Name
+            => _packet.Name;
 
-		public Color Color
-			=> new Color((uint)_packet.Color);
+        public Color Color
+            => new Color((uint)_packet.Color);
 
-		public int Position
-			=> _packet.Position;
+        public int Position
+            => _packet.Position;
 
-		public ulong Id
-			=> _packet.Id;
+        public ulong Id
+            => _packet.Id;
 
-		public GuildPermission Permissions
-			=> (GuildPermission)_packet.Permissions;
+        public GuildPermission Permissions
+            => (GuildPermission)_packet.Permissions;
 
-		public bool IsManaged
-			=> _packet.Managed;
+        public bool IsManaged
+            => _packet.Managed;
 
-		public bool IsHoisted
-			=> _packet.IsHoisted;
+        public bool IsHoisted
+            => _packet.IsHoisted;
 
-		public bool IsMentionable
-			=> _packet.Mentionable;
-	}
+        public bool IsMentionable
+            => _packet.Mentionable;
+    }
 }

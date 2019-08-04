@@ -2,13 +2,13 @@
 
 namespace Miki.Discord.Common.Packets
 {
-	[DataContract]
-	public class GuildIdUserArgs
-	{
-		[DataMember(Name = "user")]
-		public DiscordUserPacket user;
+    [DataContract]
+    public class GuildIdUserArgs
+    {
+        [DataMember(Name = "user")]
+        public DiscordUserPacket user;
 
-		[DataMember(Name = "guild_id")]
-		public ulong guildId;
-	}
+        [DataMember(Name = "guild_id")]
+        public ulong guildId;
+    }
 }

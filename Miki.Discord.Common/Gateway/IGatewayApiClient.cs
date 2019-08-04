@@ -2,10 +2,10 @@
 
 namespace Miki.Discord.Common.Gateway
 {
-	public interface IGatewayApiClient
-	{
-		Task<GatewayConnectionPacket> GetGatewayAsync();
+    public interface IGatewayApiClient
+    {
+        Task<GatewayConnectionPacket> GetGatewayAsync();
 
-		Task<GatewayConnectionPacket> GetGatewayBotAsync();
-	}
+        Task<GatewayConnectionPacket> GetGatewayBotAsync();
+    }
 }
