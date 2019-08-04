@@ -2,10 +2,10 @@
 
 namespace Miki.Discord.Common.Packets
 {
-    [DataContract]
-    public class DiscordUserPacket
+	[DataContract]
+	public class DiscordUserPacket
 	{
-		[DataMember(Name ="id", Order = 1)]
+		[DataMember(Name = "id", Order = 1)]
 		public ulong Id { get; set; }
 
 		[DataMember(Name = "username", Order = 2)]
@@ -26,7 +26,7 @@ namespace Miki.Discord.Common.Packets
 		[DataMember(Name = "email", Order = 7)]
 		public string Email { get; set; }
 
-		[DataMember(Name ="mfa_enabled", Order = 8)]
+		[DataMember(Name = "mfa_enabled", Order = 8)]
 		public bool MfaEnabled { get; set; }
 	}
 }

@@ -1,14 +1,11 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Miki.Discord.Tests
 {
-    public class Helpers
-    {
+	public class Helpers
+	{
 		public class User
 		{
 			DiscordUserPacket user;

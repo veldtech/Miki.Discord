@@ -26,17 +26,17 @@ namespace Miki.Discord.Internal
 
 			GuildPermission permissions = await guild.GetPermissionsAsync(user);
 
-			if (permissions.HasFlag(GuildPermission.Administrator))
+			if(permissions.HasFlag(GuildPermission.Administrator))
 			{
 				return GuildPermission.All;
 			}
 
-			if (_packet.PermissionOverwrites != null)
+			if(_packet.PermissionOverwrites != null)
 			{
 				PermissionOverwrite overwriteEveryone = _packet.PermissionOverwrites
 					.FirstOrDefault(x => x.Id == GuildId) ?? null;
 
-				if (overwriteEveryone != null)
+				if(overwriteEveryone != null)
 				{
 					permissions &= ~overwriteEveryone.DeniedPermissions;
 					permissions |= overwriteEveryone.AllowedPermissions;
@@ -44,13 +44,13 @@ namespace Miki.Discord.Internal
 
 				PermissionOverwrite overwrites = new PermissionOverwrite();
 
-				if (user.RoleIds != null)
+				if(user.RoleIds != null)
 				{
-					foreach (ulong roleId in user.RoleIds)
+					foreach(ulong roleId in user.RoleIds)
 					{
 						PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
 
-						if (roleOverwrites != null)
+						if(roleOverwrites != null)
 						{
 							overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
 							overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
@@ -63,7 +63,7 @@ namespace Miki.Discord.Internal
 
 				PermissionOverwrite userOverwrite = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == user.Id);
 
-				if (userOverwrite != null)
+				if(userOverwrite != null)
 				{
 					permissions &= ~userOverwrite.DeniedPermissions;
 					permissions |= userOverwrite.AllowedPermissions;

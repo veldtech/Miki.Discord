@@ -12,10 +12,10 @@ namespace Miki.Discord.Internal
 		private readonly DiscordGuildMemberPacket _packet;
 
 		public DiscordGuildUser(DiscordGuildMemberPacket packet, IDiscordClient client)
-            : base(packet.User, client)
+			: base(packet.User, client)
 		{
 			_packet = packet;
-        }
+		}
 
 		public string Nickname
 			=> _packet.Nickname;
@@ -29,10 +29,10 @@ namespace Miki.Discord.Internal
 		public DateTimeOffset JoinedAt
 			=> new DateTimeOffset(_packet.JoinedAt, new TimeSpan(0));
 
-        public DateTimeOffset PremiumSince
-            => new DateTimeOffset(_packet.PremiumSince, new TimeSpan(0));
+		public DateTimeOffset PremiumSince
+			=> new DateTimeOffset(_packet.PremiumSince, new TimeSpan(0));
 
-        public async Task AddRoleAsync(IDiscordRole role)
+		public async Task AddRoleAsync(IDiscordRole role)
 		{
 			await Client.ApiClient.AddGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
@@ -47,25 +47,25 @@ namespace Miki.Discord.Internal
 
 		public async Task RemoveRoleAsync(IDiscordRole role)
 		{
-            if(role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+			if(role == null)
+			{
+				throw new ArgumentNullException(nameof(role));
+			}
 
 			await Client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
 		}
 
 		public async Task<bool> HasPermissionsAsync(GuildPermission permissions)
 		{
-            var guild = await GetGuildAsync();
+			var guild = await GetGuildAsync();
 			GuildPermission p = await guild.GetPermissionsAsync(this);
 			return p.HasFlag(permissions);
 		}
 
 		public async Task<int> GetHierarchyAsync()
-        {
-            var guild = await GetGuildAsync();
-            return (await guild.GetRolesAsync())
+		{
+			var guild = await GetGuildAsync();
+			return (await guild.GetRolesAsync())
 				.Where(x => RoleIds.Contains(x.Id))
 				.Max(x => x.Position);
 		}

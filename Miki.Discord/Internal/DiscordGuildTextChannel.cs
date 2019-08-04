@@ -17,22 +17,22 @@ namespace Miki.Discord.Internal
 
 		public async Task DeleteMessagesAsync(params ulong[] id)
 		{
-			if (id.Length == 0)
+			if(id.Length == 0)
 			{
 				throw new ArgumentNullException(nameof(id));
 			}
 
-			if (id.Length < 2)
+			if(id.Length < 2)
 			{
 				await _client.ApiClient.DeleteMessageAsync(Id, id[0]);
 			}
 
-            if (id.Length > 100)
-            {
-                // TODO: Remove the messages in batches.
-                // Note: Before we can implement this we have to implement the ratelimit queue.
-                id = id.Take(100).ToArray();
-            }
+			if(id.Length > 100)
+			{
+				// TODO: Remove the messages in batches.
+				// Note: Before we can implement this we have to implement the ratelimit queue.
+				id = id.Take(100).ToArray();
+			}
 
 			await _client.ApiClient.DeleteMessagesAsync(Id, id);
 		}
@@ -55,16 +55,16 @@ namespace Miki.Discord.Internal
 
 		public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
 			=> await _client.SendFileAsync(
-                Id, 
-                file, 
-                fileName, 
-                new MessageArgs(content, embed, isTTS));
+				Id,
+				file,
+				fileName,
+				new MessageArgs(content, embed, isTTS));
 
-        public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
-            => await DiscordChannelHelper.CreateMessageAsync(
-                _client, 
-                _packet,
-                new MessageArgs(content, embed, isTTS));
+		public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
+			=> await DiscordChannelHelper.CreateMessageAsync(
+				_client,
+				_packet,
+				new MessageArgs(content, embed, isTTS));
 
 		public async Task TriggerTypingAsync()
 		{

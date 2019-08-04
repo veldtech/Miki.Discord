@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord
@@ -18,17 +17,17 @@ namespace Miki.Discord
 		}
 		public async Task DeleteMessagesAsync(params ulong[] id)
 		{
-			if (id.Length == 0)
+			if(id.Length == 0)
 			{
 				throw new ArgumentNullException();
 			}
 
-			if (id.Length < 2)
+			if(id.Length < 2)
 			{
 				await _client.ApiClient.DeleteMessageAsync(Id, id[0]);
 			}
 
-			if (id.Length > 100)
+			if(id.Length > 100)
 			{
 				id = id.Take(100).ToArray();
 			}
@@ -54,16 +53,16 @@ namespace Miki.Discord
 
 		public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
 			=> await _client.SendFileAsync(
-                Id, 
-                file, 
-                fileName, 
-                new MessageArgs(content, embed, isTTS));
+				Id,
+				file,
+				fileName,
+				new MessageArgs(content, embed, isTTS));
 
-        public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
-            => await DiscordChannelHelper.CreateMessageAsync(
-                _client, 
-                _packet, 
-                new MessageArgs(content, embed, isTTS));
+		public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
+			=> await DiscordChannelHelper.CreateMessageAsync(
+				_client,
+				_packet,
+				new MessageArgs(content, embed, isTTS));
 
 		public async Task TriggerTypingAsync()
 		{

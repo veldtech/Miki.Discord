@@ -6,8 +6,8 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
-    [DataContract]
-    public class DiscordEmoji
+	[DataContract]
+	public class DiscordEmoji
 	{
 		[DataMember(Name = "id", Order = 1)]
 		public ulong? Id { get; set; }
@@ -21,10 +21,10 @@ namespace Miki.Discord.Common
 		[DataMember(Name = "user", Order = 4)]
 		public DiscordUserPacket Creator { get; set; }
 
-		[DataMember(Name ="require_colons", Order = 5)]
+		[DataMember(Name = "require_colons", Order = 5)]
 		public bool? RequireColons { get; set; }
 
-		[DataMember(Name ="managed", Order = 6)]
+		[DataMember(Name = "managed", Order = 6)]
 		public bool? Managed { get; set; }
 
 		[DataMember(Name = "animated", Order = 7)]
@@ -33,18 +33,18 @@ namespace Miki.Discord.Common
 		public static bool TryParse(string text, out DiscordEmoji emoji)
 		{
 			emoji = null;
-			if (text.Length >= 4 && text[0] == '<' && (text[1] == ':' || (text[1] == 'a' && text[2] == ':')) && text[text.Length - 1] == '>')
+			if(text.Length >= 4 && text[0] == '<' && (text[1] == ':' || (text[1] == 'a' && text[2] == ':')) && text[text.Length - 1] == '>')
 			{
 				bool animated = text[1] == 'a';
 				int startIndex = animated ? 3 : 2;
 
 				int splitIndex = text.IndexOf(':', startIndex);
-				if (splitIndex == -1)
+				if(splitIndex == -1)
 				{
 					return false;
 				}
 
-				if (!ulong.TryParse(text.Substring(splitIndex + 1, text.Length - splitIndex - 2), NumberStyles.None, CultureInfo.InvariantCulture, out ulong id))
+				if(!ulong.TryParse(text.Substring(splitIndex + 1, text.Length - splitIndex - 2), NumberStyles.None, CultureInfo.InvariantCulture, out ulong id))
 				{
 					return false;
 				}
@@ -59,7 +59,7 @@ namespace Miki.Discord.Common
 				};
 				return true;
 			}
-			else if (text.Length > 0 && text.All((t) => char.IsSurrogate(t)))
+			else if(text.Length > 0 && text.All((t) => char.IsSurrogate(t)))
 			{
 				emoji = new DiscordEmoji
 				{
@@ -71,13 +71,13 @@ namespace Miki.Discord.Common
 			return false;
 		}
 
-        public override string ToString()
-        {
-            if(Id.HasValue)
-            {
-                return $"{Name}:{Id}";
-            }
-            return Name;
-        }
+		public override string ToString()
+		{
+			if(Id.HasValue)
+			{
+				return $"{Name}:{Id}";
+			}
+			return Name;
+		}
 	}
 }

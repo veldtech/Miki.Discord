@@ -3,19 +3,19 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
-    [DataContract]
-    public class PermissionOverwrite
+	[DataContract]
+	public class PermissionOverwrite
 	{
-		[DataMember(Name ="id")]
+		[DataMember(Name = "id")]
 		public ulong Id;
 
-		[DataMember(Name ="type")]
+		[DataMember(Name = "type")]
 		public string Type;
 
-		[DataMember(Name ="allow")]
+		[DataMember(Name = "allow")]
 		public GuildPermission AllowedPermissions;
 
-		[DataMember(Name ="deny")]
+		[DataMember(Name = "deny")]
 		public GuildPermission DeniedPermissions;
 	}
 

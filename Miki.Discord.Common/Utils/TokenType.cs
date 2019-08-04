@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Discord.Common.Utils
+﻿namespace Miki.Discord.Common.Utils
 {
-    public enum TokenType
-    {
-        BOT,
-        BEARER
-    }
+	public enum TokenType
+	{
+		BOT,
+		BEARER
+	}
 }

@@ -5,15 +5,12 @@ using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Common.Packets.Events;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Miki.Discord.Common.Extensions;
 
 namespace Miki.Discord.Tests.Dummy
 {
-    /// <inheritdoc/>
-    public class DummyGateway : IGateway
+	/// <inheritdoc/>
+	public class DummyGateway : IGateway
 	{
 		public Func<DiscordChannelPacket, Task> OnChannelCreate { get; set; }
 
@@ -61,28 +58,28 @@ namespace Miki.Discord.Tests.Dummy
 
 		public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
 
-        public event Func<GatewayMessage, Task> OnPacketSent;
+		public event Func<GatewayMessage, Task> OnPacketSent;
 
-        public event Func<GatewayMessage, Task> OnPacketReceived;
+		public event Func<GatewayMessage, Task> OnPacketReceived;
 
-        public Task RestartAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
+		public Task RestartAsync()
 		{
-            return Task.CompletedTask;
-        }
+			return Task.CompletedTask;
+		}
 
-        public Task StartAsync()
+		public Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
 		{
-            return Task.CompletedTask;
-        }
+			return Task.CompletedTask;
+		}
 
-        public Task StopAsync()
+		public Task StartAsync()
 		{
-            return Task.CompletedTask;
-        }
-    }
+			return Task.CompletedTask;
+		}
+
+		public Task StopAsync()
+		{
+			return Task.CompletedTask;
+		}
+	}
 }

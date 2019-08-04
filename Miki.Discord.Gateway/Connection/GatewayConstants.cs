@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Miki.Discord.Gateway.Connection
+﻿namespace Miki.Discord.Gateway.Connection
 {
 	public static class GatewayConstants
 	{

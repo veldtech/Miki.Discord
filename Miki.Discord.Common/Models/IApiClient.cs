@@ -47,9 +47,9 @@ namespace Miki.Discord.Common
 
 		Task<IEnumerable<DiscordChannelPacket>> GetChannelsAsync(ulong guildId);
 
-        Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync();
+		Task<IEnumerable<DiscordChannelPacket>> GetDMChannelsAsync();
 
-        Task<DiscordGuildPacket> GetGuildAsync(ulong guildId);
+		Task<DiscordGuildPacket> GetGuildAsync(ulong guildId);
 
 		Task<DiscordGuildMemberPacket> GetGuildUserAsync(ulong userId, ulong guildId);
 
@@ -57,7 +57,7 @@ namespace Miki.Discord.Common
 
 		Task<IEnumerable<DiscordMessagePacket>> GetMessagesAsync(ulong channelId, int amount = 100);
 
-        Task<int> GetPruneCountAsync(ulong guildId, int days);
+		Task<int> GetPruneCountAsync(ulong guildId, int days);
 
 		Task<DiscordUserPacket[]> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emojiId);
 
@@ -69,9 +69,9 @@ namespace Miki.Discord.Common
 
 		Task ModifyGuildMemberAsync(ulong guildId, ulong userId, ModifyGuildMemberArgs packet);
 
-        Task ModifySelfAsync(UserModifyArgs args);
+		Task ModifySelfAsync(UserModifyArgs args);
 
-        Task<int?> PruneGuildMembersAsync(ulong guildId, int days, bool computePrunedCount);
+		Task<int?> PruneGuildMembersAsync(ulong guildId, int days, bool computePrunedCount);
 
 		Task RemoveGuildBanAsync(ulong guildId, ulong userId);
 

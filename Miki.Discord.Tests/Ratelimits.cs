@@ -3,15 +3,12 @@ using Miki.Cache.InMemory;
 using Miki.Discord.Rest;
 using Miki.Serialization.Protobuf;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Miki.Discord.Tests
 {
-    public class Ratelimits
-    {
+	public class Ratelimits
+	{
 		private ICachePool _pool;
 
 		public Ratelimits()
@@ -44,5 +41,5 @@ namespace Miki.Discord.Tests
 
 			Assert.False(Ratelimit.IsRatelimited(rateLimit));
 		}
-    }
+	}
 }

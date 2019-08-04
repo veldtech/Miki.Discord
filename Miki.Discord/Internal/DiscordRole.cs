@@ -30,13 +30,13 @@ namespace Miki.Discord.Internal
 		public GuildPermission Permissions
 			=> (GuildPermission)_packet.Permissions;
 
-        public bool IsManaged 
-            => _packet.Managed;
+		public bool IsManaged
+			=> _packet.Managed;
 
-        public bool IsHoisted 
-            => _packet.IsHoisted;
+		public bool IsHoisted
+			=> _packet.IsHoisted;
 
-        public bool IsMentionable 
-            => _packet.Mentionable;
-    }
+		public bool IsMentionable
+			=> _packet.Mentionable;
+	}
 }

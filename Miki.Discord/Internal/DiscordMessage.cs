@@ -15,34 +15,34 @@ namespace Miki.Discord.Internal
 		public DiscordMessage(DiscordMessagePacket packet, IDiscordClient client)
 		{
 			_packet = packet;
-            if(_packet.GuildId != null
-                && _packet.Member != null)
-            {
-                _packet.Member.User = _packet.Author;
-                _packet.Member.GuildId = _packet.GuildId.Value;
-            }
+			if(_packet.GuildId != null
+				&& _packet.Member != null)
+			{
+				_packet.Member.User = _packet.Author;
+				_packet.Member.GuildId = _packet.GuildId.Value;
+			}
 			_client = client;
 		}
 
-        public IReadOnlyList<IDiscordAttachment> Attachments
-            => _packet.Attachments
-                .Select(x => new DiscordAttachment(x))
-                .ToList();
+		public IReadOnlyList<IDiscordAttachment> Attachments
+			=> _packet.Attachments
+				.Select(x => new DiscordAttachment(x))
+				.ToList();
 
 		public IDiscordUser Author
-        {
-            get
-            {
-                if (_packet.Member == null)
-                {
-                    return new DiscordUser(_packet.Author, _client);
-                }
-                else
-                {
-                    return new DiscordGuildUser(_packet.Member, _client);
-                }
-            }
-        }
+		{
+			get
+			{
+				if(_packet.Member == null)
+				{
+					return new DiscordUser(_packet.Author, _client);
+				}
+				else
+				{
+					return new DiscordGuildUser(_packet.Member, _client);
+				}
+			}
+		}
 
 		public string Content
 			=> _packet.Content;
@@ -52,7 +52,7 @@ namespace Miki.Discord.Internal
 
 		public IReadOnlyList<ulong> MentionedUserIds
 			=> _packet.Mentions.Select(x => x.Id)
-                .ToList();
+				.ToList();
 
 		public DateTimeOffset Timestamp
 			=> _packet.Timestamp;
@@ -69,11 +69,11 @@ namespace Miki.Discord.Internal
 		public async Task DeleteAsync()
 			=> await _client.ApiClient.DeleteMessageAsync(_packet.ChannelId, _packet.Id);
 
-        public async Task<IDiscordTextChannel> GetChannelAsync()
-        {
-            var channel = await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId);
-            return channel as IDiscordTextChannel;
-        }
+		public async Task<IDiscordTextChannel> GetChannelAsync()
+		{
+			var channel = await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId);
+			return channel as IDiscordTextChannel;
+		}
 
 		public async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(DiscordEmoji emoji)
 			=> await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji);

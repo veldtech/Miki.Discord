@@ -14,10 +14,10 @@ namespace Miki.Discord.Common
 
 		DateTimeOffset JoinedAt { get; }
 
-        /// <summary>
-        /// This user nitro boosting current 
-        /// </summary>
-        DateTimeOffset PremiumSince { get; }
+		/// <summary>
+		/// This user nitro boosting current 
+		/// </summary>
+		DateTimeOffset PremiumSince { get; }
 
 		Task AddRoleAsync(IDiscordRole role);
 

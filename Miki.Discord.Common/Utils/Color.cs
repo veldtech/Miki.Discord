@@ -4,17 +4,17 @@ namespace Miki.Discord.Rest
 {
 	public struct Color : IEquatable<Color>
 	{
-        public uint Value { get; }
+		public uint Value { get; }
 
-        public byte R => (byte)(Value >> 16);
-        public byte G => (byte)(Value >> 8);
-        public byte B => (byte)Value;
+		public byte R => (byte)(Value >> 16);
+		public byte G => (byte)(Value >> 8);
+		public byte B => (byte)Value;
 
-        public Color(uint baseValue)
-        {
-            Value = baseValue;
-        }
-        public Color(byte r, byte g, byte b)
+		public Color(uint baseValue)
+		{
+			Value = baseValue;
+		}
+		public Color(byte r, byte g, byte b)
 			: this(((uint)r << 16) | ((uint)g << 8) | (uint)b)
 		{
 		}
@@ -45,39 +45,39 @@ namespace Miki.Discord.Rest
 			return $"#{R.ToString("X2")}{G.ToString("X2")}{B.ToString("X2")}";
 		}
 
-        public static bool operator==(Color c, int value)
-            => value == c.Value;
-        public static bool operator !=(Color c, int value)
-            => value != c.Value;
+		public static bool operator ==(Color c, int value)
+			=> value == c.Value;
+		public static bool operator !=(Color c, int value)
+			=> value != c.Value;
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
+		public override bool Equals(object obj)
+		{
+			if(ReferenceEquals(null, obj))
+			{
+				return false;
+			}
 
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
+			if(ReferenceEquals(this, obj))
+			{
+				return true;
+			}
 
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
+			if(obj.GetType() != GetType())
+			{
+				return false;
+			}
 
-            return Equals((Color)obj);
-        }
+			return Equals((Color)obj);
+		}
 
-        public bool Equals(Color other)
-        {
-            return other.Value == Value;
-        }
+		public bool Equals(Color other)
+		{
+			return other.Value == Value;
+		}
 
-        public override int GetHashCode()
-        {
-            return (int)Value;
-        }
-    }
+		public override int GetHashCode()
+		{
+			return (int)Value;
+		}
+	}
 }

@@ -25,8 +25,8 @@ namespace Miki.Discord.Internal
 			=> _packet.Id;
 
 		public string IconUrl
-			=> _packet.Icon == null ? DiscordUtils.GetAvatarUrl(0) 
-                : DiscordUtils.GetAvatarUrl(Id, _packet.Icon);
+			=> _packet.Icon == null ? DiscordUtils.GetAvatarUrl(0)
+				: DiscordUtils.GetAvatarUrl(Id, _packet.Icon);
 
 		public ulong OwnerId
 			=> _packet.OwnerId;
@@ -37,15 +37,15 @@ namespace Miki.Discord.Internal
 		public GuildPermission Permissions
 			=> (GuildPermission)_packet.Permissions.GetValueOrDefault(0);
 
-        public int PremiumSubscriberCount 
-            => _packet.PremiumSubscriberCount
-                .GetValueOrDefault(0);
+		public int PremiumSubscriberCount
+			=> _packet.PremiumSubscriberCount
+				.GetValueOrDefault(0);
 
-        public int PremiumTier 
-            => _packet.PremiumTier
-                .GetValueOrDefault(0);
+		public int PremiumTier
+			=> _packet.PremiumTier
+				.GetValueOrDefault(0);
 
-        public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
+		public async Task AddBanAsync(IDiscordGuildUser user, int pruneDays = 7, string reason = null)
 		{
 			await _client.ApiClient.AddGuildBanAsync(Id, user.Id, pruneDays, reason);
 		}
@@ -54,7 +54,7 @@ namespace Miki.Discord.Internal
 			=> await _client.CreateRoleAsync(Id, roleParams);
 
 		public Task<IDiscordGuildChannel> GetChannelAsync(ulong id)
-		    => _client.GetChannelAsync<IDiscordGuildChannel>(id, Id);
+			=> _client.GetChannelAsync<IDiscordGuildChannel>(id, Id);
 
 		public async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync()
 		{
@@ -63,7 +63,7 @@ namespace Miki.Discord.Internal
 
 		public Task<IDiscordChannel> GetDefaultChannelAsync()
 		{
-			if (!_packet.SystemChannelId.HasValue)
+			if(!_packet.SystemChannelId.HasValue)
 			{
 				return Task.FromResult<IDiscordChannel>(null);
 			}
@@ -77,8 +77,8 @@ namespace Miki.Discord.Internal
 		}
 
 		public Task<IEnumerable<IDiscordGuildUser>> GetMembersAsync()
-        {
-            return _client.GetGuildUsersAsync(Id);
+		{
+			return _client.GetGuildUsersAsync(Id);
 		}
 
 		public Task<IDiscordGuildUser> GetOwnerAsync()
@@ -86,14 +86,14 @@ namespace Miki.Discord.Internal
 
 		public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user)
 		{
-			if (user.Id == OwnerId)
+			if(user.Id == OwnerId)
 			{
 				return GuildPermission.All;
 			}
 
 			GuildPermission permissions = Permissions;
 
-			if (permissions.HasFlag(GuildPermission.Administrator))
+			if(permissions.HasFlag(GuildPermission.Administrator))
 			{
 				return GuildPermission.All;
 			}
@@ -101,66 +101,66 @@ namespace Miki.Discord.Internal
 			IDiscordRole everyoneRole = await GetRoleAsync(Id);
 			permissions = everyoneRole.Permissions;
 
-			if (user.RoleIds != null)
+			if(user.RoleIds != null)
 			{
-                var roles = await GetRolesAsync();
-				foreach (IDiscordRole role in roles.Where(x => user.RoleIds.Contains(x.Id)))
+				var roles = await GetRolesAsync();
+				foreach(IDiscordRole role in roles.Where(x => user.RoleIds.Contains(x.Id)))
 				{
 					permissions |= role.Permissions;
 				}
 			}
 
-			if (permissions.HasFlag(GuildPermission.Administrator))
+			if(permissions.HasFlag(GuildPermission.Administrator))
 			{
 				return GuildPermission.All;
 			}
 			return permissions;
 		}
 
-        public Task<int> GetPruneCountAsync(int days)
-        {
-            return _client.ApiClient.GetPruneCountAsync(Id, days);
-        }
+		public Task<int> GetPruneCountAsync(int days)
+		{
+			return _client.ApiClient.GetPruneCountAsync(Id, days);
+		}
 
-        public async Task<IDiscordRole> GetRoleAsync(ulong id)
-            => await _client.GetRoleAsync(Id, id)
-                .ConfigureAwait(false);
+		public async Task<IDiscordRole> GetRoleAsync(ulong id)
+			=> await _client.GetRoleAsync(Id, id)
+				.ConfigureAwait(false);
 
 		public async Task<IEnumerable<IDiscordRole>> GetRolesAsync()
 			=> await _client.GetRolesAsync(Id)
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        public async Task<IDiscordGuildUser> GetSelfAsync()
+		public async Task<IDiscordGuildUser> GetSelfAsync()
 		{
-            IDiscordUser user = await _client.GetSelfAsync()
-                .ConfigureAwait(false);
+			IDiscordUser user = await _client.GetSelfAsync()
+				.ConfigureAwait(false);
 
-            if(user == null)
-            {
-                throw new InvalidOperationException("Could not find self user");
-            }
+			if(user == null)
+			{
+				throw new InvalidOperationException("Could not find self user");
+			}
 
 			return await GetMemberAsync(user.Id);
 		}
 
-        public async Task<int?> PruneMembersAsync(int days, bool computeCount = false)
-        {
-            // NOTE: It is not recommended to compute these counts for large guilds.
-            if(computeCount && MemberCount > 1000)
-            {
-                computeCount = false;
-            }
-            return await _client.ApiClient.PruneGuildMembersAsync(Id, days, computeCount);
-        }
+		public async Task<int?> PruneMembersAsync(int days, bool computeCount = false)
+		{
+			// NOTE: It is not recommended to compute these counts for large guilds.
+			if(computeCount && MemberCount > 1000)
+			{
+				computeCount = false;
+			}
+			return await _client.ApiClient.PruneGuildMembersAsync(Id, days, computeCount);
+		}
 
-        public async Task RemoveBanAsync(IDiscordGuildUser user)
-        {
-            if(user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+		public async Task RemoveBanAsync(IDiscordGuildUser user)
+		{
+			if(user == null)
+			{
+				throw new ArgumentNullException(nameof(user));
+			}
 
-            await _client.ApiClient.RemoveGuildBanAsync(Id, user.Id);
-        }
-    }
+			await _client.ApiClient.RemoveGuildBanAsync(Id, user.Id);
+		}
+	}
 }

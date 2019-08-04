@@ -8,7 +8,7 @@
 		/// <returns></returns>
 		public static string ChannelsKey(ulong? guildId = null)
 		{
-			if (guildId.HasValue)
+			if(guildId.HasValue)
 			{
 				return $"{GuildsCacheKey}:channels:{guildId}";
 			}

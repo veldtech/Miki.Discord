@@ -3,13 +3,13 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common.Events
 {
-    [DataContract]
-    public class RoleEventArgs
+	[DataContract]
+	public class RoleEventArgs
 	{
-		[DataMember(Name ="guild_id")]
+		[DataMember(Name = "guild_id")]
 		public ulong GuildId;
 
-		[DataMember(Name ="role")]
+		[DataMember(Name = "role")]
 		public DiscordRolePacket Role;
 	}
 }

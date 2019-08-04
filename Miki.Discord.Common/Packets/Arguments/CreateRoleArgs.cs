@@ -2,22 +2,22 @@
 
 namespace Miki.Discord.Common
 {
-    [DataContract]
-    public class CreateRoleArgs
+	[DataContract]
+	public class CreateRoleArgs
 	{
-		[DataMember(Name ="name")]
+		[DataMember(Name = "name")]
 		public string Name;
 
-		[DataMember(Name ="permissions")]
+		[DataMember(Name = "permissions")]
 		public GuildPermission? Permissions;
 
-		[DataMember(Name ="color")]
+		[DataMember(Name = "color")]
 		public int? Color;
 
-		[DataMember(Name ="hoist")]
+		[DataMember(Name = "hoist")]
 		public bool? Hoisted;
 
-		[DataMember(Name ="mentionable")]
+		[DataMember(Name = "mentionable")]
 		public bool? Mentionable;
 	}
 }

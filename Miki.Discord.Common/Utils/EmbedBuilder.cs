@@ -8,7 +8,7 @@ namespace Miki.Discord
 	{
 		private readonly DiscordEmbed embed = new DiscordEmbed();
 
-        public EmbedAuthor Author
+		public EmbedAuthor Author
 		{
 			get => embed.Author;
 			set => embed.Author = value;
@@ -20,7 +20,7 @@ namespace Miki.Discord
 			set => embed.Color = value.Value;
 		}
 
-        public string Description
+		public string Description
 		{
 			get => embed.Description;
 			set => embed.Description = value;
@@ -32,19 +32,19 @@ namespace Miki.Discord
 			set => embed.Footer = value;
 		}
 
-        public string ImageUrl
+		public string ImageUrl
 		{
 			get => embed.Image?.Url ?? null;
 			set => embed.Image = new EmbedImage() { Url = value };
 		}
 
-        public string ThumbnailUrl
-        {
-            get => embed.Thumbnail?.Url ?? null;
-            set => embed.Thumbnail = new EmbedImage() { Url = value };
-        }
+		public string ThumbnailUrl
+		{
+			get => embed.Thumbnail?.Url ?? null;
+			set => embed.Thumbnail = new EmbedImage() { Url = value };
+		}
 
-        public string Title
+		public string Title
 		{
 			get => embed.Title;
 			set => embed.Title = value;
@@ -52,7 +52,7 @@ namespace Miki.Discord
 
 		public EmbedBuilder AddField(string title, object content, bool isInline = false)
 		{
-			if (embed.Fields == null)
+			if(embed.Fields == null)
 			{
 				embed.Fields = new List<EmbedField>();
 			}
@@ -68,7 +68,7 @@ namespace Miki.Discord
 		}
 
 		public EmbedBuilder AddInlineField(string title, string content)
-            => AddField(title, content, true);
+			=> AddField(title, content, true);
 
 		public EmbedBuilder SetAuthor(string name, string iconUrl = null, string url = null)
 		{
@@ -100,7 +100,7 @@ namespace Miki.Discord
 
 		public EmbedBuilder SetDescription(string description)
 		{
-			if (!string.IsNullOrWhiteSpace(description))
+			if(!string.IsNullOrWhiteSpace(description))
 			{
 				embed.Description = description;
 			}

@@ -6,11 +6,8 @@ using Miki.Discord.Common.Packets;
 using Miki.Discord.Mocking;
 using Miki.Discord.Tests.Dummy;
 using Miki.Serialization.MsgPack;
-using Miki.Serialization.Protobuf;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Tests
@@ -28,7 +25,7 @@ namespace Miki.Discord.Tests
 		DiscordGuildMemberPacket member;
 		DiscordUserPacket user;
 		DiscordRolePacket role;
-        DiscordClient discordClient;
+		DiscordClient discordClient;
 		Common.Events.GuildMemberUpdateEventArgs updateMember;
 
 		[Params(1000, 10000)]
@@ -37,7 +34,7 @@ namespace Miki.Discord.Tests
 		[Params(16, 256, 2048, 10000)]
 		public int MemberCount;
 
-        [GlobalSetup]
+		[GlobalSetup]
 		public async Task Setup()
 		{
 			Random r = new Random();
@@ -68,7 +65,7 @@ namespace Miki.Discord.Tests
 
 			var members = new DiscordGuildMemberPacket[MemberCount];
 
-			for (int i = 0; i < MemberCount; i++)
+			for(int i = 0; i < MemberCount; i++)
 			{
 				members[i] = new DiscordGuildMemberPacket();
 				members[i].User = new DiscordUserPacket();
@@ -77,7 +74,7 @@ namespace Miki.Discord.Tests
 
 			var channels = new DiscordChannelPacket[24];
 
-			for (int i = 0; i < 24; i++)
+			for(int i = 0; i < 24; i++)
 			{
 				channels[i] = new DiscordChannelPacket();
 				channels[i].Id = (ulong)i;
@@ -89,14 +86,14 @@ namespace Miki.Discord.Tests
 			pool = new StackExchangeCachePool(new LZ4MsgPackSerializer(), "localhost");
 			gateway = new DummyGateway();
 
-            discordClient = new DiscordClient(new DiscordClientConfigurations
-            {
-                ApiClient = new DefaultDummyApiClient(),
-                Gateway = gateway,
-                CacheClient = client
-            });
+			discordClient = new DiscordClient(new DiscordClientConfigurations
+			{
+				ApiClient = new DefaultDummyApiClient(),
+				Gateway = gateway,
+				CacheClient = client
+			});
 
-            client = (IExtendedCacheClient) await pool.GetAsync();
+			client = (IExtendedCacheClient)await pool.GetAsync();
 
 			role = new DiscordRolePacket
 			{
@@ -145,7 +142,10 @@ namespace Miki.Discord.Tests
 
 			updateMember = new Common.Events.GuildMemberUpdateEventArgs
 			{
-				GuildId = packet.Id, Nickname = "wewe", RoleIds = new ulong[0], User = user
+				GuildId = packet.Id,
+				Nickname = "wewe",
+				RoleIds = new ulong[0],
+				User = user
 			};
 		}
 
@@ -162,7 +162,8 @@ namespace Miki.Discord.Tests
 			await gateway.OnGuildRoleCreate(packet.Id, role);
 			await gateway.OnGuildRoleUpdate(packet.Id, role);
 			await gateway.OnGuildRoleDelete(packet.Id, role.Id);
-			await gateway.OnUserUpdate(new DiscordPresencePacket(){
+			await gateway.OnUserUpdate(new DiscordPresencePacket()
+			{
 				User = user,
 				GuildId = packet.Id
 			});

@@ -2,8 +2,8 @@
 
 namespace Miki.Discord.Common.Packets
 {
-    [DataContract]
-    public class DiscordRolePacket
+	[DataContract]
+	public class DiscordRolePacket
 	{
 		[DataMember(Name = "id", Order = 1)]
 		public ulong Id;

@@ -2,13 +2,13 @@
 
 namespace Miki.Discord.Common.Packets
 {
-    [DataContract]
-    public class DiscordGuildUnavailablePacket
+	[DataContract]
+	public class DiscordGuildUnavailablePacket
 	{
-		[DataMember(Name ="id")]
+		[DataMember(Name = "id")]
 		public ulong GuildId;
 
-		[DataMember(Name ="unavailable")]
+		[DataMember(Name = "unavailable")]
 		public bool? IsUnavailable;
 
 		/// <summary>

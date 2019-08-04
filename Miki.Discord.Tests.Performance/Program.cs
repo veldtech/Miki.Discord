@@ -39,7 +39,7 @@ namespace Miki.Discord.Tests.Performance
 
 			var members = new DiscordGuildMemberPacket[p.MemberCount.Value];
 
-			for (int i = 0; i < p.MemberCount; i++)
+			for(int i = 0; i < p.MemberCount; i++)
 			{
 				members[i] = new DiscordGuildMemberPacket();
 				members[i].User = new DiscordUserPacket();
@@ -53,7 +53,7 @@ namespace Miki.Discord.Tests.Performance
 
 			var channels = new DiscordChannelPacket[24];
 
-			for (int i = 0; i < 24; i++)
+			for(int i = 0; i < 24; i++)
 			{
 				channels[i] = new DiscordChannelPacket();
 				channels[i].Id = (ulong)i;
@@ -68,7 +68,7 @@ namespace Miki.Discord.Tests.Performance
 
 			var sw = Stopwatch.StartNew();
 
-			for (int i = 0; i < 100000; i++)
+			for(int i = 0; i < 100000; i++)
 			{
 				pbuf.Serialize(p);
 			}
@@ -80,7 +80,7 @@ namespace Miki.Discord.Tests.Performance
 
 			sw.Restart();
 
-			for (int i = 0; i < 100000; i++)
+			for(int i = 0; i < 100000; i++)
 			{
 				msgp.Serialize(p);
 			}

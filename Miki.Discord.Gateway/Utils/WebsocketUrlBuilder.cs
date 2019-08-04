@@ -8,7 +8,7 @@ namespace Miki.Discord.Gateway.Utils
 	{
 		public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value)
 		{
-			if (dict.ContainsKey(key))
+			if(dict.ContainsKey(key))
 			{
 				dict[key] = value;
 			}
@@ -20,7 +20,7 @@ namespace Miki.Discord.Gateway.Utils
 
 		public static bool TryRemove<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key)
 		{
-			if (dict.ContainsKey(key))
+			if(dict.ContainsKey(key))
 			{
 				dict.Remove(key);
 				return true;
@@ -53,7 +53,7 @@ namespace Miki.Discord.Gateway.Utils
 
 		public WebSocketUrlBuilder SetCompression(bool compressed)
 		{
-			if (compressed)
+			if(compressed)
 			{
 				arguments.AddOrUpdate("compress", "zlib-stream");
 			}
@@ -66,7 +66,7 @@ namespace Miki.Discord.Gateway.Utils
 
 		public string Build()
 		{
-			if (arguments.Count == 0)
+			if(arguments.Count == 0)
 			{
 				return url;
 			}

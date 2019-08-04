@@ -2,13 +2,13 @@
 
 namespace Miki.Discord.Common.Packets.Events
 {
-    [DataContract]
-    public class GuildEmojisUpdateEventArgs
+	[DataContract]
+	public class GuildEmojisUpdateEventArgs
 	{
-		[DataMember(Name ="guild_id")]
+		[DataMember(Name = "guild_id")]
 		public ulong guildId;
 
-		[DataMember(Name ="emojis")]
+		[DataMember(Name = "emojis")]
 		public DiscordEmoji[] emojis;
 	}
 }

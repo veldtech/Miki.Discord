@@ -2,23 +2,23 @@ using Miki.Cache;
 using Miki.Cache.InMemory;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
+using Miki.Discord.Mocking;
 using Miki.Discord.Tests.Dummy;
 using Miki.Serialization.Protobuf;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Discord.Mocking;
 using Xunit;
-using System;
-using System.Globalization;
 
 namespace Miki.Discord.Tests
 {
 	/// <summary>
 	/// Contains tests for Caching
 	/// </summary>
-    public class Caching
-    {
+	public class Caching
+	{
 		DummyGateway gateway;
 		ICachePool pool;
 		IExtendedCacheClient client;
@@ -28,21 +28,21 @@ namespace Miki.Discord.Tests
 		DiscordGuildMemberPacket member;
 		DiscordUserPacket user;
 		DiscordRolePacket role;
-        DiscordClient discordClient;
+		DiscordClient discordClient;
 
 		private async Task ResetObjectsAsync()
-        {
-            gateway = new DummyGateway();
-            pool = new InMemoryCachePool(new ProtobufSerializer());
-			client = (IExtendedCacheClient) await pool.GetAsync();
-            discordClient = new DiscordClient(new DiscordClientConfigurations
-            {
-                ApiClient = new InvalidDummyApiClient(),
-                Gateway = gateway,
-                CacheClient = client
-            });
+		{
+			gateway = new DummyGateway();
+			pool = new InMemoryCachePool(new ProtobufSerializer());
+			client = (IExtendedCacheClient)await pool.GetAsync();
+			discordClient = new DiscordClient(new DiscordClientConfigurations
+			{
+				ApiClient = new InvalidDummyApiClient(),
+				Gateway = gateway,
+				CacheClient = client
+			});
 
-            role = new DiscordRolePacket
+			role = new DiscordRolePacket
 			{
 				Color = 2342,
 				Id = 999,
@@ -104,11 +104,11 @@ namespace Miki.Discord.Tests
 				Presences = new List<DiscordPresencePacket>(),
 				Region = "lul region",
 				Roles = new List<DiscordRolePacket>(),
-                Emojis = new[]
-                {
-                    new DiscordEmoji() 
-                }
-            };
+				Emojis = new[]
+				{
+					new DiscordEmoji()
+				}
+			};
 		}
 
 		[Fact]
@@ -118,7 +118,7 @@ namespace Miki.Discord.Tests
 			await gateway.OnGuildMemberRemove(guild.Id, member.User);
 
 			var m = await client.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id), member.User.Id.ToString());
-			
+
 			await gateway.OnGuildMemberAdd(member);
 
 			user.Avatar = "new avi";
@@ -135,13 +135,13 @@ namespace Miki.Discord.Tests
 
 			Assert.NotEmpty(x);
 			Assert.Equal("new avi", currentUser.Avatar);
-		}	
+		}
 
 		[Fact]
 		public async Task GuildMemberAsync()
-        {
-            await ResetObjectsAsync();
-            await gateway.OnGuildMemberRemove(guild.Id, user);
+		{
+			await ResetObjectsAsync();
+			await gateway.OnGuildMemberRemove(guild.Id, user);
 
 			DiscordGuildMemberPacket[] g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
 
@@ -149,7 +149,7 @@ namespace Miki.Discord.Tests
 
 			await gateway.OnGuildMemberAdd(member);
 
-			 g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
+			g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
 
 			Assert.NotEmpty(g);
 
@@ -168,11 +168,11 @@ namespace Miki.Discord.Tests
 		}
 
 		[Fact]
-        public async Task ChannelAsync()
-        {
-            await ResetObjectsAsync();
+		public async Task ChannelAsync()
+		{
+			await ResetObjectsAsync();
 
-            Assert.True(channel.IsNsfw);
+			Assert.True(channel.IsNsfw);
 			Assert.Equal("test channel", channel.Name);
 
 			channel.IsNsfw = false;
@@ -181,15 +181,15 @@ namespace Miki.Discord.Tests
 			await gateway.OnChannelUpdate(channel);
 
 			DiscordChannelPacket[] channels = (await client.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guild.Id))).ToArray();
-		
+
 			Assert.NotEmpty(channels);
 
 			var newChannel = channels.First();
 
 			Assert.NotNull(newChannel);
-			
+
 			Assert.False(newChannel.IsNsfw);
-			
+
 			Assert.Equal("new test channel", newChannel.Name);
 
 			DiscordChannelPacket otherChannel = new DiscordChannelPacket
@@ -200,7 +200,7 @@ namespace Miki.Discord.Tests
 				Type = ChannelType.GUILDTEXT,
 				IsNsfw = false,
 				Topic = "lol this is a channel"
-            };
+			};
 
 			await gateway.OnChannelCreate(otherChannel);
 
@@ -225,9 +225,9 @@ namespace Miki.Discord.Tests
 		[Fact]
 		public async Task GuildAsync()
 		{
-            await ResetObjectsAsync();
+			await ResetObjectsAsync();
 
-            await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
+			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
 			{
 				GuildId = guild.Id,
 				IsUnavailable = true
@@ -273,14 +273,14 @@ namespace Miki.Discord.Tests
 
 		[Fact]
 		public async Task RoleAsync()
-        {
-            await ResetObjectsAsync();
+		{
+			await ResetObjectsAsync();
 
-            await gateway.OnGuildRoleCreate(guild.Id, role);
+			await gateway.OnGuildRoleCreate(guild.Id, role);
 
 			var updatedRole = await client.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guild.Id), role.Id.ToString());
 
-			Assert.NotNull(updatedRole); 
+			Assert.NotNull(updatedRole);
 
 			Assert.Equal(role.Name, updatedRole.Name);
 
@@ -303,50 +303,50 @@ namespace Miki.Discord.Tests
 			Assert.Null(updatedRole);
 		}
 
-        [Fact]
-        public async Task GuildOperations()
-        {
-            await ResetObjectsAsync();
+		[Fact]
+		public async Task GuildOperations()
+		{
+			await ResetObjectsAsync();
 
-            await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
-            {
-                GuildId = guild.Id,
-                IsUnavailable = false
-            });
+			await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
+			{
+				GuildId = guild.Id,
+				IsUnavailable = false
+			});
 
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await discordClient.GetGuildAsync(guild.Id));
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await discordClient.GetGuildAsync(guild.Id));
 
-            await gateway.OnGuildCreate(guild);
+			await gateway.OnGuildCreate(guild);
 
-            var guildObject = await discordClient.GetGuildAsync(guild.Id);
+			var guildObject = await discordClient.GetGuildAsync(guild.Id);
 
-            Assert.Equal(guild.Id, guildObject.Id);
-            Assert.Equal(DiscordUtils.GetAvatarUrl(guild.Id, guild.Icon), guildObject.IconUrl);
-            Assert.Equal(guild.MemberCount, guildObject.MemberCount);
-        }
+			Assert.Equal(guild.Id, guildObject.Id);
+			Assert.Equal(DiscordUtils.GetAvatarUrl(guild.Id, guild.Icon), guildObject.IconUrl);
+			Assert.Equal(guild.MemberCount, guildObject.MemberCount);
+		}
 
-        [Fact]
-        public async Task CultureChanged()
-        {
-            await ResetObjectsAsync();
+		[Fact]
+		public async Task CultureChanged()
+		{
+			await ResetObjectsAsync();
 
-            var now = DateTime.ParseExact("01/01/2019 00:00:00", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).Ticks;
+			var now = DateTime.ParseExact("01/01/2019 00:00:00", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).Ticks;
 
-            CultureInfo.CurrentCulture = new CultureInfo("nl-NL");
+			CultureInfo.CurrentCulture = new CultureInfo("nl-NL");
 
-            var guildPacket = new DiscordGuildPacket
-            {
-                CreatedAt = now
-            };
+			var guildPacket = new DiscordGuildPacket
+			{
+				CreatedAt = now
+			};
 
-            await client.UpsertAsync("guild", guildPacket);
+			await client.UpsertAsync("guild", guildPacket);
 
-            CultureInfo.CurrentCulture = new CultureInfo("en-US");
+			CultureInfo.CurrentCulture = new CultureInfo("en-US");
 
-            var cachedGuild = await client.GetAsync<DiscordGuildPacket>("guild");
+			var cachedGuild = await client.GetAsync<DiscordGuildPacket>("guild");
 
-            Assert.Equal(now, cachedGuild.CreatedAt);
-        }
-    }
+			Assert.Equal(now, cachedGuild.CreatedAt);
+		}
+	}
 }

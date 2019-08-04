@@ -2,13 +2,13 @@
 
 namespace Miki.Discord.Common.Gateway.Packets
 {
-    [DataContract]
+	[DataContract]
 	public class GatewayHelloPacket
 	{
-        [DataMember(Name = "heartbeat_interval")]
-        public int HeartbeatInterval;
+		[DataMember(Name = "heartbeat_interval")]
+		public int HeartbeatInterval;
 
-        [DataMember(Name = "_trace")]
-        public string[] TraceServers;
+		[DataMember(Name = "_trace")]
+		public string[] TraceServers;
 	}
 }
