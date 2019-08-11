@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     public interface IDiscordGuildUser : IDiscordUser
     {
         string Nickname { get; }
@@ -24,6 +24,8 @@ namespace Miki.Discord.Common
         Task<IDiscordGuild> GetGuildAsync();
 
         Task<int> GetHierarchyAsync();
+
+        Task<IEnumerable<IDiscordRole>> GetRolesAsync();
 
         Task<bool> HasPermissionsAsync(GuildPermission permissions);
 

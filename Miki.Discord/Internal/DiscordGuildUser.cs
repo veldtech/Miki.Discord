@@ -1,12 +1,12 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Packets;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class DiscordGuildUser : DiscordUser, IDiscordGuildUser
     {
         private readonly DiscordGuildMemberPacket _packet;
@@ -53,6 +53,13 @@ namespace Miki.Discord.Internal
             }
 
             await Client.ApiClient.RemoveGuildMemberRoleAsync(GuildId, Id, role.Id);
+        }
+
+        public async Task<IEnumerable<IDiscordRole>> GetRolesAsync()
+        {
+            var guild = await GetGuildAsync();
+            var roles = await guild.GetRolesAsync();
+            return roles.Where(x => RoleIds.Contains(x.Id));
         }
 
         public async Task<bool> HasPermissionsAsync(GuildPermission permissions)

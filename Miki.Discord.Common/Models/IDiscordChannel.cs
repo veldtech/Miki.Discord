@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
@@ -15,11 +16,19 @@ namespace Miki.Discord.Common
 
     public interface IDiscordGuildChannel : IDiscordChannel
     {
+        IEnumerable<PermissionOverwrite> PermissionOverwrites { get; }
+
         ulong GuildId { get; }
 
         ChannelType Type { get; }
 
-        Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user">The user in question; null meaning the user will be self</param>
+        /// <returns></returns>
+        Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user = null);
 
         Task<IDiscordGuildUser> GetUserAsync(ulong id);
 

@@ -107,7 +107,8 @@ namespace Miki.Discord
         {
             if(!guildId.HasValue)
             {
-                throw new NotSupportedException("The default Discord Client cannot get the presence of the user without the guild ID. Use the cached client instead.");
+                throw new NotSupportedException(@"The default Discord Client cannot get the presence of 
+the user without the guild ID. Use the cached client instead.");
             }
 
             // We have to get the guild because there is no API end-point for user presence.
@@ -116,7 +117,9 @@ namespace Miki.Discord
             var guild = await GetGuildPacketAsync(guildId.Value);
             var presence = guild.Presences.FirstOrDefault(p => p.User.Id == userId);
 
-            return presence != null ? new DiscordPresence(presence) : null;
+            return presence != null 
+                ? new DiscordPresence(presence) 
+                : null;
         }
 
         public virtual async Task<IDiscordRole> GetRoleAsync(
@@ -147,7 +150,8 @@ namespace Miki.Discord
             return ResolveChannel(channel);
         }
 
-        public virtual async Task<T> GetChannelAsync<T>(ulong id, ulong? guildId = null) where T : class, IDiscordChannel
+        public virtual async Task<T> GetChannelAsync<T>(ulong id, ulong? guildId = null) 
+            where T : class, IDiscordChannel
         {
             var channel = await GetChannelPacketAsync(id, guildId);
 
@@ -315,7 +319,6 @@ namespace Miki.Discord
             {
                 return GuildUnavailable.InvokeAsync(guild.GuildId);
             }
-
             return GuildLeave.InvokeAsync(guild.GuildId);
         }
 

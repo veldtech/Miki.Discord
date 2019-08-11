@@ -51,12 +51,19 @@ namespace Miki.Discord
                 .Select(x => new DiscordMessage(x, _client));
         }
 
-        public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
-            => await _client.SendFileAsync(
+        public async Task<IDiscordMessage> SendFileAsync(
+            Stream file,
+            string fileName,
+            string content,
+            bool isTTS = false,
+            DiscordEmbed embed = null)
+        {
+            return await _client.SendFileAsync(
                 Id,
                 file,
                 fileName,
                 new MessageArgs(content, embed, isTTS));
+        }
 
         public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
             => await DiscordChannelHelper.CreateMessageAsync(

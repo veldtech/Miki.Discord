@@ -1,11 +1,15 @@
-﻿using Miki.Discord.Common;
+﻿using System.Collections.Generic;
+using Miki.Discord.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Discord.Helpers;
 
 namespace Miki.Discord.Internal
 {
     public class DiscordGuildChannel : DiscordChannel, IDiscordGuildChannel
     {
+        public IEnumerable<PermissionOverwrite> PermissionOverwrites => _packet.PermissionOverwrites;
+
         public DiscordGuildChannel(DiscordChannelPacket packet, IDiscordClient client)
             : base(packet, client)
         {
@@ -20,57 +24,15 @@ namespace Miki.Discord.Internal
         public async Task<IDiscordGuild> GetGuildAsync()
             => await _client.GetGuildAsync(GuildId);
 
-        public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user)
+        public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user = null)
         {
             IDiscordGuild guild = await GetGuildAsync();
-
+            if(user == null)
+            {
+                user = await guild.GetSelfAsync();
+            }
             GuildPermission permissions = await guild.GetPermissionsAsync(user);
-
-            if(permissions.HasFlag(GuildPermission.Administrator))
-            {
-                return GuildPermission.All;
-            }
-
-            if(_packet.PermissionOverwrites != null)
-            {
-                PermissionOverwrite overwriteEveryone = _packet.PermissionOverwrites
-                    .FirstOrDefault(x => x.Id == GuildId) ?? null;
-
-                if(overwriteEveryone != null)
-                {
-                    permissions &= ~overwriteEveryone.DeniedPermissions;
-                    permissions |= overwriteEveryone.AllowedPermissions;
-                }
-
-                PermissionOverwrite overwrites = new PermissionOverwrite();
-
-                if(user.RoleIds != null)
-                {
-                    foreach(ulong roleId in user.RoleIds)
-                    {
-                        PermissionOverwrite roleOverwrites = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == roleId);
-
-                        if(roleOverwrites != null)
-                        {
-                            overwrites.AllowedPermissions |= roleOverwrites.AllowedPermissions;
-                            overwrites.DeniedPermissions &= roleOverwrites.DeniedPermissions;
-                        }
-                    }
-                }
-
-                permissions &= ~overwrites.DeniedPermissions;
-                permissions |= overwrites.AllowedPermissions;
-
-                PermissionOverwrite userOverwrite = _packet.PermissionOverwrites.FirstOrDefault(x => x.Id == user.Id);
-
-                if(userOverwrite != null)
-                {
-                    permissions &= ~userOverwrite.DeniedPermissions;
-                    permissions |= userOverwrite.AllowedPermissions;
-                }
-            }
-
-            return permissions;
+            return DiscordChannelHelper.GetOverwritePermissions(user, this, permissions);
         }
 
         public async Task<IDiscordGuildUser> GetUserAsync(ulong id)

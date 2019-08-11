@@ -9,6 +9,8 @@ namespace Miki.Discord
 {
     public partial class DiscordClient : BaseDiscordClient
     {
+        public IExtendedCacheClient CacheClient { get; }
+
         public DiscordClient(DiscordClientConfigurations config)
             : this(config.ApiClient, config.Gateway, config.CacheClient)
         {
@@ -20,8 +22,6 @@ namespace Miki.Discord
             CacheClient = cacheClient;
             AttachHandlers();
         }
-
-        public IExtendedCacheClient CacheClient { get; }
 
         protected override async Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id, ulong? guildId = null)
         {

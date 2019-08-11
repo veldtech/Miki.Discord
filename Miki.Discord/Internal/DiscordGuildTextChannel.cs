@@ -2,13 +2,14 @@
 using Miki.Discord.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
-    public class DiscordGuildTextChannel : DiscordGuildChannel, IDiscordGuildChannel, IDiscordTextChannel
+    public class DiscordGuildTextChannel : DiscordGuildChannel, IDiscordTextChannel
     {
         public DiscordGuildTextChannel(DiscordChannelPacket packet, IDiscordClient client)
             : base(packet, client)
@@ -60,11 +61,23 @@ namespace Miki.Discord.Internal
                 fileName,
                 new MessageArgs(content, embed, isTTS));
 
-        public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
-            => await DiscordChannelHelper.CreateMessageAsync(
+        public async Task<IDiscordMessage> SendMessageAsync(
+            string content,
+            bool isTTS = false,
+            DiscordEmbed embed = null)
+        {
+            var permissions = await GetPermissionsAsync();
+            if(!permissions.HasFlag(GuildPermission.SendMessages))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            return await DiscordChannelHelper.CreateMessageAsync(
                 _client,
                 _packet,
                 new MessageArgs(content, embed, isTTS));
+
+        }
 
         public async Task TriggerTypingAsync()
         {
