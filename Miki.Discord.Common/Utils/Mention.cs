@@ -40,7 +40,7 @@ namespace Miki.Discord.Common.Utils
 
                 case '#':
                 {
-                    if(ulong.TryParse(content.Slice(1, content.Length - 2).ToString(), out ulong result))
+                    if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
                     {
                         value = new Mention(result, MentionType.CHANNEL);
                         return true;
@@ -79,14 +79,14 @@ namespace Miki.Discord.Common.Utils
             }
             else if(content[0] == '!')
             {
-                if(ulong.TryParse(content.Slice(1, content.Length - 2).ToString(), out ulong result))
+                if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
                 {
                     return new Mention(result, MentionType.USER_NICKNAME);
                 }
             }
             else if(content[0] == '&')
             {
-                if(ulong.TryParse(content.Slice(1, content.Length - 2).ToString(), out ulong result))
+                if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
                 {
                     return new Mention(result, MentionType.ROLE);
                 }
