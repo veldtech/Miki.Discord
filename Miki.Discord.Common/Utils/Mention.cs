@@ -18,10 +18,17 @@ namespace Miki.Discord.Common.Utils
         public ulong Id { get; }
         public MentionType Type { get; }
 
-        public Mention(ulong id, MentionType type)
+        /// <summary>
+        /// Data is used for mentions that hold more info than only an <see cref="Id"/>.
+        /// <see cref="DiscordEmoji"/>
+        /// </summary>
+        public string Data { get; }
+
+        public Mention(ulong id, MentionType type, string data = null)
         {
             Id = id;
             Type = type;
+            Data = data;
         }
 
         public static bool TryParse(ReadOnlySpan<char> content, out Mention value)
@@ -40,7 +47,9 @@ namespace Miki.Discord.Common.Utils
 
                 case '#':
                 {
-                    if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
+                    if(ulong.TryParse(
+                        content.Slice(1, content.Length - 1).ToString(), 
+                        out ulong result))
                     {
                         value = new Mention(result, MentionType.CHANNEL);
                         return true;
@@ -52,20 +61,34 @@ namespace Miki.Discord.Common.Utils
                 case 'a':
                 case ':':
                 {
-                    int lastidx = content.LastIndexOf(':');
-                    if(ulong.TryParse(content.Slice(lastidx, content.Length - 1 - lastidx).ToString(), out var emojiId))
+                    int idStart = content.IndexOf(':');
+                    var emojiIdStart = content.LastIndexOf(':');
+
+                    var emojiName = content.Slice(idStart + 1, emojiIdStart - 1);
+
+                    if(ulong.TryParse(
+                        content.Slice(
+                            emojiIdStart + 1, 
+                            content.Length - emojiIdStart - 1).ToString(), 
+                        out var emojiId))
                     {
-                        value = new Mention(emojiId, content[0] == 'a'
-                                ? MentionType.ANIMATED_EMOJI
-                                : MentionType.EMOJI);
+                        var type = content[0] == 'a'
+                            ? MentionType.ANIMATED_EMOJI
+                            : MentionType.EMOJI;
+
+                        value = new Mention(emojiId, type, emojiName.ToString());
                         return true;
                     }
                     value = default;
                     return false;
                 }
+
+                default:
+                {
+                    value = default;
+                    return false;
+                }
             }
-            value = default;
-            return false;
         }
 
         private static Mention ParseUserMention(ReadOnlySpan<char> content)
