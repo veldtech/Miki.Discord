@@ -64,7 +64,7 @@ namespace Miki.Discord.Common.Utils
                     int idStart = content.IndexOf(':');
                     var emojiIdStart = content.LastIndexOf(':');
 
-                    var emojiName = content.Slice(idStart + 1, emojiIdStart - 1);
+                    var emojiName = content.Slice(idStart + 1, emojiIdStart - idStart - 1);
 
                     if(ulong.TryParse(
                         content.Slice(
