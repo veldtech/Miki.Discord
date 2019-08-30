@@ -118,11 +118,11 @@ namespace Miki.Discord.Common.Utils
             }
             else if (content.SequenceEqual("everyone".AsSpan()))
             {
-                return new Mention(0, MentionType.MENTION_ALL, "everyone");
+                return new Mention(0, MentionType.USER_ALL, "everyone");
             }
             else if(content.SequenceEqual("here".AsSpan()))
             {
-                return new Mention(0, MentionType.MENTION_ALL_ONLINE, "here");
+                return new Mention(0, MentionType.USER_ALL_ONLINE, "here");
             }
             return default;
         }

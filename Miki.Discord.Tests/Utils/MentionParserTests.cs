@@ -19,8 +19,8 @@ namespace Miki.Discord.Tests.Utils
         [InlineData("<:anim:10000000>", MentionType.EMOJI, 10000000, "anim")]
         [InlineData("<a:anim:0>", MentionType.ANIMATED_EMOJI, 0, "anim")]
         [InlineData("<a:anim:10000000>", MentionType.ANIMATED_EMOJI, 10000000, "anim")]
-        [InlineData("@everyone", MentionType.MENTION_ALL, 0, "everyone")]
-        [InlineData("@here", MentionType.MENTION_ALL_ONLINE, 0, "here")]
+        [InlineData("@everyone", MentionType.USER_ALL, 0, "everyone")]
+        [InlineData("@here", MentionType.USER_ALL_ONLINE, 0, "here")]
         public void ParseValidAsync(
             string userData, 
             MentionType expectedType, 
