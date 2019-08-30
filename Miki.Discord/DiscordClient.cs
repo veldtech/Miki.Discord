@@ -92,10 +92,14 @@ namespace Miki.Discord
             return packets;
         }
 
-        protected override async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId)
+        protected override async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(
+            ulong userId, 
+            ulong guildId)
         {
             DiscordGuildMemberPacket packet =
-                await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId), userId.ToString());
+                await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(
+                    CacheUtils.GuildMembersKey(guildId), 
+                    userId.ToString());
 
             if(packet == null)
             {
@@ -105,7 +109,10 @@ namespace Miki.Discord
                 {
                     packet.GuildId = guildId;
 
-                    await CacheClient.HashUpsertAsync(CacheUtils.GuildMembersKey(guildId), userId.ToString(), packet);
+                    await CacheClient.HashUpsertAsync(
+                        CacheUtils.GuildMembersKey(guildId), 
+                        userId.ToString(), 
+                        packet);
                 }
             }
 
