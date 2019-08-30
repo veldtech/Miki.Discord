@@ -95,7 +95,7 @@ namespace Miki.Discord.Common.Utils
 
         private static Mention ParseUserMention(ReadOnlySpan<char> content)
         {
-            if(content[0] >= '0' || content[0] <= '9')
+            if(content[0] >= '0' && content[0] <= '9')
             {
                 if(ulong.TryParse(content.ToString(), out ulong result))
                 {
