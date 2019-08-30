@@ -11,6 +11,8 @@ namespace Miki.Discord.Common.Utils
         CHANNEL,
         EMOJI,
         ANIMATED_EMOJI,
+        USER_ALL,
+        USER_ALL_ONLINE,
     }
 
     public struct Mention : ISnowflake
@@ -93,7 +95,7 @@ namespace Miki.Discord.Common.Utils
 
         private static Mention ParseUserMention(ReadOnlySpan<char> content)
         {
-            if(char.IsNumber(content[0]))
+            if(content[0] >= '0' && content[0] <= '9')
             {
                 if(ulong.TryParse(content.ToString(), out ulong result))
                 {
@@ -113,6 +115,14 @@ namespace Miki.Discord.Common.Utils
                 {
                     return new Mention(result, MentionType.ROLE);
                 }
+            }
+            else if (content.SequenceEqual("everyone".AsSpan()))
+            {
+                return new Mention(0, MentionType.USER_ALL, "everyone");
+            }
+            else if(content.SequenceEqual("here".AsSpan()))
+            {
+                return new Mention(0, MentionType.USER_ALL_ONLINE, "here");
             }
             return default;
         }
