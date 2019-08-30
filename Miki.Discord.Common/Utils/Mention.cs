@@ -11,8 +11,8 @@ namespace Miki.Discord.Common.Utils
         CHANNEL,
         EMOJI,
         ANIMATED_EMOJI,
-        MENTION_ALL,
-        MENTION_ALL_ONLINE,
+        USER_ALL,
+        USER_ALL_ONLINE,
     }
 
     public struct Mention : ISnowflake
