@@ -11,6 +11,8 @@ namespace Miki.Discord.Common.Utils
         CHANNEL,
         EMOJI,
         ANIMATED_EMOJI,
+        MENTION_ALL,
+        MENTION_ALL_ONLINE,
     }
 
     public struct Mention : ISnowflake
@@ -113,6 +115,14 @@ namespace Miki.Discord.Common.Utils
                 {
                     return new Mention(result, MentionType.ROLE);
                 }
+            }
+            else if (content.SequenceEqual("everyone".AsSpan()))
+            {
+                return new Mention(0, MentionType.MENTION_ALL, "everyone");
+            }
+            else if(content.SequenceEqual("here".AsSpan()))
+            {
+                return new Mention(0, MentionType.MENTION_ALL_ONLINE, "here");
             }
             return default;
         }
