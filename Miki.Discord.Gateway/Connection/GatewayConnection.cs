@@ -1,23 +1,23 @@
-﻿using Miki.Discord.Common.Converters;
-using Miki.Discord.Common.Gateway;
-using Miki.Discord.Common.Gateway.Packets;
-using Miki.Discord.Gateway.Utils;
-using Miki.Logging;
-using Miki.Net.WebSockets;
-using Miki.Net.WebSockets.Exceptions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Gateway.Connection
+﻿namespace Miki.Discord.Gateway.Connection
 {
+    using Miki.Discord.Common.Converters;
+    using Miki.Discord.Common.Gateway;
+    using Miki.Discord.Common.Gateway.Packets;
+    using Miki.Discord.Gateway.Utils;
+    using Miki.Logging;
+    using Miki.Net.WebSockets;
+    using Miki.Net.WebSockets.Exceptions;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Net.WebSockets;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     public enum ConnectionStatus
     {
         Connecting,
@@ -480,7 +480,7 @@ namespace Miki.Discord.Gateway.Connection
 
                 if(response.Count + _receiveStream.Position > _receiveStream.Capacity)
                 {
-                    _receiveStream.Capacity = _receiveStream.Capacity * 2;
+                    _receiveStream.Capacity *= 2;
                 }
 
                 await _receiveStream.WriteAsync(_receivePacket, 0, response.Count, _connectionToken.Token)

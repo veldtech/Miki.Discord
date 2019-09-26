@@ -37,8 +37,6 @@ namespace Miki.Discord.Tests
         [GlobalSetup]
         public async Task Setup()
         {
-            Random r = new Random();
-
             packet = new DiscordGuildPacket
             {
                 AfkChannelId = 245245,

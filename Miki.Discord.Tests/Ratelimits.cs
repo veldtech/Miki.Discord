@@ -19,10 +19,11 @@ namespace Miki.Discord.Tests
         [Fact]
         public void IsRatelimited()
         {
-            var rateLimit = new Ratelimit();
-
-            rateLimit.Remaining = 5;
-            rateLimit.Reset = (DateTimeOffset.Now + TimeSpan.FromSeconds(1)).ToUnixTimeSeconds();
+            var rateLimit = new Ratelimit
+            {
+                Remaining = 5,
+                Reset = (DateTimeOffset.Now + TimeSpan.FromSeconds(1)).ToUnixTimeSeconds()
+            };
 
             Assert.False(Ratelimit.IsRatelimited(rateLimit));
 
