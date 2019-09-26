@@ -92,7 +92,7 @@ namespace Miki.Discord.Tests.Performance
 
             Console.ReadLine();
 
-            var summary = BenchmarkRunner.Run<CachePerformance>();
+            BenchmarkRunner.Run<CachePerformance>();
             Console.ReadLine();
         }
     }
