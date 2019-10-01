@@ -1,17 +1,16 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Events;
-using Miki.Discord.Common.Gateway;
-using Miki.Discord.Common.Packets;
-using Miki.Discord.Common.Packets.Arguments;
-using Miki.Discord.Rest;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Mocking
+﻿namespace Miki.Discord.Mocking
 {
-    /// <summary>
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Events;
+    using Miki.Discord.Common.Gateway;
+    using Miki.Discord.Common.Packets;
+    using Miki.Discord.Common.Packets.Arguments;
+    using Miki.Discord.Rest;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Threading.Tasks;
+ 
     /// This API client will always throw an <see cref="InvalidOperationException"/>. This is used to make sure API calls are not being called whenever they are not necessary.
     /// </summary>
     public class InvalidDummyApiClient : IApiClient

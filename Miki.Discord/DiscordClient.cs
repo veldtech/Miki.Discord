@@ -23,7 +23,8 @@ namespace Miki.Discord
             AttachHandlers();
         }
 
-        protected override async Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id, ulong? guildId = null)
+        protected override async Task<DiscordChannelPacket> GetChannelPacketAsync(
+            ulong id, ulong? guildId = null)
         {
             var packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(
                 CacheUtils.ChannelsKey(guildId),
@@ -48,10 +49,12 @@ namespace Miki.Discord
             return !await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey, guildId.ToString());
         }
 
-        protected override async Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId)
+        protected override async Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(
+            ulong guildId)
         {
             IReadOnlyList<DiscordGuildMemberPacket> packets =
-                (await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guildId)))?.ToArray();
+                (await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(
+                    CacheUtils.GuildMembersKey(guildId)))?.ToArray();
 
             if(packets == null || packets.Count == 0)
             {
@@ -61,7 +64,8 @@ namespace Miki.Discord
                 {
                     await CacheClient.HashUpsertAsync(
                         CacheUtils.ChannelsKey(guildId),
-                        packets.Select(x => new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x)
+                        packets.Select(x => new KeyValuePair<string, DiscordGuildMemberPacket>(
+                            x.User.Id.ToString(), x)
                         ));
                 }
             }
@@ -69,10 +73,12 @@ namespace Miki.Discord
             return packets;
         }
 
-        protected override async Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId)
+        protected override async Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(
+            ulong guildId)
         {
             IReadOnlyList<DiscordChannelPacket> packets =
-                (await CacheClient.HashValuesAsync<DiscordChannelPacket>(CacheUtils.ChannelsKey(guildId)))?.ToArray();
+                (await CacheClient.HashValuesAsync<DiscordChannelPacket>(
+                    CacheUtils.ChannelsKey(guildId)))?.ToArray();
 
             if(packets == null || packets.Count == 0)
             {
@@ -84,7 +90,8 @@ namespace Miki.Discord
                 {
                     await CacheClient.HashUpsertAsync(
                         CacheUtils.ChannelsKey(guildId),
-                        packets.Select(x => new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x))
+                        packets.Select(x => new KeyValuePair<string, DiscordChannelPacket>(
+                            x.Id.ToString(), x))
                     );
                 }
             }
@@ -93,8 +100,7 @@ namespace Miki.Discord
         }
 
         protected override async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(
-            ulong userId, 
-            ulong guildId)
+            ulong userId, ulong guildId)
         {
             DiscordGuildMemberPacket packet =
                 await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(
@@ -122,7 +128,8 @@ namespace Miki.Discord
         protected override async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
         {
             DiscordRolePacket packet =
-                await CacheClient.HashGetAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId), roleId.ToString());
+                await CacheClient.HashGetAsync<DiscordRolePacket>(
+                    CacheUtils.GuildRolesKey(guildId), roleId.ToString());
 
             if(packet == null)
             {
@@ -131,7 +138,8 @@ namespace Miki.Discord
 
                 if(packet != null)
                 {
-                    await CacheClient.HashUpsertAsync(CacheUtils.GuildRolesKey(guildId), roleId.ToString(), packet);
+                    await CacheClient.HashUpsertAsync(
+                        CacheUtils.GuildRolesKey(guildId), roleId.ToString(), packet);
                 }
             }
 
@@ -141,7 +149,8 @@ namespace Miki.Discord
         protected override async Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
         {
             IReadOnlyList<DiscordRolePacket> packets =
-                (await CacheClient.HashValuesAsync<DiscordRolePacket>(CacheUtils.GuildRolesKey(guildId)))?.ToArray();
+                (await CacheClient.HashValuesAsync<DiscordRolePacket>(
+                    CacheUtils.GuildRolesKey(guildId)))?.ToArray();
 
             if(packets == null || packets.Count == 0)
             {
@@ -153,7 +162,8 @@ namespace Miki.Discord
                 {
                     await CacheClient.HashUpsertAsync(
                         CacheUtils.ChannelsKey(guildId),
-                        packets.Select(x => new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x)
+                        packets.Select(x => new KeyValuePair<string, DiscordRolePacket>(
+                            x.Id.ToString(), x)
                     ));
                 }
             }
@@ -163,7 +173,8 @@ namespace Miki.Discord
 
         protected override async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
         {
-            DiscordGuildPacket packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(CacheUtils.GuildsCacheKey, id.ToString());
+            DiscordGuildPacket packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(
+                CacheUtils.GuildsCacheKey, id.ToString());
 
             if(packet == null)
             {
@@ -180,7 +191,8 @@ namespace Miki.Discord
 
         protected override async Task<DiscordUserPacket> GetUserPacketAsync(ulong id)
         {
-            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, id.ToString());
+            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(
+                CacheUtils.UsersCacheKey, id.ToString());
 
             if(packet == null)
             {
@@ -196,7 +208,8 @@ namespace Miki.Discord
 
         protected override async Task<DiscordUserPacket> GetCurrentUserPacketAsync()
         {
-            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(CacheUtils.UsersCacheKey, "me");
+            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(
+                CacheUtils.UsersCacheKey, "me");
 
             if(packet == null)
             {

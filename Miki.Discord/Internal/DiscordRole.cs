@@ -6,37 +6,37 @@ namespace Miki.Discord.Internal
 {
     public class DiscordRole : IDiscordRole
     {
-        private DiscordRolePacket _packet;
-        private readonly IDiscordClient _client;
+        private DiscordRolePacket packet;
+        private readonly IDiscordClient client;
 
         public DiscordRole(DiscordRolePacket packet, IDiscordClient client)
         {
-            _packet = packet;
-            _client = client;
+            this.packet = packet;
+            this.client = client;
         }
 
         public string Name
-            => _packet.Name;
+            => packet.Name;
 
         public Color Color
-            => new Color((uint)_packet.Color);
+            => new Color((uint)packet.Color);
 
         public int Position
-            => _packet.Position;
+            => packet.Position;
 
         public ulong Id
-            => _packet.Id;
+            => packet.Id;
 
         public GuildPermission Permissions
-            => (GuildPermission)_packet.Permissions;
+            => (GuildPermission)packet.Permissions;
 
         public bool IsManaged
-            => _packet.Managed;
+            => packet.Managed;
 
         public bool IsHoisted
-            => _packet.IsHoisted;
+            => packet.IsHoisted;
 
         public bool IsMentionable
-            => _packet.Mentionable;
+            => packet.Mentionable;
     }
 }

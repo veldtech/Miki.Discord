@@ -42,37 +42,38 @@ namespace Miki.Discord.Tests
             {
                 Gateway = gatewayCluster
             };
-            var client = new DiscordClient(config);
-
-            var clientEventOne = 0;
-            var clientEventTwo = 0;
-
-            client.MessageCreate += _ =>
+            using(var client = new DiscordClient(config))
             {
-                clientEventOne++;
-                return Task.CompletedTask;
-            };
+                var clientEventOne = 0;
+                var clientEventTwo = 0;
 
-            client.MessageCreate += _ =>
-            {
-                clientEventTwo++;
-                return Task.CompletedTask;
-            };
+                client.MessageCreate += _ =>
+                {
+                    clientEventOne++;
+                    return Task.CompletedTask;
+                };
 
-            await gatewayCluster.StartAsync();
+                client.MessageCreate += _ =>
+                {
+                    clientEventTwo++;
+                    return Task.CompletedTask;
+                };
 
-            // Invoke the event on shard 1 and 2.
-            await ((DummyGateway)gatewayCluster.Shards[0]).OnMessageCreate.InvokeAsync(new DiscordMessagePacket());
+                await gatewayCluster.StartAsync();
 
-            Assert.Equal(1, clientEventOne);
-            Assert.Equal(1, clientEventTwo);
-            Assert.Equal(1, clusterEventOne);
-            Assert.Equal(1, clusterEventTwo);
+                // Invoke the event on shard 1 and 2.
+                await ((DummyGateway)gatewayCluster.Shards[0]).OnMessageCreate.InvokeAsync(new DiscordMessagePacket());
 
-            await ((DummyGateway)gatewayCluster.Shards[1]).OnMessageCreate.InvokeAsync(new DiscordMessagePacket());
+                Assert.Equal(1, clientEventOne);
+                Assert.Equal(1, clientEventTwo);
+                Assert.Equal(1, clusterEventOne);
+                Assert.Equal(1, clusterEventTwo);
 
-            Assert.Equal(2, clientEventOne);
-            Assert.Equal(2, clientEventTwo);
+                await ((DummyGateway)gatewayCluster.Shards[1]).OnMessageCreate.InvokeAsync(new DiscordMessagePacket());
+
+                Assert.Equal(2, clientEventOne);
+                Assert.Equal(2, clientEventTwo);
+            }
             Assert.Equal(2, clusterEventOne);
             Assert.Equal(2, clusterEventTwo);
         }
