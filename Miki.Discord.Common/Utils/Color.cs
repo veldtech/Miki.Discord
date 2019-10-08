@@ -56,18 +56,8 @@ namespace Miki.Discord.Rest
             {
                 return false;
             }
-
-            if(ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if(obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            return Equals((Color)obj);
+            return obj.GetType() == GetType() 
+                   && Equals((Color)obj);
         }
 
         public bool Equals(Color other)
