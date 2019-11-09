@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
+    using Packets.API;
+
     public interface IApiClient : IGatewayApiClient
     {
         Task AddGuildBanAsync(ulong guildId, ulong userId, int pruneDays = 7, string reason = null);

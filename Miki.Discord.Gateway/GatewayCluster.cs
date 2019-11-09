@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Gateway
 {
+    using Common.Packets.API;
+
     public partial class GatewayCluster : IGateway
     {
         public Dictionary<int, IGateway> Shards { get; set; } = new Dictionary<int, IGateway>();

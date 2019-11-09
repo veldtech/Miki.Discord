@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
-    class DiscordSelfUser : DiscordUser, IDiscordSelfUser
+    public class DiscordSelfUser : DiscordUser, IDiscordSelfUser
     {
         public DiscordSelfUser(DiscordUserPacket user, IDiscordClient client)
             : base(user, client)

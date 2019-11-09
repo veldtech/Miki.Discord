@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Common
 {
+    using Packets.API;
+
     public interface IDiscordMessage : ISnowflake
     {
         /// <summary>

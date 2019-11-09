@@ -21,6 +21,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Rest
 {
+    using Common.Packets.API;
+
     /// <summary>
     /// A client for Discord's API. Used to perform calls to their RESTful API.
     /// </summary>

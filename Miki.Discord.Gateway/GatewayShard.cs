@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Gateway
 {
+    using Common.Packets.API;
+
     public class GatewayShard : IDisposable, IGateway
     {
         private readonly GatewayConnection _connection;

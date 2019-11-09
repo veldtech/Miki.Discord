@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
+    using Common.Packets.API;
+
     public class DiscordMessage : IDiscordMessage
     {
         private readonly DiscordMessagePacket _packet;

@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord
 {
+    using Common.Packets.API;
+
     public abstract class BaseDiscordClient : IDiscordClient
     {
         /// <summary>

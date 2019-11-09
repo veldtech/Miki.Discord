@@ -7,6 +7,8 @@ using Xunit;
 
 namespace Miki.Discord.Tests
 {
+    using Common.Packets.API;
+
     public class DiscordClientTest
     {
         [Fact]

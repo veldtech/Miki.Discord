@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Packets
+﻿namespace Miki.Discord.Common.Packets.API
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [Serializable]
     [DataContract]
     public class DiscordMessagePacket

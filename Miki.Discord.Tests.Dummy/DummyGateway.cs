@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Tests.Dummy
 {
+    using Common.Packets.API;
+
     /// <inheritdoc/>
     public class DummyGateway : IGateway
     {
