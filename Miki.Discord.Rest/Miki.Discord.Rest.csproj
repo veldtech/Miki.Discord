@@ -7,7 +7,7 @@
     <Company>Velddev</Company>
     <Product>Miki.Discord.Rest</Product>
     <Authors>Velddev</Authors>
-    <Version>3.1.0</Version>
+    <Version>3.1.2</Version>
     <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
     <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
   </PropertyGroup>
