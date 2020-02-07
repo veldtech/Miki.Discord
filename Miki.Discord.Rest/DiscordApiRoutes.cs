@@ -29,7 +29,7 @@ namespace Miki.Discord.Rest
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string Channel(
             ulong channelId)
-            => $"/channels/{channelId}";
+            => $"channels/{channelId}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string GuildBan(
@@ -85,7 +85,7 @@ namespace Miki.Discord.Rest
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string Guild(
             ulong guildId)
-            => $"/guilds/{guildId}";
+            => $"guilds/{guildId}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string MessageReactions(
@@ -117,7 +117,7 @@ namespace Miki.Discord.Rest
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string UserMe()
-            => $"/users/@me";
+            => "users/@me";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string UserMeChannels()
@@ -126,14 +126,14 @@ namespace Miki.Discord.Rest
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string User(
             ulong userId)
-            => $"/users/{userId}";
+            => $"users/{userId}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string Gateway()
-            => $"/gateway";
+            => "gateway";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string BotGateway()
-            => $"/gateway/bot";
+            => "gateway/bot";
     }
 }

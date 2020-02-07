@@ -1,4 +1,4 @@
-﻿namespace Miki.Discord.Common.Utils
+﻿namespace Miki.Discord.Common
 {
     public struct DiscordToken
     {

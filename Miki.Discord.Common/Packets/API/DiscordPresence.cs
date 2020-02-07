@@ -20,8 +20,7 @@ namespace Miki.Discord.Common
         public bool IsAFK { get; private set; }
 
         public DiscordPresence()
-        {
-        }
+        {}
         public DiscordPresence(DiscordPresencePacket packet)
         {
             Activity = packet.Game;

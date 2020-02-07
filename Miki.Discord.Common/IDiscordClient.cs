@@ -1,13 +1,12 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Gateway.Packets;
-using Miki.Discord.Common.Packets;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace Miki.Discord
+﻿namespace Miki.Discord.Common
 {
+    using Miki.Discord.Common.Gateway.Packets;
+    using Miki.Discord.Common.Packets;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Threading.Tasks;
+
     public interface IDiscordClient : IDisposable
     {
         event Func<IDiscordMessage, Task> MessageCreate;

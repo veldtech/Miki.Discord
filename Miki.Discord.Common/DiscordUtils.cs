@@ -1,8 +1,8 @@
-﻿using Miki.Discord.Common.Packets;
-using System;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using Miki.Discord.Common.Packets;
+    using System;
+
     public static class DiscordUtils
     {
         public const string BaseUrl = "/api/v6";
