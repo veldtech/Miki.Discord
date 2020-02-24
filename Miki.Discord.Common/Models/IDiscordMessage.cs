@@ -1,10 +1,8 @@
-﻿using Miki.Discord.Common.Packets;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Packets.API;
 
     public interface IDiscordMessage : ISnowflake

@@ -1,98 +1,104 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
     using Common.Packets.API;
+    using Miki.Discord.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public class DiscordMessage : IDiscordMessage
     {
-        private readonly DiscordMessagePacket _packet;
-        private readonly IDiscordClient _client;
+        protected readonly DiscordMessagePacket packet;
+        protected readonly IDiscordClient client;
 
         public DiscordMessage(DiscordMessagePacket packet, IDiscordClient client)
         {
-            _packet = packet;
-            if(_packet.GuildId != null
-                && _packet.Member != null)
+            this.packet = packet;
+            if(this.packet.GuildId != null
+                && this.packet.Member != null)
             {
-                _packet.Member.User = _packet.Author;
-                _packet.Member.GuildId = _packet.GuildId.Value;
+                this.packet.Member.User = this.packet.Author;
+                this.packet.Member.GuildId = this.packet.GuildId.Value;
             }
-            _client = client;
+            this.client = client;
         }
 
+        /// <inheritdoc/>
         public IReadOnlyList<IDiscordAttachment> Attachments
-            => _packet.Attachments
+            => packet.Attachments
                 .Select(x => new DiscordAttachment(x))
                 .ToList();
 
+        /// <inheritdoc/>
         public IDiscordUser Author
-        {
-            get
-            {
-                if(_packet.Member == null)
-                {
-                    return new DiscordUser(_packet.Author, _client);
-                }
-                else
-                {
-                    return new DiscordGuildUser(_packet.Member, _client);
-                }
-            }
-        }
+            => packet.Member == null
+                ? new DiscordUser(packet.Author, client)
+                : new DiscordGuildUser(packet.Member, client);
 
+        /// <inheritdoc/>
         public string Content
-            => _packet.Content;
+            => packet.Content;
 
+        /// <inheritdoc/>
         public ulong ChannelId
-            => _packet.ChannelId;
+            => packet.ChannelId;
 
+
+        /// <inheritdoc/>
         public IReadOnlyList<ulong> MentionedUserIds
-            => _packet.Mentions.Select(x => x.Id)
+            => packet.Mentions.Select(x => x.Id)
                 .ToList();
 
+        /// <inheritdoc/>
         public DateTimeOffset Timestamp
-            => _packet.Timestamp;
+            => packet.Timestamp;
 
+        /// <inheritdoc/>
         public ulong Id
-            => _packet.Id;
+            => packet.Id;
 
+        /// <inheritdoc/>
         public DiscordMessageType Type
-            => _packet.Type;
+            => packet.Type;
 
+        /// <inheritdoc/>
         public async Task<IDiscordMessage> EditAsync(EditMessageArgs args)
-            => await _client.EditMessageAsync(ChannelId, Id, args.Content, args.Embed);
+            => await client.EditMessageAsync(ChannelId, Id, args.Content, args.Embed);
 
+        /// <inheritdoc/>
         public async Task DeleteAsync()
-            => await _client.ApiClient.DeleteMessageAsync(_packet.ChannelId, _packet.Id);
+            => await client.ApiClient.DeleteMessageAsync(packet.ChannelId, packet.Id);
 
+        /// <inheritdoc/>
         public async Task<IDiscordTextChannel> GetChannelAsync()
         {
-            var channel = await _client.GetChannelAsync(_packet.ChannelId, _packet.GuildId);
+            var channel = await client.GetChannelAsync(packet.ChannelId, packet.GuildId);
             return channel as IDiscordTextChannel;
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(DiscordEmoji emoji)
-            => await _client.GetReactionsAsync(_packet.ChannelId, Id, emoji);
+            => await client.GetReactionsAsync(packet.ChannelId, Id, emoji);
 
+        /// <inheritdoc/>
         public async Task CreateReactionAsync(DiscordEmoji emoji)
-            => await _client.ApiClient.CreateReactionAsync(ChannelId, Id, emoji);
+            => await client.ApiClient.CreateReactionAsync(ChannelId, Id, emoji);
 
+        /// <inheritdoc/>
         public async Task DeleteReactionAsync(DiscordEmoji emoji)
-            => await _client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji);
+            => await client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji);
 
+        /// <inheritdoc/>
         public async Task DeleteReactionAsync(DiscordEmoji emoji, IDiscordUser user)
             => await DeleteReactionAsync(emoji, user.Id);
 
+        /// <inheritdoc/>
         public async Task DeleteReactionAsync(DiscordEmoji emoji, ulong userId)
-            => await _client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji, userId);
+            => await client.ApiClient.DeleteReactionAsync(ChannelId, Id, emoji, userId);
 
+        /// <inheritdoc/>
         public async Task DeleteAllReactionsAsync()
-            => await _client.ApiClient.DeleteReactionsAsync(ChannelId, Id);
+            => await client.ApiClient.DeleteReactionsAsync(ChannelId, Id);
     }
 }

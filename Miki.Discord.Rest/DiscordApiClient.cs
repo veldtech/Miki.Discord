@@ -4,7 +4,6 @@ using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Common.Packets.Arguments;
-using Miki.Discord.Common.Utils;
 using Miki.Discord.Rest.Arguments;
 using Miki.Discord.Rest.Converters;
 using Miki.Discord.Rest.Exceptions;
@@ -27,7 +26,7 @@ namespace Miki.Discord.Rest
     /// A client for Discord's API. Used to perform calls to their RESTful API.
     /// </summary>
     public class DiscordApiClient
-        : IApiClient, IGatewayApiClient, IDisposable
+        : IApiClient, IDisposable
     {
         private readonly JsonSerializerSettings serializer;
 
@@ -81,7 +80,8 @@ namespace Miki.Discord.Rest
                 qs.Add("delete-message-days", pruneDays);
             }
 
-            var response = await RestClient.PutAsync(DiscordApiRoutes.GuildBan(guildId, userId) + qs.Query)
+            var response = await RestClient.PutAsync(
+                    DiscordApiRoutes.GuildBan(guildId, userId) + qs.Query)
                 .ConfigureAwait(false);
             HandleErrors(response);
         }

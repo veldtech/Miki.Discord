@@ -51,31 +51,33 @@ namespace Miki.Discord
 
         protected abstract Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id);
 
-        protected abstract Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(ulong userId, ulong guildId);
+        protected abstract Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(
+            ulong userId, ulong guildId);
 
-        protected abstract Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(ulong guildId);
+        protected abstract Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(
+            ulong guildId);
 
-        protected abstract Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(ulong guildId);
+        protected abstract Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(
+            ulong guildId);
 
         protected abstract Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId);
 
         protected abstract Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId);
 
-        protected abstract Task<DiscordChannelPacket> GetChannelPacketAsync(ulong id, ulong? guildId = null);
+        protected abstract Task<DiscordChannelPacket> GetChannelPacketAsync(
+            ulong id, ulong? guildId = null);
 
         protected abstract Task<bool> IsGuildNewAsync(ulong guildId);
 
         public virtual async Task<IDiscordMessage> EditMessageAsync(
             ulong channelId, ulong messageId, string text, DiscordEmbed embed = null)
         {
-            return new DiscordMessage(
-                await ApiClient.EditMessageAsync(channelId, messageId, new EditMessageArgs
+            return ResolveMessage(await ApiClient.EditMessageAsync(
+                channelId, messageId, new EditMessageArgs
                 {
                     Content = text,
                     Embed = embed
-                }),
-                this
-            );
+                }));
         }
 
         public virtual async Task<IDiscordTextChannel> CreateDMAsync(
@@ -97,19 +99,18 @@ namespace Miki.Discord
         }
 
         public virtual async Task<IDiscordRole> EditRoleAsync(
-            ulong guildId,
-            DiscordRolePacket role)
+            ulong guildId, DiscordRolePacket role)
         {
             return new DiscordRole(await ApiClient.EditRoleAsync(guildId, role), this);
         }
 
         public virtual async Task<IDiscordPresence> GetUserPresence(
-            ulong userId,
-            ulong? guildId = null)
+            ulong userId, ulong? guildId = null)
         {
             if(!guildId.HasValue)
             {
-                throw new NotSupportedException(@"The default Discord Client cannot get the presence of 
+                throw new NotSupportedException(
+                    @"The default Discord Client cannot get the presence of 
 the user without the guild ID. Use the cached client instead.");
             }
 
@@ -191,7 +192,8 @@ the user without the guild ID. Use the cached client instead.");
                 .Select(x => new DiscordGuildUser(x, this));
         }
 
-        public virtual async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(ulong channelId, ulong messageId, DiscordEmoji emoji)
+        public virtual async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(
+            ulong channelId, ulong messageId, DiscordEmoji emoji)
         {
             var users = await ApiClient.GetReactionsAsync(channelId, messageId, emoji);
 
@@ -215,30 +217,36 @@ the user without the guild ID. Use the cached client instead.");
             );
         }
 
-        public virtual async Task SetGameAsync(int shardId, DiscordStatus status)
+        public virtual async Task SetGameAsync(
+            int shardId, DiscordStatus status)
         {
             await Gateway.SendAsync(shardId, GatewayOpcode.StatusUpdate, status);
         }
 
-        public virtual async Task<IDiscordMessage> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs message = null)
-            => new DiscordMessage(
-                await ApiClient.SendFileAsync(channelId, stream, fileName, message),
-                this
-            );
+        public virtual async Task<IDiscordMessage> SendFileAsync(
+            ulong channelId, Stream stream, string fileName, MessageArgs message = null)
+            => ResolveMessage(await ApiClient.SendFileAsync(channelId, stream, fileName, message));
 
-        public virtual async Task<IDiscordMessage> SendMessageAsync(ulong channelId, MessageArgs message)
-            => new DiscordMessage(
-                await ApiClient.SendMessageAsync(channelId, message),
-                this
-            );
+        public virtual async Task<IDiscordMessage> SendMessageAsync(
+            ulong channelId, MessageArgs message)
+            => ResolveMessage(await ApiClient.SendMessageAsync(channelId, message));
 
-        public virtual async Task<IDiscordMessage> SendMessageAsync(ulong channelId, string text, DiscordEmbed embed = null)
+        public virtual async Task<IDiscordMessage> SendMessageAsync(
+            ulong channelId, string text, DiscordEmbed embed = null)
             => await SendMessageAsync(channelId, new MessageArgs
             {
                 Content = text,
                 Embed = embed
             });
 
+        protected IDiscordMessage ResolveMessage(DiscordMessagePacket packet)
+        {
+            if(packet.GuildId.HasValue)
+            {
+                return new DiscordGuildMessage(packet, this);
+            }
+            return new DiscordMessage(packet, this);
+        }
         protected IDiscordChannel ResolveChannel(DiscordChannelPacket packet)
         {
             switch(packet.Type)
@@ -285,21 +293,12 @@ the user without the guild ID. Use the cached client instead.");
         }
 
         private Task OnGuildMemberCreate(DiscordGuildMemberPacket packet)
-        {
-            return GuildMemberCreate.InvokeAsync(
-                new DiscordGuildUser(packet, this));
-        }
+            => GuildMemberCreate?.InvokeAsync(new DiscordGuildUser(packet, this));
 
         private Task OnMessageCreate(DiscordMessagePacket packet)
-        {
-            return MessageCreate.InvokeAsync(
-                new DiscordMessage(packet, this));
-        }
-
+            => MessageCreate?.InvokeAsync(ResolveMessage(packet));
         private Task OnMessageUpdate(DiscordMessagePacket packet)
-        {
-            return MessageUpdate.InvokeAsync(new DiscordMessage(packet, this));
-        }
+            => MessageUpdate?.InvokeAsync(ResolveMessage(packet));
 
         private async Task OnGuildJoin(DiscordGuildPacket guild)
         {
@@ -328,8 +327,7 @@ the user without the guild ID. Use the cached client instead.");
         {
             await UserUpdate.InvokeAsync(
                 await GetUserAsync(user.User.Id),
-                new DiscordUser(user.User, this)
-            );
+                new DiscordUser(user.User, this));
         }
 
         private async Task OnReady(GatewayReadyPacket readyPacket)

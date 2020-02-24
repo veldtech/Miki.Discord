@@ -3,14 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Miki.Discord.Common.Models;
 
-    public interface IDiscordGuildUser : IDiscordUser
+    public interface IDiscordGuildUser : IDiscordUser, IContainsGuild
     {
         string Nickname { get; }
 
         IReadOnlyCollection<ulong> RoleIds { get; }
-
-        ulong GuildId { get; }
 
         DateTimeOffset JoinedAt { get; }
 
@@ -20,8 +19,6 @@
         DateTimeOffset PremiumSince { get; }
 
         Task AddRoleAsync(IDiscordRole role);
-
-        Task<IDiscordGuild> GetGuildAsync();
 
         Task<int> GetHierarchyAsync();
 

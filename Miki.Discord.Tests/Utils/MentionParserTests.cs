@@ -1,7 +1,6 @@
-﻿using Miki.Discord.Common.Utils;
-
-namespace Miki.Discord.Tests.Utils
+﻿namespace Miki.Discord.Tests.Utils
 {
+    using Miki.Discord.Common;
     using Xunit;
 
     public class MentionParserTests

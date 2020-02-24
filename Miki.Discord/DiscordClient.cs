@@ -102,10 +102,9 @@ namespace Miki.Discord
         protected override async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(
             ulong userId, ulong guildId)
         {
-            DiscordGuildMemberPacket packet =
-                await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(
-                    CacheUtils.GuildMembersKey(guildId), 
-                    userId.ToString());
+            DiscordGuildMemberPacket packet = await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(
+                CacheUtils.GuildMembersKey(guildId),
+                userId.ToString());
 
             if(packet == null)
             {
