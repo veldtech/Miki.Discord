@@ -6,8 +6,8 @@ namespace Miki.Discord.Internal
 {
     public class DiscordChannel : IDiscordChannel
     {
-        protected DiscordChannelPacket _packet;
-        protected IDiscordClient _client;
+        protected DiscordChannelPacket packet;
+        protected IDiscordClient client;
 
         public DiscordChannel()
         {
@@ -15,24 +15,22 @@ namespace Miki.Discord.Internal
 
         public DiscordChannel(DiscordChannelPacket packet, IDiscordClient client)
         {
-            _packet = packet;
-            _client = client;
+            this.packet = packet;
+            this.client = client;
         }
 
         public string Name
-            => _packet.Name;
+            => packet.Name;
 
         public ulong Id
-            => _packet.Id;
+            => packet.Id;
 
         public bool IsNsfw
-            => _packet?.IsNsfw
-                .GetValueOrDefault(false)
-                    ?? false;
+            => packet?.IsNsfw.GetValueOrDefault(false) ?? false;
 
         public async Task DeleteAsync()
         {
-            await _client.ApiClient.DeleteChannelAsync(Id);
+            await client.ApiClient.DeleteChannelAsync(Id);
         }
 
         public Task ModifyAsync(object todo)

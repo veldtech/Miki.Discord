@@ -1,11 +1,11 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [Serializable]
     [DataContract]
-    public class DiscordChannelPacket
+    public sealed class DiscordChannelPacket
     {
         [DataMember(Name = "id", Order = 1)]
         public ulong Id { get; set; }
@@ -40,10 +40,39 @@ namespace Miki.Discord.Common
 
     public enum ChannelType
     {
-        GUILDTEXT = 0,
-        DM,
-        GUILDVOICE,
-        GROUPDM,
-        CATEGORY,
+        /// <summary>
+        /// A text channel within a Discord server.
+        /// </summary>
+        GuildText = 0,
+
+        /// <summary>
+        /// A Direct Message channel with another user.
+        /// </summary>
+        DirectText,
+
+        /// <summary>
+        /// A voice channel.
+        /// </summary>
+        GuildVoice,
+
+        /// <summary>
+        /// A Group Direct Message channel with multiple users.
+        /// </summary>
+        GroupDirect,
+        
+        /// <summary>
+        /// A server category
+        /// </summary>
+        GuildCategory,
+        
+        /// <summary>
+        /// A news channel which allows users to cross-post their message.
+        /// </summary>
+        GuildNews,
+
+        /// <summary>
+        /// A game store channel to sell games on Discord.
+        /// </summary>
+        GuildStore
     }
 }

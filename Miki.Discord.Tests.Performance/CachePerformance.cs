@@ -1,32 +1,25 @@
-﻿using BenchmarkDotNet.Attributes;
-using Miki.Cache;
-using Miki.Cache.StackExchange;
-using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using Miki.Discord.Mocking;
-using Miki.Discord.Tests.Dummy;
-using Miki.Serialization.MsgPack;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Tests
+﻿namespace Miki.Discord.Tests.Performance
 {
-    [CoreJob]
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using BenchmarkDotNet.Attributes;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Events;
+    using Miki.Discord.Common.Packets;
+    using Miki.Discord.Tests.Dummy;
+
+    [SimpleJob]
     [RPlotExporter, RankColumn]
     public class CachePerformance
     {
         private DiscordGuildPacket packet;
-        private StackExchangeCachePool pool;
         private DummyGateway gateway;
-        private IExtendedCacheClient client;
 
-        DiscordChannelPacket channel;
-        DiscordGuildMemberPacket member;
-        DiscordUserPacket user;
-        DiscordRolePacket role;
-        DiscordClient discordClient;
-        Common.Events.GuildMemberUpdateEventArgs updateMember;
+        private DiscordChannelPacket channel;
+        private DiscordGuildMemberPacket member;
+        private DiscordUserPacket user;
+        private DiscordRolePacket role;
+        private GuildMemberUpdateEventArgs updateMember;
 
         [Params(1000, 10000)]
         public int N;
@@ -35,7 +28,7 @@ namespace Miki.Discord.Tests
         public int MemberCount;
 
         [GlobalSetup]
-        public async Task Setup()
+        public void Setup()
         {
             packet = new DiscordGuildPacket
             {
@@ -65,33 +58,29 @@ namespace Miki.Discord.Tests
 
             for(int i = 0; i < MemberCount; i++)
             {
-                members[i] = new DiscordGuildMemberPacket();
-                members[i].User = new DiscordUserPacket();
-                members[i].User.Id = (ulong)i;
+                members[i] = new DiscordGuildMemberPacket
+                {
+                    User = new DiscordUserPacket
+                    {
+                        Id = (ulong) i
+                    }
+                };
             }
 
             var channels = new DiscordChannelPacket[24];
 
             for(int i = 0; i < 24; i++)
             {
-                channels[i] = new DiscordChannelPacket();
-                channels[i].Id = (ulong)i;
+                channels[i] = new DiscordChannelPacket
+                {
+                    Id = (ulong) i
+                };
             }
 
             packet.Channels.AddRange(channels);
             packet.Members.AddRange(members);
 
-            pool = new StackExchangeCachePool(new LZ4MsgPackSerializer(), "localhost");
             gateway = new DummyGateway();
-
-            discordClient = new DiscordClient(new DiscordClientConfigurations
-            {
-                ApiClient = new DefaultDummyApiClient(),
-                Gateway = gateway,
-                CacheClient = client
-            });
-
-            client = (IExtendedCacheClient)await pool.GetAsync();
 
             role = new DiscordRolePacket
             {
@@ -111,7 +100,7 @@ namespace Miki.Discord.Tests
                 Id = 111,
                 IsNsfw = true,
                 Name = "test channel",
-                Type = ChannelType.GUILDTEXT,
+                Type = ChannelType.GuildText,
                 CreatedAt = 0
             };
 
@@ -160,13 +149,18 @@ namespace Miki.Discord.Tests
             await gateway.OnGuildRoleCreate(packet.Id, role);
             await gateway.OnGuildRoleUpdate(packet.Id, role);
             await gateway.OnGuildRoleDelete(packet.Id, role.Id);
-            await gateway.OnUserUpdate(new DiscordPresencePacket()
-            {
-                User = user,
-                GuildId = packet.Id
-            });
+            await gateway.OnUserUpdate(
+                new DiscordPresencePacket
+                {
+                    User = user,
+                    GuildId = packet.Id
+                });
             await gateway.OnGuildUpdate(packet);
-            await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket { GuildId = packet.Id, IsUnavailable = true });
+            await gateway.OnGuildDelete(
+                new DiscordGuildUnavailablePacket
+                {
+                    GuildId = packet.Id, IsUnavailable = true
+                });
         }
     }
 }

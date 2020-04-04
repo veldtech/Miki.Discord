@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Events
+﻿namespace Miki.Discord.Common.Events
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class MessageDeleteArgs
     {

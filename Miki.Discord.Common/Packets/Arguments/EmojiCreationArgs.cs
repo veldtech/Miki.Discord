@@ -1,8 +1,9 @@
-﻿using System.IO;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Rest
+﻿namespace Miki.Discord.Common
 {
+    using System.IO;
+    using System.Runtime.Serialization;
+    using Miki.Discord.Rest;
+
     /// <summary>
     /// Data structure to create an emoji.
     /// </summary>

@@ -1,14 +1,15 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Helpers;
-using Miki.Discord.Internal;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord
+﻿namespace Miki.Discord
 {
+    using Miki.Discord.Common;
+    using Miki.Discord.Helpers;
+    using Miki.Discord.Internal;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Discord.Common.Arguments;
+
     internal class DiscordTextChannel : DiscordChannel, IDiscordTextChannel
     {
         public DiscordTextChannel(DiscordChannelPacket packet, IDiscordClient client)
@@ -24,7 +25,7 @@ namespace Miki.Discord
 
             if(id.Length < 2)
             {
-                await _client.ApiClient.DeleteMessageAsync(Id, id[0]);
+                await client.ApiClient.DeleteMessageAsync(Id, id[0]);
             }
 
             if(id.Length > 100)
@@ -32,7 +33,7 @@ namespace Miki.Discord
                 id = id.Take(100).ToArray();
             }
 
-            await _client.ApiClient.DeleteMessagesAsync(Id, id);
+            await client.ApiClient.DeleteMessagesAsync(Id, id);
         }
 
         public async Task DeleteMessagesAsync(params IDiscordMessage[] messages)
@@ -42,13 +43,13 @@ namespace Miki.Discord
 
         public async Task<IDiscordMessage> GetMessageAsync(ulong id)
         {
-            return new DiscordMessage(await _client.ApiClient.GetMessageAsync(Id, id), _client);
+            return new DiscordMessage(await client.ApiClient.GetMessageAsync(Id, id), client);
         }
 
         public async Task<IEnumerable<IDiscordMessage>> GetMessagesAsync(int amount = 100)
         {
-            return (await _client.ApiClient.GetMessagesAsync(Id, amount))
-                .Select(x => new DiscordMessage(x, _client));
+            return (await client.ApiClient.GetMessagesAsync(Id, amount))
+                .Select(x => new DiscordMessage(x, client));
         }
 
         public async Task<IDiscordMessage> SendFileAsync(
@@ -58,22 +59,18 @@ namespace Miki.Discord
             bool isTTS = false,
             DiscordEmbed embed = null)
         {
-            return await _client.SendFileAsync(
-                Id,
-                file,
-                fileName,
-                new MessageArgs(content, embed, isTTS));
+            return await client.SendFileAsync(
+                Id, file, fileName, new MessageArgs(content, embed, isTTS));
         }
 
-        public async Task<IDiscordMessage> SendMessageAsync(string content, bool isTTS = false, DiscordEmbed embed = null)
+        public async Task<IDiscordMessage> SendMessageAsync(
+            string content, bool isTTS = false, DiscordEmbed embed = null)
             => await DiscordChannelHelper.CreateMessageAsync(
-                _client,
-                _packet,
-                new MessageArgs(content, embed, isTTS));
+                client, packet, new MessageArgs(content, embed, isTTS));
 
         public async Task TriggerTypingAsync()
         {
-            await _client.ApiClient.TriggerTypingAsync(Id);
+            await client.ApiClient.TriggerTypingAsync(Id);
         }
     }
 }

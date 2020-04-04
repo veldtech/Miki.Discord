@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using Miki.Discord.Common;
-using System.Linq;
-using System.Threading.Tasks;
-using Miki.Discord.Helpers;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
+    using System;
+    using System.Collections.Generic;
+    using Miki.Discord.Common;
+    using System.Threading.Tasks;
+    using Miki.Discord.Helpers;
+
     public class DiscordGuildChannel : DiscordChannel, IDiscordGuildChannel
     {
-        public IEnumerable<PermissionOverwrite> PermissionOverwrites => _packet.PermissionOverwrites;
+        public IEnumerable<PermissionOverwrite> PermissionOverwrites => packet.PermissionOverwrites;
 
         public DiscordGuildChannel(DiscordChannelPacket packet, IDiscordClient client)
             : base(packet, client)
@@ -16,13 +16,13 @@ namespace Miki.Discord.Internal
         }
 
         public ulong GuildId
-            => _packet.GuildId.Value;
+            => packet.GuildId ?? throw new InvalidOperationException("Guild ID was invalid");
 
         public ChannelType Type
-            => _packet.Type;
+            => packet.Type;
 
         public async Task<IDiscordGuild> GetGuildAsync()
-            => await _client.GetGuildAsync(GuildId);
+            => await client.GetGuildAsync(GuildId);
 
         public async Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user = null)
         {
@@ -35,7 +35,13 @@ namespace Miki.Discord.Internal
             return DiscordChannelHelper.GetOverwritePermissions(user, this, permissions);
         }
 
+        public async Task<IDiscordGuildUser> GetSelfAsync()
+        {
+            var selfUser = await client.GetSelfAsync();
+            return await GetUserAsync(selfUser.Id);
+        }
+
         public async Task<IDiscordGuildUser> GetUserAsync(ulong id)
-            => await _client.GetGuildUserAsync(id, GuildId);
+            => await client.GetGuildUserAsync(id, GuildId);
     }
 }

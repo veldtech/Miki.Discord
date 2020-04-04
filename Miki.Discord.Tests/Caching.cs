@@ -1,40 +1,38 @@
-using Miki.Cache;
-using Miki.Cache.InMemory;
-using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using Miki.Discord.Mocking;
-using Miki.Discord.Tests.Dummy;
-using Miki.Serialization.Protobuf;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace Miki.Discord.Tests
 {
+    using Miki.Cache;
+    using Miki.Cache.InMemory;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Packets;
+    using Miki.Discord.Mocking;
+    using Miki.Discord.Tests.Dummy;
+    using Miki.Serialization.Protobuf;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Xunit;
+
     /// <summary>
     /// Contains tests for Caching
     /// </summary>
     public class Caching
     {
-        DummyGateway gateway;
-        ICachePool pool;
-        IExtendedCacheClient client;
+        private DummyGateway gateway;
+        private IExtendedCacheClient client;
 
-        DiscordChannelPacket channel;
-        DiscordGuildPacket guild;
-        DiscordGuildMemberPacket member;
-        DiscordUserPacket user;
-        DiscordRolePacket role;
-        DiscordClient discordClient;
+        private DiscordChannelPacket channel;
+        private DiscordGuildPacket guild;
+        private DiscordGuildMemberPacket member;
+        private DiscordUserPacket user;
+        private DiscordRolePacket role;
+        private DiscordClient discordClient;
 
-        private async Task ResetObjectsAsync()
+        private void ResetObjects()
         {
             gateway = new DummyGateway();
-            pool = new InMemoryCachePool(new ProtobufSerializer());
-            client = (IExtendedCacheClient)await pool.GetAsync();
+            client = new InMemoryCacheClient(new ProtobufSerializer());
             discordClient = new DiscordClient(new DiscordClientConfigurations
             {
                 ApiClient = new InvalidDummyApiClient(),
@@ -60,7 +58,7 @@ namespace Miki.Discord.Tests
                 Id = 111,
                 IsNsfw = true,
                 Name = "test channel",
-                Type = ChannelType.GUILDTEXT,
+                Type = ChannelType.GuildText,
                 CreatedAt = 0,
             };
 
@@ -114,7 +112,7 @@ namespace Miki.Discord.Tests
         [Fact]
         public async Task UserUpdateAsync()
         {
-            await ResetObjectsAsync();
+            ResetObjects();
             await gateway.OnGuildMemberRemove(guild.Id, member.User);
 
             var m = await client.HashGetAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id), member.User.Id.ToString());
@@ -140,7 +138,7 @@ namespace Miki.Discord.Tests
         [Fact]
         public async Task GuildMemberAsync()
         {
-            await ResetObjectsAsync();
+            ResetObjects();
             await gateway.OnGuildMemberRemove(guild.Id, user);
 
             DiscordGuildMemberPacket[] g = (await client.HashValuesAsync<DiscordGuildMemberPacket>(CacheUtils.GuildMembersKey(guild.Id))).ToArray();
@@ -170,7 +168,7 @@ namespace Miki.Discord.Tests
         [Fact]
         public async Task ChannelAsync()
         {
-            await ResetObjectsAsync();
+            ResetObjects();
 
             Assert.True(channel.IsNsfw);
             Assert.Equal("test channel", channel.Name);
@@ -197,7 +195,7 @@ namespace Miki.Discord.Tests
                 GuildId = guild.Id,
                 Id = 451,
                 Name = "another channel",
-                Type = ChannelType.GUILDTEXT,
+                Type = ChannelType.GuildText,
                 IsNsfw = false,
                 Topic = "lol this is a channel"
             };
@@ -211,7 +209,7 @@ namespace Miki.Discord.Tests
 
             Assert.NotNull(otherAddedChannel);
             Assert.Equal("another channel", otherAddedChannel.Name);
-            Assert.Equal(ChannelType.GUILDTEXT, otherAddedChannel.Type);
+            Assert.Equal(ChannelType.GuildText, otherAddedChannel.Type);
             Assert.False(otherChannel.IsNsfw);
             Assert.Equal("lol this is a channel", otherAddedChannel.Topic);
 
@@ -225,7 +223,7 @@ namespace Miki.Discord.Tests
         [Fact]
         public async Task GuildAsync()
         {
-            await ResetObjectsAsync();
+            ResetObjects();
 
             await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
             {
@@ -274,7 +272,7 @@ namespace Miki.Discord.Tests
         [Fact]
         public async Task RoleAsync()
         {
-            await ResetObjectsAsync();
+            ResetObjects();
 
             await gateway.OnGuildRoleCreate(guild.Id, role);
 
@@ -306,7 +304,7 @@ namespace Miki.Discord.Tests
         [Fact]
         public async Task GuildOperations()
         {
-            await ResetObjectsAsync();
+            ResetObjects();
 
             await gateway.OnGuildDelete(new DiscordGuildUnavailablePacket
             {
@@ -329,7 +327,7 @@ namespace Miki.Discord.Tests
         [Fact]
         public async Task CultureChanged()
         {
-            await ResetObjectsAsync();
+            ResetObjects();
 
             var now = DateTime.ParseExact("01/01/2019 00:00:00", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).Ticks;
 

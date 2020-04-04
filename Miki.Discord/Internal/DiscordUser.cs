@@ -7,51 +7,51 @@ namespace Miki.Discord.Internal
 {
     public class DiscordUser : IDiscordUser
     {
-        private readonly DiscordUserPacket _user;
+        private readonly DiscordUserPacket user;
 
-        protected readonly IDiscordClient Client;
+        protected readonly IDiscordClient client;
 
         public DiscordUser(DiscordUserPacket packet, IDiscordClient client)
         {
-            Client = client;
-            _user = packet;
+            this.client = client;
+            user = packet;
         }
 
         public string Username
-            => _user.Username;
+            => user.Username;
 
         public string Discriminator
-            => _user.Discriminator;
+            => user.Discriminator;
 
         public bool IsBot
-            => _user.IsBot;
+            => user.IsBot;
 
         public ulong Id
-            => _user.Id;
+            => user.Id;
 
         public string AvatarId
-            => _user.Avatar;
+            => user.Avatar;
 
         public string GetAvatarUrl(ImageType type = ImageType.AUTO, ImageSize size = ImageSize.x256)
-            => DiscordUtils.GetAvatarUrl(_user, type, size);
+            => DiscordUtils.GetAvatarUrl(user, type, size);
 
         public string Mention
             => $"<@{Id}>";
 
         public async Task<IDiscordPresence> GetPresenceAsync()
-            => await Client.GetUserPresence(Id);
+            => await client.GetUserPresence(Id);
 
         public DateTimeOffset CreatedAt
             => this.GetCreationTime();
 
         public async Task<IDiscordTextChannel> GetDMChannelAsync()
         {
-            var currentUser = await Client.GetSelfAsync();
+            var currentUser = await client.GetSelfAsync();
             if(Id == currentUser.Id)
             {
                 throw new InvalidOperationException("Can't create a DM channel with self.");
             }
-            return await Client.CreateDMAsync(Id);
+            return await client.CreateDMAsync(Id);
         }
     }
 }

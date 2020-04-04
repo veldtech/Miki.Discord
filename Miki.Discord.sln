@@ -17,6 +17,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Performa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway", "Miki.Discord.Gateway\Miki.Discord.Gateway.csproj", "{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Example", "..\Miki.Discord.Example\Miki.Discord.Example\Miki.Discord.Example.csproj", "{D8997018-3405-46E6-8424-1660BB6C7838}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{17A727C8-38AF-417F-A09E-0585C01A63E7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{F107170E-C462-4B43-9033-0A793625E3AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,9 +57,19 @@ Global
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8997018-3405-46E6-8424-1660BB6C7838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8997018-3405-46E6-8424-1660BB6C7838}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8997018-3405-46E6-8424-1660BB6C7838}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8997018-3405-46E6-8424-1660BB6C7838}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1134FF5E-D9F0-4D78-8F02-207BDB5D3FD4} = {17A727C8-38AF-417F-A09E-0585C01A63E7}
+		{46ADCC96-0860-41B8-8794-74D76DC0BB3B} = {17A727C8-38AF-417F-A09E-0585C01A63E7}
+		{C5BABE08-66DA-403E-8BD9-4562D4EA1031} = {17A727C8-38AF-417F-A09E-0585C01A63E7}
+		{D8997018-3405-46E6-8424-1660BB6C7838} = {F107170E-C462-4B43-9033-0A793625E3AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {75D94EA5-77C7-4681-B177-59AEFFAA0F6F}

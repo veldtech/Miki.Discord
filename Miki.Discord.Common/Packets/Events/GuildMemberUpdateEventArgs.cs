@@ -1,8 +1,8 @@
-﻿using Miki.Discord.Common.Packets;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Events
+﻿namespace Miki.Discord.Common.Events
 {
+    using Miki.Discord.Common.Packets;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class GuildMemberUpdateEventArgs
     {

@@ -1,12 +1,11 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
+    using Miki.Discord.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class DiscordGuild : IDiscordGuild
     {
         private readonly DiscordGuildPacket _packet;

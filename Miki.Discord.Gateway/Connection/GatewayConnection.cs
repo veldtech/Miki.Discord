@@ -274,7 +274,7 @@
                     .ConfigureAwait(false);
             }
         }
-
+            
         private Task HandleGatewayErrorsAsync(WebSocketCloseException w)
         {
             switch(w.ErrorCode)

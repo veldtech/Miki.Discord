@@ -1,13 +1,12 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using Miki.Discord.Rest;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
+    using Miki.Discord.Common;
+    using Miki.Discord.Rest;
+
     public class DiscordRole : IDiscordRole
     {
-        private DiscordRolePacket packet;
-        private readonly IDiscordClient client;
+        protected readonly DiscordRolePacket packet;
+        protected readonly IDiscordClient client;
 
         public DiscordRole(DiscordRolePacket packet, IDiscordClient client)
         {

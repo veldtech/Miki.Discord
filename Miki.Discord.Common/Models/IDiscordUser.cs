@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Threading.Tasks;
+
     public interface IDiscordUser : ISnowflake
     {
         string AvatarId { get; }

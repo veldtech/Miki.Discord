@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
+    using Miki.Discord.Common.Arguments;
 
     public interface IDiscordClient : IDisposable
     {

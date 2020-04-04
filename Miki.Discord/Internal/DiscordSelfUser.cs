@@ -21,7 +21,7 @@ namespace Miki.Discord.Internal
         {
             var args = new UserModifyArgs();
             modifyArgs(args);
-            await Client.ApiClient.ModifySelfAsync(args);
+            await client.ApiClient.ModifySelfAsync(args);
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common.Arguments
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class EditMessageArgs
     {

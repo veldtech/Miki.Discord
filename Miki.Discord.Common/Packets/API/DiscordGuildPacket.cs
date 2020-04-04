@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Packets
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using Miki.Discord.Common.Packets;
+
     /// <summary>
-    /// The root of the Guild Packet.
-    /// This class is used internally and should not be used. Use <see cref="DiscordGuildPacket"/> instead.
+    /// The root of the Guild Packet. This class is used internally and should not be used. Use
+    /// <see cref="DiscordGuildPacket"/> instead.
     /// </summary>
     [DataContract]
     public class DiscordGuildPacket
@@ -78,19 +79,18 @@ namespace Miki.Discord.Common.Packets
         [DataMember(Order = 22)]
         public long CreatedAt;
 
+        // TODO(Veld): fix this hack.
         [DataMember(Name = "joined_at")]
-        internal string _createdAt
+        public string createdAt
         {
-            get
-            {
-                return new DateTime(CreatedAt).ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-            }
+            get => new DateTime(CreatedAt)
+                .ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
 
-            set
-            {
-                var d = DateTime.ParseExact(value, "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
-                CreatedAt = d.Ticks;
-            }
+            set => CreatedAt = DateTime.ParseExact(
+                value, 
+                "MM/dd/yyyy HH:mm:ss", 
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None).Ticks;
         }
 
         [DataMember(Name = "large", Order = 23)]

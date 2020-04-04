@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace Miki.Discord
 {
     using Common.Packets.API;
+    using Miki.Discord.Common.Arguments;
 
     public abstract class BaseDiscordClient : IDiscordClient
     {
@@ -132,11 +133,11 @@ the user without the guild ID. Use the cached client instead.");
             return new DiscordRole(await GetRolePacketAsync(roleId, guildId), this);
         }
 
-        public virtual async Task<IEnumerable<IDiscordRole>> GetRolesAsync(
-            ulong guildId)
+        public virtual async Task<IEnumerable<IDiscordRole>> GetRolesAsync(ulong guildId)
         {
             return (await GetRolePacketsAsync(guildId))
-                .Select(x => new DiscordRole(x, this));
+                .Select(x => new DiscordRole(x, this))
+                .ToList();
         }
 
         public virtual async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
@@ -247,23 +248,20 @@ the user without the guild ID. Use the cached client instead.");
             }
             return new DiscordMessage(packet, this);
         }
+
         protected IDiscordChannel ResolveChannel(DiscordChannelPacket packet)
         {
             switch(packet.Type)
             {
-                case ChannelType.GUILDTEXT:
+                case ChannelType.GuildText:
                     return new DiscordGuildTextChannel(packet, this);
 
-                case ChannelType.CATEGORY:
-                case ChannelType.GUILDVOICE:
+                default:
                     return new DiscordGuildChannel(packet, this);
 
-                case ChannelType.DM:
-                case ChannelType.GROUPDM:
+                case ChannelType.DirectText:
+                case ChannelType.GroupDirect:
                     return new DiscordTextChannel(packet, this);
-
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 

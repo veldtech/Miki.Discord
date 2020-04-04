@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class PermissionOverwrite
     {

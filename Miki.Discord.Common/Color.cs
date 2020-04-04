@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Miki.Discord.Rest
+﻿namespace Miki.Discord.Common
 {
+    using System;
+
     public struct Color : IEquatable<Color>
     {
         public uint Value { get; }
@@ -42,7 +42,7 @@ namespace Miki.Discord.Rest
 
         public override string ToString()
         {
-            return $"#{R.ToString("X2")}{G.ToString("X2")}{B.ToString("X2")}";
+            return $"#{R:X2}{G:X2}{B:X2}";
         }
 
         public static bool operator ==(Color c, int value)
@@ -52,7 +52,7 @@ namespace Miki.Discord.Rest
 
         public override bool Equals(object obj)
         {
-            if(ReferenceEquals(null, obj))
+            if(obj == null)
             {
                 return false;
             }

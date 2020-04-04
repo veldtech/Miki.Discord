@@ -1,20 +1,19 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Events;
-using Miki.Discord.Common.Extensions;
-using Miki.Discord.Common.Gateway;
-using Miki.Discord.Common.Gateway.Packets;
-using Miki.Discord.Common.Packets;
-using Miki.Discord.Common.Packets.Events;
-using Miki.Discord.Gateway.Connection;
-using Miki.Logging;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Gateway
+﻿namespace Miki.Discord.Gateway
 {
-    using Common.Packets.API;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Events;
+    using Miki.Discord.Common.Extensions;
+    using Miki.Discord.Common.Gateway;
+    using Miki.Discord.Common.Gateway.Packets;
+    using Miki.Discord.Common.Packets;
+    using Miki.Discord.Common.Packets.Events;
+    using Miki.Discord.Gateway.Connection;
+    using Miki.Logging;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Miki.Discord.Common.Packets.API;
 
     public class GatewayShard : IDisposable, IGateway
     {

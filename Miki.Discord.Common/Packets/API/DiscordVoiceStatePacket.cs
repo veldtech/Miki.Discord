@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Packets
+﻿namespace Miki.Discord.Common
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class DiscordVoiceStatePacket
     {

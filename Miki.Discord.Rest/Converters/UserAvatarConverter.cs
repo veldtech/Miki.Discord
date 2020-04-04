@@ -1,12 +1,17 @@
-﻿using Miki.Discord.Common.Packets.Arguments;
-using Newtonsoft.Json;
-using System;
-
-namespace Miki.Discord.Rest.Converters
+﻿namespace Miki.Discord.Rest.Converters
 {
+    using Miki.Discord.Common.Packets.Arguments;
+    using Newtonsoft.Json;
+    using System;
+
     public class UserAvatarConverter : JsonConverter<UserAvatar>
     {
-        public override UserAvatar ReadJson(JsonReader reader, Type objectType, UserAvatar existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override UserAvatar ReadJson(
+            JsonReader reader,
+            Type objectType,
+            UserAvatar existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
         {
             // Never need to be read.
             throw new NotSupportedException();
@@ -19,6 +24,7 @@ namespace Miki.Discord.Rest.Converters
                 writer.WriteNull();
                 return;
             }
+
             string imageData = Convert.ToBase64String(value.Stream.GetBuffer());
             writer.WriteValue($"data:image/{value.Type.ToString().ToLower()};base64,{imageData}");
         }

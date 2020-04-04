@@ -1,15 +1,13 @@
-﻿using Miki.Discord.Common.Packets;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Events
+﻿namespace Miki.Discord.Common.Events
 {
+    using Miki.Discord.Common.Packets;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class RoleEventArgs
     {
-        [DataMember(Name = "guild_id")]
-        public ulong GuildId;
+        [DataMember(Name = "guild_id")] public ulong GuildId;
 
-        [DataMember(Name = "role")]
-        public DiscordRolePacket Role;
+        [DataMember(Name = "role")] public DiscordRolePacket Role;
     }
 }

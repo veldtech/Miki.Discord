@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Packets
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using Miki.Discord.Common.Packets;
+
     [DataContract]
     public class DiscordGuildMemberPacket
     {

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Internal
 {
+    using Miki.Discord.Common.Arguments;
+
     public class DiscordGuildTextChannel : DiscordGuildChannel, IDiscordTextChannel
     {
         public DiscordGuildTextChannel(DiscordChannelPacket packet, IDiscordClient client)
@@ -25,7 +27,7 @@ namespace Miki.Discord.Internal
 
             if(id.Length < 2)
             {
-                await _client.ApiClient.DeleteMessageAsync(Id, id[0]);
+                await client.ApiClient.DeleteMessageAsync(Id, id[0]);
             }
 
             if(id.Length > 100)
@@ -35,7 +37,7 @@ namespace Miki.Discord.Internal
                 id = id.Take(100).ToArray();
             }
 
-            await _client.ApiClient.DeleteMessagesAsync(Id, id);
+            await client.ApiClient.DeleteMessagesAsync(Id, id);
         }
 
         public async Task DeleteMessagesAsync(params IDiscordMessage[] messages)
@@ -45,17 +47,17 @@ namespace Miki.Discord.Internal
 
         public async Task<IDiscordMessage> GetMessageAsync(ulong id)
         {
-            return new DiscordMessage(await _client.ApiClient.GetMessageAsync(Id, id), _client);
+            return new DiscordMessage(await client.ApiClient.GetMessageAsync(Id, id), client);
         }
 
         public async Task<IEnumerable<IDiscordMessage>> GetMessagesAsync(int amount = 100)
         {
-            return (await _client.ApiClient.GetMessagesAsync(Id, amount))
-                .Select(x => new DiscordMessage(x, _client));
+            return (await client.ApiClient.GetMessagesAsync(Id, amount))
+                .Select(x => new DiscordMessage(x, client));
         }
 
         public async Task<IDiscordMessage> SendFileAsync(Stream file, string fileName, string content, bool isTTS = false, DiscordEmbed embed = null)
-            => await _client.SendFileAsync(
+            => await client.SendFileAsync(
                 Id,
                 file,
                 fileName,
@@ -73,15 +75,15 @@ namespace Miki.Discord.Internal
             }
 
             return await DiscordChannelHelper.CreateMessageAsync(
-                _client,
-                _packet,
+                client,
+                packet,
                 new MessageArgs(content, embed, isTTS));
 
         }
 
         public async Task TriggerTypingAsync()
         {
-            await _client.ApiClient.TriggerTypingAsync(Id);
+            await client.ApiClient.TriggerTypingAsync(Id);
         }
     }
 }

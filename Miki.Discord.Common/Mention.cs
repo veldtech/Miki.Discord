@@ -1,17 +1,47 @@
-﻿using System;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System;
+
+    /// <summary>
+    /// What type of mention has been parsed.
+    /// </summary>
     public enum MentionType
     {
+        /// <summary>
+        /// Default value if nothing is parsed.
+        /// </summary>
         NONE = 0,
+
+        /// <summary>
+        /// Direct user ping.
+        /// </summary>
         USER,
+
+        /// <summary>
+        /// User nickname ping.
+        /// </summary>
         USER_NICKNAME,
+
+        /// <summary>
+        /// Guild role ping.
+        /// </summary>
         ROLE,
+
+        /// <summary>
+        /// Channel ping.
+        /// </summary>
         CHANNEL,
         EMOJI,
         ANIMATED_EMOJI,
+
+        /// <summary>
+        /// Everyone ping
+        /// </summary>
         USER_ALL,
+
+        /// <summary>
+        /// Here ping
+        /// </summary>
         USER_ALL_ONLINE,
     }
 

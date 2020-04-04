@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Miki.Discord.Common.Arguments;
     using Packets.API;
 
     public interface IDiscordMessage : ISnowflake

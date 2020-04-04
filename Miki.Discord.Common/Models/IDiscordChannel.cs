@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     public interface IDiscordChannel : ISnowflake
     {
         bool IsNsfw { get; }
@@ -22,15 +22,14 @@ namespace Miki.Discord.Common
 
         ChannelType Type { get; }
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user">The user in question; null meaning the user will be self</param>
-        /// <returns></returns>
         Task<GuildPermission> GetPermissionsAsync(IDiscordGuildUser user = null);
 
         Task<IDiscordGuildUser> GetUserAsync(ulong id);
+
+        /// <summary>
+        /// Gets the current user in the guild.
+        /// </summary>
+        Task<IDiscordGuildUser> GetSelfAsync();
 
         Task<IDiscordGuild> GetGuildAsync();
     }

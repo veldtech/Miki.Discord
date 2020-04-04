@@ -1,21 +1,11 @@
-﻿using Miki.Cache;
-using Miki.Cache.InMemory;
-using Miki.Discord.Rest;
-using Miki.Serialization.Protobuf;
-using System;
-using Xunit;
-
-namespace Miki.Discord.Tests
+﻿namespace Miki.Discord.Tests
 {
+    using Miki.Discord.Rest;
+    using System;
+    using Xunit;
+
     public class Ratelimits
     {
-        private ICachePool _pool;
-
-        public Ratelimits()
-        {
-            _pool = new InMemoryCachePool(new ProtobufSerializer());
-        }
-
         [Fact]
         public void IsRatelimited()
         {

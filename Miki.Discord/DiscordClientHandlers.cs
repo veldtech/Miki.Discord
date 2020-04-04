@@ -1,13 +1,13 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Events;
-using Miki.Discord.Common.Gateway.Packets;
-using Miki.Discord.Common.Packets;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord
+﻿namespace Miki.Discord
 {
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Events;
+    using Miki.Discord.Common.Gateway.Packets;
+    using Miki.Discord.Common.Packets;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public partial class DiscordClient
     {
         private void AttachHandlers()

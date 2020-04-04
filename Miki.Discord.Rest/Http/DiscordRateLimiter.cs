@@ -1,38 +1,36 @@
-﻿using Miki.Cache;
-using Miki.Net.Http;
-using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Rest.Http
+﻿namespace Miki.Discord.Rest.Http
 {
+    using Miki.Cache;
+    using Miki.Net.Http;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class DiscordRateLimiter : IRateLimiter
     {
-        private readonly ICacheClient _cache;
+        private readonly ICacheClient cache;
 
-        const string LimitHeader = "X-RateLimit-Limit";
-        const string RemainingHeader = "X-RateLimit-Remaining";
-        const string ResetHeader = "X-RateLimit-Reset";
-        const string GlobalHeader = "X-RateLimit-Global";
+        private const string LimitHeader = "X-RateLimit-Limit";
+        private const string RemainingHeader = "X-RateLimit-Remaining";
+        private const string ResetHeader = "X-RateLimit-Reset";
+        private const string GlobalHeader = "X-RateLimit-Global";
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetCacheKey(string route, string id)
             => $"discord:ratelimit:{route}:{id}";
 
         public DiscordRateLimiter(ICacheClient cache)
         {
-            _cache = cache;
+            this.cache = cache;
         }
 
         public async Task<bool> CanStartRequestAsync(RequestMethod method, string requestUri)
         {
             string key = GetCacheKey(requestUri.Split('/')[0], requestUri.Split('/')[1]);
 
-            Ratelimit rateLimit = await _cache.GetAsync<Ratelimit>(key);
+            Ratelimit rateLimit = await cache.GetAsync<Ratelimit>(key);
             rateLimit.Remaining--;
 
-            await _cache.UpsertAsync(key, rateLimit);
+            await cache.UpsertAsync(key, rateLimit);
 
             return !rateLimit.IsRatelimited();
         }
@@ -68,7 +66,7 @@ namespace Miki.Discord.Rest.Http
                     ratelimit.Global = int.Parse(globalValues.FirstOrDefault());
                 }
 
-                await _cache.UpsertAsync(key, ratelimit);
+                await cache.UpsertAsync(key, ratelimit);
             }
         }
     }

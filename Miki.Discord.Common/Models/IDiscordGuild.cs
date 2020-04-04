@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// A managed Discord guild object.
+    /// </summary>
     public interface IDiscordGuild : ISnowflake
     {
         /// <summary>

@@ -1,7 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Gateway.Packets
+﻿namespace Miki.Discord.Common.Gateway
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public struct GatewayMessage
     {

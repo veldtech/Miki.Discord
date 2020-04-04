@@ -11,6 +11,7 @@
     using System.IO;
     using System.Threading.Tasks;
     using Common.Packets.API;
+    using Miki.Discord.Common.Arguments;
 
     /// This API client will always throw an <see cref="InvalidOperationException"/>. This is used to make sure API calls are not being called whenever they are not necessary.
     /// </summary>

@@ -1,10 +1,11 @@
-﻿using System.Linq;
-using Miki.Discord.Common;
-using Miki.Discord.Internal;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Helpers
+﻿namespace Miki.Discord.Helpers
 {
+    using System.Linq;
+    using Miki.Discord.Common;
+    using Miki.Discord.Internal;
+    using System.Threading.Tasks;
+    using Miki.Discord.Common.Arguments;
+
     public static class DiscordChannelHelper
     {
         public static async Task<DiscordMessage> CreateMessageAsync(
@@ -13,9 +14,11 @@ namespace Miki.Discord.Helpers
             MessageArgs args)
         {
             var message = await client.ApiClient.SendMessageAsync(channel.Id, args);
-            if(channel.Type == ChannelType.GUILDTEXT
-                || channel.Type == ChannelType.GUILDVOICE
-                || channel.Type == ChannelType.CATEGORY)
+            if(channel.Type == ChannelType.GuildText
+                || channel.Type == ChannelType.GuildVoice
+                || channel.Type == ChannelType.GuildCategory
+                || channel.Type == ChannelType.GuildNews
+                || channel.Type == ChannelType.GuildStore)
             {
                 message.GuildId = channel.GuildId;
             }

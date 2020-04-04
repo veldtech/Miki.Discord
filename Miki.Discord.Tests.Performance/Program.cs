@@ -1,17 +1,17 @@
-﻿using BenchmarkDotNet.Running;
-using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using Miki.Serialization.MsgPack;
-using Miki.Serialization.Protobuf;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-namespace Miki.Discord.Tests.Performance
+﻿namespace Miki.Discord.Tests.Performance
 {
-    class Program
+    using BenchmarkDotNet.Running;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Packets;
+    using Miki.Serialization.MsgPack;
+    using Miki.Serialization.Protobuf;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
             var p = new DiscordGuildPacket
             {
@@ -41,22 +41,34 @@ namespace Miki.Discord.Tests.Performance
 
             for(int i = 0; i < p.MemberCount; i++)
             {
-                members[i] = new DiscordGuildMemberPacket();
-                members[i].User = new DiscordUserPacket();
-                members[i].User.Avatar = "iwjefpowjef";
-                members[i].User.Id = (ulong)i;
-                members[i].Roles = new List<ulong>() { 234234, 23424234234, 23435234, 345342423 };
-                members[i].JoinedAt = 23984923;
-                members[i].User.Discriminator = "1234";
-                members[i].User.Id = (ulong)i;
+                members[i] = new DiscordGuildMemberPacket
+                {
+                    User = new DiscordUserPacket
+                    {
+                        Avatar = "iwjefpowjef",
+                        Id = (ulong) i,
+                        Discriminator = "1234",
+
+                    },
+                    Roles = new List<ulong>()
+                    {
+                        234234,
+                        23424234234,
+                        23435234,
+                        345342423
+                    },
+                    JoinedAt = 23984923
+                };
             }
 
             var channels = new DiscordChannelPacket[24];
 
             for(int i = 0; i < 24; i++)
             {
-                channels[i] = new DiscordChannelPacket();
-                channels[i].Id = (ulong)i;
+                channels[i] = new DiscordChannelPacket
+                {
+                    Id = (ulong) i
+                };
             }
 
             p.Channels.AddRange(channels);

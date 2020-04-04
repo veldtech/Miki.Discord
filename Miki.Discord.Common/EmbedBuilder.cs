@@ -1,9 +1,9 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using System.Collections.Generic;
-
-namespace Miki.Discord
+﻿namespace Miki.Discord
 {
+    using Miki.Discord.Common;
+    using Miki.Discord.Rest;
+    using System.Collections.Generic;
+
     public class EmbedBuilder
     {
         private readonly DiscordEmbed embed = new DiscordEmbed();

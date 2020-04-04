@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
+    [Serializable]
     [DataContract]
-    public class DiscordEmbed
+    public sealed class DiscordEmbed
     {
         [DataMember(Name = "title")]
         public string Title { get; set; }

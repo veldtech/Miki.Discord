@@ -1,8 +1,8 @@
-﻿using Miki.Discord.Common;
-using System.Runtime.CompilerServices;
-
-namespace Miki.Discord.Rest
+﻿namespace Miki.Discord.Rest
 {
+    using Miki.Discord.Common;
+    using System.Runtime.CompilerServices;
+
     internal static class DiscordApiRoutes
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
