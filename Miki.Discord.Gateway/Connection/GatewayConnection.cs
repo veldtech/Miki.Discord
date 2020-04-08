@@ -27,6 +27,50 @@
         Error
     }
 
+    internal class SourceStream : Stream
+    {
+        public Stream BaseStream;
+
+        public override void Flush()
+        {
+            BaseStream.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            return BaseStream.Read(buffer, offset, count);
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return BaseStream.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value)
+        {
+            BaseStream.SetLength(value);
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            BaseStream.Write(buffer, offset, count);
+        }
+
+        public override bool CanRead => true;
+
+        public override bool CanSeek => BaseStream?.CanSeek ?? false;
+
+        public override bool CanWrite => BaseStream?.CanWrite ?? false;
+
+        public override long Length => BaseStream?.Length ?? 0;
+
+        public override long Position
+        {
+            get => BaseStream.Position;
+            set => BaseStream.Position = value;
+        }
+    }
+
     public class GatewayConnection
     {
         private static readonly RecyclableMemoryStreamManager streamManager 
@@ -53,6 +97,9 @@
 
         private readonly byte[] receivePacket = new byte[GatewayConstants.WebSocketReceiveSize];
 
+        private readonly SourceStream compressedStream = new SourceStream();
+        private readonly SourceStream uncompressStream = new SourceStream();
+        private readonly DeflateStream deflateStream;
         private CancellationTokenSource connectionToken;
         private SemaphoreSlim heartbeatLock;
 
@@ -70,6 +117,7 @@
             }
             webSocketClient = configuration.WebSocketClientFactory();
             this.configuration = configuration;
+            this.deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress);
         }
 
         public async Task StartAsync()
@@ -470,29 +518,27 @@
         {
             var response = await ReceivePacketBytesAsync()
                 .ConfigureAwait(false);
-            await using var uncompressStream = streamManager.GetStream();
+            await using var resultStream = streamManager.GetStream();
+            uncompressStream.BaseStream = resultStream;
 
             if(configuration.Compressed)
             {
-                await using var compressedStream = streamManager.GetStream();
+                await using var stream = streamManager.GetStream();
+                compressedStream.BaseStream = stream;
 
                 if(response.Packet.Span[0] == 0x78)
                 {
                     //Strip the zlib header
                     await compressedStream.WriteAsync(
                         response.Packet.ToArray(), 2, response.Response.Count - 2);
-                    compressedStream.SetLength(response.Response.Count - 2);
                 }
                 else
                 {
                     await compressedStream.WriteAsync(
                         response.Packet.ToArray(), 0, response.Response.Count);
-                    compressedStream.SetLength(response.Response.Count);
                 }
                 
                 compressedStream.Position = 0;
-                await using var deflateStream = new DeflateStream(
-                    compressedStream, CompressionMode.Decompress);
                 await deflateStream.CopyToAsync(uncompressStream);
             }
             else
