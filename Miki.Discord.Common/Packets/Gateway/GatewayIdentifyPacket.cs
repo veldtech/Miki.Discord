@@ -1,41 +1,53 @@
-﻿using Miki.Discord.Common.Packets;
-using System;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Gateway.Packets
+﻿
+namespace Miki.Discord.Common.Gateway
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
+
     [DataContract]
     public class GatewayIdentifyPacket
     {
+        [JsonPropertyName("token")]
         [DataMember(Name = "token")]
-        public string Token;
+        public string Token { get; set; }
 
+        [JsonPropertyName("properties")]
         [DataMember(Name = "properties")]
-        public GatewayIdentifyConnectionProperties ConnectionProperties = new GatewayIdentifyConnectionProperties();
+        public GatewayIdentifyConnectionProperties ConnectionProperties { get; set; } 
+            = new GatewayIdentifyConnectionProperties();
 
-        [DataMember(Name = "compress")]
-        public bool Compressed;
+        [JsonPropertyName("compress")]
+        [DataMember(Name = "compress")] 
+        public bool Compressed { get; set; }
 
-        [DataMember(Name = "large_threshold")]
-        public int LargeThreshold;
+        [JsonPropertyName("large_threshold")]
+        [DataMember(Name = "large_threshold")] 
+        public int LargeThreshold { get; set; }
 
-        [DataMember(Name = "presence")]
-        public DiscordStatus Presence;
-
-        [DataMember(Name = "shard")]
-        public int[] Shard;
+        [JsonPropertyName("presence")]
+        [DataMember(Name = "presence")] 
+        public DiscordStatus Presence { get; set; }
+        
+        [JsonPropertyName("shard")]
+        [DataMember(Name = "shard")] 
+        public int[] Shard { get; set; }
     }
 
     [DataContract]
     public class GatewayIdentifyConnectionProperties
     {
-        [DataMember(Name = "$os")]
-        public string OperatingSystem = Environment.OSVersion.ToString();
+        [JsonPropertyName("$os")]
+        [DataMember(Name = "$os")] 
+        public string OperatingSystem { get; set; } 
+            = Environment.OSVersion.ToString();
 
-        [DataMember(Name = "$browser")]
-        public string Browser = "Miki.Discord";
+        [JsonPropertyName("$browser")]
+        [DataMember(Name = "$browser")] 
+        public string Browser { get; set; } = "Miki.Discord";
 
-        [DataMember(Name = "$device")]
-        public string Device = "Miki.Discord";
+        [JsonPropertyName("$device")]
+        [DataMember(Name = "$device")] 
+        public string Device { get; set; } = "Miki.Discord";
     }
 }

@@ -1,14 +1,12 @@
-﻿namespace Miki.Discord
+﻿namespace Miki.Discord.Internal
 {
-    using Miki.Discord.Common;
-    using Miki.Discord.Helpers;
-    using Miki.Discord.Internal;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using Miki.Discord.Common.Arguments;
+    using Miki.Discord.Common;
+    using Miki.Discord.Helpers;
 
     internal class DiscordTextChannel : DiscordChannel, IDiscordTextChannel
     {

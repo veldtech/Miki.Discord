@@ -4,12 +4,9 @@
     using Miki.Discord.Common.Gateway;
     using Miki.Discord.Common.Packets;
     using Miki.Discord.Common.Packets.API;
-    using Miki.Discord.Common.Packets.Arguments;
-    using Miki.Discord.Rest;
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
-    using Miki.Discord.Common.Arguments;
 
     public interface IApiClient : IGatewayApiClient
     {

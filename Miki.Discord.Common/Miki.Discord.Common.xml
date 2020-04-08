@@ -1,0 +1,725 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Miki.Discord.Common</name>
+    </assembly>
+    <members>
+        <member name="M:Miki.Discord.Common.CacheUtils.ChannelsKey(System.Nullable{System.UInt64})">
+            <summary>
+            Returns a DM channel cache key collection
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Miki.Discord.Common.CacheUtils.UsersCacheKey">
+            <summary>
+            Returns a user collection cache key
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Miki.Discord.Common.DiscordToken">
+            <summary>
+            Discord Token wrapper object to abstractify the bare token away.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordToken.#ctor(System.String)">
+            <summary>
+            Parses token for multiple kinds of tokens.
+            <list type="number">
+            <item>
+            <term>Bearer {{TOKEN}}</term>
+            <description>For a user login token.</description>
+            </item>
+            <item>
+            <term>Bot {{TOKEN}}</term>
+            <description>For a bot API token.</description>
+            </item>
+            <item>
+            <term>{{TOKEN}}</term>
+            <description>Defaults to Bot.</description>
+            </item>
+            </list>
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordToken.Token">
+            <summary>
+            Raw token source
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordToken.Type">
+            <summary>
+            Token type
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordToken.GetOAuthType">
+            <summary>
+            Gets the formatted type. e.g. Bot, Bearer.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordToken.op_Implicit(System.String)~Miki.Discord.Common.DiscordToken">
+            <summary>
+            Implicitely takes a string and parses it into a token.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.Gateway.GatewayConnectionPacket">
+            <summary>
+            Gateway bot connection recommended amount.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayConnectionPacket.Url">
+            <summary>
+            Websocket URL to connect to.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayConnectionPacket.ShardCount">
+            <summary>
+            Recommended amount of shards to connect.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayConnectionPacket.SessionLimit">
+            <summary>
+            Session limits.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.Gateway.GatewayMessage">
+            <summary>
+            A message payload wrapping events received from the Discord gateway.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Gateway.GatewayMessage.OpCode">
+            <summary>
+            Gateway message type. Can be instructions for the gateway to follow, or events.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Gateway.GatewayMessage.Data">
+            <summary>
+            Data modelled for each <see cref="P:Miki.Discord.Common.Gateway.GatewayMessage.OpCode"/>.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Gateway.GatewayMessage.SequenceNumber">
+            <summary>
+            Sequence number, should increase linearly.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Gateway.GatewayMessage.EventName">
+            <summary>
+            If <see cref="P:Miki.Discord.Common.Gateway.GatewayMessage.OpCode"/> is <see cref="F:Miki.Discord.Common.Gateway.GatewayOpcode.Dispatch"/>, an event name is attached
+            for the user to parse <see cref="P:Miki.Discord.Common.Gateway.GatewayMessage.Data"/> with.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.Gateway.GatewayOpcode">
+            <summary>
+            Gateway payload opcodes. Discord documentation page:
+            <a href="https://discordapp.com/developers/docs/topics/opcodes-and-status-codes#gateway">
+            Gateway - Opcodes and status codes.</a>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayOpcode.Dispatch">
+            <summary>
+            Discord events being dispatched to the bot.
+            <code>Receive only</code>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayOpcode.Heartbeat">
+            <summary>
+            Opcode to send discord's gateway a heartbeat. If properly sent, the gateway returns with
+            <see cref="F:Miki.Discord.Common.Gateway.GatewayOpcode.HeartbeatAcknowledge"/>. Is required to keep the connection alive.
+            <code>Send/Receive</code>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayOpcode.Reconnect">
+            <summary>
+            Opcode to instruct the gateway implementation to reconnect to the gateway immediately. You
+            are allowed to <see cref="F:Miki.Discord.Common.Gateway.GatewayOpcode.Resume"/> afterwards.
+            <code>Receive only</code>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayOpcode.HeartbeatAcknowledge">
+            <summary>
+            Opcode for the Discord gateway to acknowledge your latest heartbeat.
+            <code>Receive only</code>
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.Gateway.GatewaySessionLimitsPacket">
+            <summary>
+            Session limits
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Gateway.GatewaySessionLimitsPacket.Total">
+            <summary>
+            Total amount of reconnects for the time until <see cref="P:Miki.Discord.Common.Gateway.GatewaySessionLimitsPacket.ResetAfter"/>.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Gateway.GatewaySessionLimitsPacket.Remaining">
+            <summary>
+            Total sum of reconnect calls available to use.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Gateway.GatewaySessionLimitsPacket.ResetAfter">
+            <summary>
+            Milliseconds until this session refreshes.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.Gateway.GatewayEventType">
+            <summary>
+            All Gateway Events.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelCreate">
+            <summary>
+            A new channel was created.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelDelete">
+            <summary>
+            A channel was deleted.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelUpdate">
+            <summary>
+            A channel was edited.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelPinsUpdate">
+            <summary>
+            A message was pinned on this channel.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildBanAdd">
+            <summary>
+            A member got banned.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildBanRemove">
+            <summary>
+            A member got unbanned.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildCreate">
+            <summary>
+            The bot joined a new guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildDelete">
+            <summary>
+            The bot left a guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildEmojisUpdate">
+            <summary>
+            A new emoji got added/removed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildIntegrationsUpdate">
+            <summary>
+            A new integration got added/removed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMemberAdd">
+            <summary>
+            A member joined a guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMemberRemove">
+            <summary>
+            A former member left a guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMemberUpdate">
+            <summary>
+            A guild member updated their profile/roles/nickname.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMembersChunk">
+            <summary>
+            Gateway requested members from this guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.Ready">
+            <summary>
+            Gateway is ready to go.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.Resumed">
+            <summary>
+            The connection was cut and got resumed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.Undefined">
+            <summary>
+            Catch-all for undefined event types.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordClient.ApiClient">
+            <summary>
+            The api client used in the discord client and was given in <see cref="!:DiscordClientConfigurations"/> at the beginning.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordClient.Gateway">
+            <summary>
+            The gateway client used in the discord client and was given in <see cref="!:DiscordClientConfigurations"/> at the beginning.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.MentionType">
+            <summary>
+            What type of mention has been parsed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.NONE">
+            <summary>
+            Default value if nothing is parsed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.USER">
+            <summary>
+            Direct user ping.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.USER_NICKNAME">
+            <summary>
+            User nickname ping.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.ROLE">
+            <summary>
+            Guild role ping.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.CHANNEL">
+            <summary>
+            Channel ping.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.USER_ALL">
+            <summary>
+            Everyone ping
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.USER_ALL_ONLINE">
+            <summary>
+            Here ping
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Mention.Data">
+            <summary>
+            Data is used for mentions that hold more info than only an <see cref="P:Miki.Discord.Common.Mention.Id"/>.
+            <see cref="T:Miki.Discord.Common.DiscordEmoji"/>
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.Models.IContainsGuild">
+            <summary>
+            This member has a guild connection.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordAttachment.FileName">
+            <summary>
+            Full name of the file attached.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordAttachment.Height">
+            <summary>
+            The height of the file (if the attachment is an image).
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordAttachment.Id">
+            <summary>
+            The attachment Id.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordAttachment.ProxyUrl">
+            <summary>
+            The proxy version of the Url.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordAttachment.Size">
+            <summary>
+            The size of the file in bytes.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordAttachment.Url">
+            <summary>
+            The source url of the attachment.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordAttachment.Width">
+            <summary>
+            The width of the file (if the attachment is an image).
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuildChannel.GetSelfAsync">
+            <summary>
+            Gets the current user in the guild.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.IDiscordGuild">
+            <summary>
+            A managed Discord guild object.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordGuild.Name">
+            <summary>
+            Display name of the guild.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordGuild.IconUrl">
+            <summary>
+            A Discord CDN URL pointing to the guild's icon.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordGuild.OwnerId">
+            <summary>
+            Snowflake referring to the current owner of the guild.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordGuild.MemberCount">
+            <summary>
+            Current amount of members in the guild.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordGuild.PremiumSubscriberCount">
+            <summary>
+            Current amount of members that are nitro boosting this server.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordGuild.PremiumTier">
+            <summary>
+            Current premium tier.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.AddBanAsync(Miki.Discord.Common.IDiscordGuildUser,System.Int32,System.String)">
+            <summary>
+            Bans a discord user from the discord guild.
+            </summary>
+            <param name="user">The user in question.</param>
+            <param name="pruneDays">Amount of days of messages sent to be pruned</param>
+            <param name="reason">Reason of the ban</param>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.CreateRoleAsync(Miki.Discord.Common.CreateRoleArgs)">
+            <summary>
+            Creates a new role. Requires <see cref="F:Miki.Discord.Common.GuildPermission.ManageRoles"/> permission.
+            </summary>
+            <param name="roleArgs">Role properties</param>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetDefaultChannelAsync">
+            <summary>
+            Gets the system channel.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetPermissionsAsync(Miki.Discord.Common.IDiscordGuildUser)">
+            <summary>
+            Get permissions that are attached the <see cref="T:Miki.Discord.Common.IDiscordGuildUser"/> based on the guild's permissions and the user's roles.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetOwnerAsync">
+            <summary>
+            Gets the <see cref="T:Miki.Discord.Common.IDiscordGuildUser"/> of the current discord server owner.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetChannelAsync(System.UInt64)">
+            <summary>
+            Gets a <see cref="T:Miki.Discord.Common.IDiscordGuildChannel"/> where its snowflake matches {id}. Will return null if non-existant.
+            </summary>
+            <param name="id">Snowflake of the channel.</param>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetChannelsAsync">
+            <summary>
+            Returns all channels in a guild.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetRoleAsync(System.UInt64)">
+            <summary>
+            Gets a <see cref="T:Miki.Discord.Common.IDiscordRole"/> where its snowflake matches {id}. Will return null if non-existant.
+            </summary>
+            <param name="id">Snowflake of the role.</param>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetRolesAsync">
+            <summary>
+            Returns all roles in a guild.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetMembersAsync">
+            <summary>
+            Returns all members in a guild.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetMemberAsync(System.UInt64)">
+            <summary>
+            Gets the <see cref="T:Miki.Discord.Common.IDiscordGuildUser"/> that fits with the current snowflake.
+            </summary>
+            <param name="id">Specified <seealso cref="T:Miki.Discord.Common.ISnowflake"/> pointing to a <seealso cref="T:Miki.Discord.Common.IDiscordGuildUser"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetPruneCountAsync(System.Int32)">
+            <summary>
+            Get the amount of users that would be pruned if you would prune by {days} days.
+            </summary>
+            <param name="days">Amount of days since user was last online.</param>
+            <returns>Amount of users that will be pruned.</returns>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.PruneMembersAsync(System.Int32,System.Boolean)">
+            <summary>
+            Starts a prune operation. Requires <see cref="F:Miki.Discord.Common.GuildPermission.KickMembers"/> to be active for the current user.
+            </summary>
+            <param name="days">Amount of days since user was last online.</param>
+            <param name="computeCount">Whether a count is calculated and returned, discouraged for larger guilds.</param>
+            <returns>Amount of users that will be pruned.</returns>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.GetSelfAsync">
+            <summary>
+            Gets the current user as a <see cref="T:Miki.Discord.Common.IDiscordGuildUser"/>.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordGuild.RemoveBanAsync(Miki.Discord.Common.IDiscordGuildUser)">
+            <summary>
+            Removes a ban from the server, requires <see cref="F:Miki.Discord.Common.GuildPermission.BanMembers"/>.
+            </summary>
+            <param name="user">User you want to unban.</param>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordGuildUser.PremiumSince">
+            <summary>
+            This user nitro boosting current 
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordMessage.Attachments">
+            <summary>
+            All attachments attached to this message.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordMessage.Author">
+            <summary>
+            The creator of the message.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordMessage.ChannelId">
+            <summary>
+            The channel this message was created in.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordMessage.DeleteAsync">
+            <summary>
+            Deletes this message.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordReaction.Emoji">
+            <summary>
+            The emoji information.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordReaction.User">
+            <summary>
+            The user information.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordRole.Name">
+            <summary>
+            Name of the role.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordRole.Color">
+            <summary>
+            The color attached to the role.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordRole.Position">
+            <summary>
+            The position of the role compared to other roles.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordRole.Permissions">
+            <summary>
+            Permissions attached to the role.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordRole.IsManaged">
+            <summary>
+            Is this role managed by an external service?
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordRole.IsHoisted">
+            <summary>
+            Is this role hoisted up in the user list?
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordRole.IsMentionable">
+            <summary>
+            Can this role be mentioned in a <see cref="T:Miki.Discord.Common.IDiscordTextChannel"/>?
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordSelfUser.GetDMChannelsAsync">
+            <summary>
+            Gets recent DM channels for the current user. This function does not work on a BOT account.
+            </summary>
+            <remarks>Does not work on a BOT account.</remarks>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordSelfUser.ModifyAsync(System.Action{Miki.Discord.Common.Packets.UserModifyArgs})">
+            <summary>
+            Modify the current user.
+            </summary>
+            <param name="modifyArgs"></param>
+        </member>
+        <member name="T:Miki.Discord.Common.Packets.ActivityType">
+            <summary>
+            Current activity type of an <seealso cref="T:Miki.Discord.Common.DiscordActivity"/>
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.Packets.DiscordGuildUnavailablePacket.ToGuildPacket">
+            <summary>
+            A converter method to avoid protocol buffer serialization complexion
+            </summary>
+            <returns>A converted DiscordGuildPacket</returns>
+        </member>
+        <member name="T:Miki.Discord.Common.Packets.API.DiscordMessageType">
+            <summary>
+            Type of message received from the Discord API.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.DEFAULT">
+            <summary>
+            Default text message from a user.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.RECIPIENT_ADD">
+            <summary>
+            Recipent added to a DM group.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.RECIPIENT_REMOVE">
+            <summary>
+            Recipent removed from a DM group.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.CALL">
+            <summary>
+            Receiving a voice call request from another user.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.CHANNEL_NAME_CHANGE">
+            <summary>
+            DM channel name change event
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.CHANNEL_ICON_CHANGE">
+            <summary>
+            DM channel icon change event
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.CHANNEL_PINNED_MESSAGE">
+            <summary>
+            Message has been pinned in a channel
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Packets.API.DiscordMessageType.GUILD_MEMBER_JOIN">
+            <summary>
+            A guild member joined, and the discord guild has default join events turned on.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.ChannelType.GuildText">
+            <summary>
+            A text channel within a Discord server.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.ChannelType.DirectText">
+            <summary>
+            A Direct Message channel with another user.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.ChannelType.GuildVoice">
+            <summary>
+            A voice channel.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.ChannelType.GroupDirect">
+            <summary>
+            A Group Direct Message channel with multiple users.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.ChannelType.GuildCategory">
+            <summary>
+            A server category
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.ChannelType.GuildNews">
+            <summary>
+            A news channel which allows users to cross-post their message.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.ChannelType.GuildStore">
+            <summary>
+            A game store channel to sell games on Discord.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.DiscordGuildPacket">
+            <summary>
+            The root of the Guild Packet. This class is used internally and should not be used. Use
+            <see cref="T:Miki.Discord.Common.DiscordGuildPacket"/> instead.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.ImageSize">
+            <summary>
+            Determines the size of your avatar image.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.ImageType">
+            <summary>
+            Declares what type you want your image is.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.EmojiCreationArgs">
+            <summary>
+            Data structure to create an emoji.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.TokenType">
+            <summary>
+            Token type used to differentiate bot users from normal users.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.TokenType.BOT">
+            <summary>
+            API bot user.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.TokenType.BEARER">
+            <summary>
+            Discord user account.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Rest.Ratelimit">
+            <summary>
+            General ratelimit struct used to verify ratelimits and block potentially ratelimited requests.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Rest.Ratelimit.Remaining">
+            <summary>
+            Remaining amount of entities that can be sent on this route.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Rest.Ratelimit.Limit">
+            <summary>
+            Total limit of entities that can be sent until <see cref="P:Miki.Discord.Rest.Ratelimit.Reset"/> occurs.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Rest.Ratelimit.Reset">
+            <summary>
+            Epoch until ratelimit resets values.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Rest.Ratelimit.Global">
+            <summary>
+            An optional global value for a shared ratelimit value.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Rest.Ratelimit.IsRatelimited">
+            <summary>
+            Checks if the current ratelimit is valid and/or is expired.
+            </summary>
+            <returns>Whether the current instance is being ratelimited</returns>
+        </member>
+        <member name="M:Miki.Discord.Rest.Ratelimit.IsRatelimited(Miki.Discord.Rest.Ratelimit)">
+            <summary>
+            Checks if the ratelimit is valid and/or is expired.
+            </summary>
+            <param name="rl">The instance that is being checked.</param>
+            <returns>Whether the instance is being ratelimited</returns>
+        </member>
+    </members>
+</doc>

@@ -2,21 +2,26 @@
 {
     using System;
     using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
 
     [DataContract]
     public class PermissionOverwrite
     {
+        [JsonPropertyName("id")]
         [DataMember(Name = "id")]
-        public ulong Id;
+        public ulong Id { get; set; }
 
+        [JsonPropertyName("type")]
         [DataMember(Name = "type")]
-        public string Type;
+        public string Type { get; set; }
 
+        [JsonPropertyName("allow")]
         [DataMember(Name = "allow")]
-        public GuildPermission AllowedPermissions;
+        public GuildPermission AllowedPermissions { get; set; }
 
+        [JsonPropertyName("deny")]
         [DataMember(Name = "deny")]
-        public GuildPermission DeniedPermissions;
+        public GuildPermission DeniedPermissions { get; set; }
     }
 
     [Flags]

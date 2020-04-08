@@ -1,35 +1,34 @@
-﻿using Miki.Cache;
-using System;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Gateway.Ratelimiting
+﻿namespace Miki.Discord.Gateway.Ratelimiting
 {
+    using Miki.Cache;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     public class CacheBasedRatelimiter : IGatewayRatelimiter
     {
         private const string CacheKey = "miki:gateway:identify:ratelimit";
 
-        private readonly ICacheClient cache;
+        private readonly IDistributedLockProvider cache;
 
-        public CacheBasedRatelimiter(ICacheClient cache)
+        public CacheBasedRatelimiter(IDistributedLockProvider cache)
         {
             this.cache = cache;
         }
 
-        public async Task<bool> CanIdentifyAsync()
+        public async Task<bool> CanIdentifyAsync(CancellationToken token)
         {
-            var ticks = await cache.GetAsync<long>(CacheKey);
-            if(ticks == 0)
+            try
             {
-                await cache.UpsertAsync(CacheKey, DateTime.UtcNow.AddSeconds(5.1).Ticks);
-                return true;
+                await cache.AcquireLockAsync(CacheKey, token);
+            }
+            catch(OperationCanceledException)
+            {
+                return false;
             }
 
-            if(DateTime.UtcNow.Ticks > ticks)
-            {
-                await cache.UpsertAsync(CacheKey, DateTime.UtcNow.AddSeconds(5.1).Ticks);
-                return true;
-            }
-            return false;
+            await cache.ExpiresAsync(CacheKey, TimeSpan.FromSeconds(5));
+            return true;
         }
     }
 }

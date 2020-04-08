@@ -2,6 +2,7 @@
 {
     using System.IO;
     using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
     using Miki.Discord.Rest;
 
     /// <summary>
@@ -10,8 +11,9 @@
     [DataContract]
     public class EmojiCreationArgs : EmojiModifyArgs
     {
+        [JsonPropertyName("image")]
         [DataMember(Name = "image")]
-        public Stream Image { get; private set; }
+        public Stream Image { get; set; }
 
         public EmojiCreationArgs(string name, Stream image, params ulong[] roles)
             : base(name, roles)

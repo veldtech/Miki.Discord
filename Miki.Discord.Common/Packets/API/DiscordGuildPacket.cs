@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
     using Miki.Discord.Common.Packets;
 
     /// <summary>
@@ -13,118 +14,141 @@
     [DataContract]
     public class DiscordGuildPacket
     {
+        [JsonPropertyName("id")]
         [DataMember(Name = "id", Order = 1)]
-        public ulong Id;
+        public ulong Id { get; set; }
 
+        [JsonPropertyName("name")]
         [DataMember(Name = "name", Order = 2)]
-        public string Name;
+        public string Name { get; set; }
 
+        [JsonPropertyName("icon")]
         [DataMember(Name = "icon", Order = 3)]
-        public string Icon;
+        public string Icon { get; set; }
 
+        [JsonPropertyName("splash")]
         [DataMember(Name = "splash", Order = 4)]
-        public string Splash;
+        public string Splash { get; set; }
 
+        [JsonPropertyName("owner_id")]
         [DataMember(Name = "owner_id", Order = 5)]
-        public ulong OwnerId;
+        public ulong OwnerId { get; set; }
 
+        [JsonPropertyName("region")]
         [DataMember(Name = "region", Order = 6)]
-        public string Region;
+        public string Region { get; set; }
 
+        [JsonPropertyName("afk_channel_id")]
         [DataMember(Name = "afk_channel_id", Order = 7)]
-        public ulong? AfkChannelId;
+        public ulong? AfkChannelId { get; set; }
 
+        [JsonPropertyName("afk_timeout")]
         [DataMember(Name = "afk_timeout", Order = 8)]
-        public int? AfkTimeout;
+        public int? AfkTimeout { get; set; }
 
+        [JsonPropertyName("embed_enabled")]
         [DataMember(Name = "embed_enabled", Order = 9)]
-        public bool EmbedEnabled;
+        public bool EmbedEnabled { get; set; }
 
+        [JsonPropertyName("embed_channel_id")]
         [DataMember(Name = "embed_channel_id", Order = 10)]
-        public ulong? EmbedChannelId;
+        public ulong? EmbedChannelId { get; set; }
 
+        [JsonPropertyName("verification_level")]
         [DataMember(Name = "verification_level", Order = 11)]
-        public int VerificationLevel;
+        public int VerificationLevel { get; set; }
 
+        [JsonPropertyName("default_message_notifications")]
         [DataMember(Name = "default_message_notifications", Order = 12)]
-        public int DefaultMessageNotifications;
+        public int DefaultMessageNotifications { get; set; }
 
+        [JsonPropertyName("explicit_content_filter")]
         [DataMember(Name = "explicit_content_filter", Order = 13)]
-        public int ExplicitContentFilter;
+        public int ExplicitContentFilter { get; set; }
 
+        [JsonPropertyName("roles")]
         [DataMember(Name = "roles", Order = 14)]
-        public List<DiscordRolePacket> Roles = new List<DiscordRolePacket>();
+        public List<DiscordRolePacket> Roles { get; set; } 
+            = new List<DiscordRolePacket>();
 
+        [JsonPropertyName("emojis")]
         [DataMember(Name = "emojis", Order = 15)]
-        public DiscordEmoji[] Emojis;
+        public DiscordEmoji[] Emojis { get; set; }
 
+        [JsonPropertyName("features")]
         [DataMember(Name = "features", Order = 16)]
-        public List<string> Features;
+        public List<string> Features { get; set; }
 
+        [JsonPropertyName("mfa_level")]
         [DataMember(Name = "mfa_level", Order = 17)]
-        public int MFALevel;
+        public int MFALevel { get; set; }
 
+        [JsonPropertyName("application_id")]
         [DataMember(Name = "application_id", Order = 18)]
-        public ulong? ApplicationId;
+        public ulong? ApplicationId { get; set; }
 
+        [JsonPropertyName("widget_enabled")]
         [DataMember(Name = "widget_enabled", Order = 19)]
-        public bool? WidgetEnabled;
+        public bool? WidgetEnabled { get; set; }
 
+        [JsonPropertyName("widget_channel_id")]
         [DataMember(Name = "widget_channel_id", Order = 20)]
-        public ulong? WidgetChannelId;
+        public ulong? WidgetChannelId { get; set; }
 
+        [JsonPropertyName("system_channel_id")]
         [DataMember(Name = "system_channel_id", Order = 21)]
-        public ulong? SystemChannelId;
+        public ulong? SystemChannelId { get; set; }
 
-        [DataMember(Order = 22)]
-        public long CreatedAt;
+        [JsonPropertyName("joined_at")]
+        [DataMember(Name = "joined_at", Order = 22)]
+        public DateTime CreatedAt { get; set; }
 
-        // TODO(Veld): fix this hack.
-        [DataMember(Name = "joined_at")]
-        public string createdAt
-        {
-            get => new DateTime(CreatedAt)
-                .ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-
-            set => CreatedAt = DateTime.ParseExact(
-                value, 
-                "MM/dd/yyyy HH:mm:ss", 
-                CultureInfo.InvariantCulture, 
-                DateTimeStyles.None).Ticks;
-        }
-
+        [JsonPropertyName("large")]
         [DataMember(Name = "large", Order = 23)]
-        public bool? IsLarge;
+        public bool? IsLarge { get; set; }
 
+        [JsonPropertyName("unavailable")]
         [DataMember(Name = "unavailable", Order = 24)]
-        public bool? Unavailable;
+        public bool? Unavailable { get; set; }
 
+        [JsonPropertyName("member_count")]
         [DataMember(Name = "member_count", Order = 25)]
-        public int? MemberCount;
+        public int? MemberCount { get; set; }
 
+        [JsonPropertyName("owner")]
         [DataMember(Name = "owner", Order = 26)]
-        public bool? IsOwner;
+        public bool? IsOwner { get; set; }
 
+        [JsonPropertyName("permissions")]
         [DataMember(Name = "permissions", Order = 27)]
-        public int? Permissions;
+        public int? Permissions { get; set; }
 
+        [JsonPropertyName("premium_tier")]
         [DataMember(Name = "premium_tier", Order = 28)]
-        public int? PremiumTier;
+        public int? PremiumTier { get; set; }
 
+        [JsonPropertyName("premium_subscription_count")]
         [DataMember(Name = "premium_subscription_count", Order = 29)]
-        public int? PremiumSubscriberCount;
+        public int? PremiumSubscriberCount { get; set; }
 
+        [JsonPropertyName("voice_states")]
         [DataMember(Name = "voice_states")]
-        public List<DiscordVoiceStatePacket> VoiceStates;
+        public List<DiscordVoiceStatePacket> VoiceStates { get; set; }
 
+        [JsonPropertyName("members")]
         [DataMember(Name = "members")]
-        public List<DiscordGuildMemberPacket> Members = new List<DiscordGuildMemberPacket>();
+        public List<DiscordGuildMemberPacket> Members { get; set; } 
+            = new List<DiscordGuildMemberPacket>();
 
+        [JsonPropertyName("channels")]
         [DataMember(Name = "channels")]
-        public List<DiscordChannelPacket> Channels = new List<DiscordChannelPacket>();
+        public List<DiscordChannelPacket> Channels { get; set; } 
+            = new List<DiscordChannelPacket>();
 
+        [JsonPropertyName("presences")]
         [DataMember(Name = "presences")]
-        public List<DiscordPresencePacket> Presences = new List<DiscordPresencePacket>();
+        public List<DiscordPresencePacket> Presences { get; set; } 
+            = new List<DiscordPresencePacket>();
 
         public void OverwriteContext(DiscordGuildPacket guild)
         {

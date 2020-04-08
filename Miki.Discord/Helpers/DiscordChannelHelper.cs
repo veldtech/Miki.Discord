@@ -4,7 +4,6 @@
     using Miki.Discord.Common;
     using Miki.Discord.Internal;
     using System.Threading.Tasks;
-    using Miki.Discord.Common.Arguments;
 
     public static class DiscordChannelHelper
     {

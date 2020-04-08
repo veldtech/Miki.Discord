@@ -1,13 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Gateway.Ratelimiting
+﻿namespace Miki.Discord.Gateway.Ratelimiting
 {
+    using System;
+    using System.Threading.Tasks;
+    using System.Threading;
+
     public class DefaultGatewayRatelimiter : IGatewayRatelimiter
     {
         private DateTime lastIdentifyAccepted = DateTime.MinValue;
 
-        public Task<bool> CanIdentifyAsync()
+        public Task<bool> CanIdentifyAsync(CancellationToken token)
         {
             if(lastIdentifyAccepted.AddSeconds(5) > DateTime.Now)
             {

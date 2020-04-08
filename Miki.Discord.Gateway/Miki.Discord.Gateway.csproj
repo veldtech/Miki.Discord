@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>3.2.1</Version>
+    <Version>3.3.1</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Discord gateway implementation</Description>
@@ -10,7 +10,7 @@
     <AssemblyOriginatorKeyFile>Miki.Discord.Gateway.Centralized.snk</AssemblyOriginatorKeyFile>
     <PackageTags>Discord Gateway Miki</PackageTags>
     <Product>Miki</Product>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>latest</LangVersion>
     <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
     <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -18,16 +18,23 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DocumentationFile>D:\Projects\Miki.Discord\Miki.Discord.Gateway\Miki.Discord.Gateway.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Connection\GatewayConnection.cs~RF1d873077.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.3" />
+    <PackageReference Include="Miki.Cache" Version="1.5.0" />
     <PackageReference Include="Miki.Net.Websockets" Version="1.1.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj" />
+    <ProjectReference Include="..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
     <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
   </ItemGroup>
 

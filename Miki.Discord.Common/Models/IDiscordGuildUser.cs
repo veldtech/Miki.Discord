@@ -16,7 +16,7 @@
         /// <summary>
         /// This user nitro boosting current 
         /// </summary>
-        DateTimeOffset PremiumSince { get; }
+        DateTimeOffset? PremiumSince { get; }
 
         Task AddRoleAsync(IDiscordRole role);
 

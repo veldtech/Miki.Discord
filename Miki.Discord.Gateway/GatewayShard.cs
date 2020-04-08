@@ -4,106 +4,116 @@
     using Miki.Discord.Common.Events;
     using Miki.Discord.Common.Extensions;
     using Miki.Discord.Common.Gateway;
-    using Miki.Discord.Common.Gateway.Packets;
     using Miki.Discord.Common.Packets;
     using Miki.Discord.Common.Packets.Events;
     using Miki.Discord.Gateway.Connection;
     using Miki.Logging;
-    using Newtonsoft.Json.Linq;
     using System;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using Miki.Discord.Common.Packets.API;
 
     public class GatewayShard : IDisposable, IGateway
     {
-        private readonly GatewayConnection _connection;
-        private readonly CancellationTokenSource _tokenSource;
-        private bool _isRunning;
+        private readonly GatewayProperties configuration;
+        private readonly GatewayConnection connection;
+        private readonly CancellationTokenSource tokenSource;
+        private bool isRunning;
 
         public GatewayShard(GatewayProperties configuration)
         {
-            _tokenSource = new CancellationTokenSource();
-            _connection = new GatewayConnection(configuration);
+            this.configuration = configuration;
+            tokenSource = new CancellationTokenSource();
+            connection = new GatewayConnection(configuration);
         }
 
-        public int ShardId => _connection.ShardId;
+        public int ShardId => connection.ShardId;
 
-        public ConnectionStatus Status => _connection.ConnectionStatus;
+        public ConnectionStatus Status => connection.ConnectionStatus;
 
         public async Task RestartAsync()
         {
-            await _connection.ReconnectAsync();
+            await connection.ReconnectAsync();
         }
 
         public async Task StartAsync()
         {
-            if(_isRunning)
+            if(isRunning)
             {
                 return;
             }
 
-            _connection.OnPacketReceived += OnPacketReceivedAsync;
-            await _connection.StartAsync();
-            _isRunning = true;
+            connection.OnPacketReceived += OnPacketReceivedAsync;
+            await connection.StartAsync();
+            isRunning = true;
         }
 
         public async Task StopAsync()
         {
-            if(!_isRunning)
+            if(!isRunning)
             {
                 return;
             }
 
-            _connection.OnPacketReceived -= OnPacketReceivedAsync;
-            _tokenSource.Cancel();
-            await _connection.StopAsync();
-            _isRunning = false;
+            connection.OnPacketReceived -= OnPacketReceivedAsync;
+            tokenSource.Cancel();
+            await connection.StopAsync();
+            isRunning = false;
         }
 
         public Task OnPacketReceivedAsync(GatewayMessage text)
         {
-            if(text.OpCode != GatewayOpcode.Dispatch || !(text.Data is JToken token))
+            if(text.OpCode != GatewayOpcode.Dispatch || !(text.Data is JsonElement elem))
             {
                 return Task.CompletedTask;
             }
 
             switch(text.EventName)
             {
-                case "READY":
-                    return OnReady.InvokeAsync(token.ToObject<GatewayReadyPacket>());
-
-                case "GUILD_CREATE":
-                    return OnGuildCreate.InvokeAsync(token.ToObject<DiscordGuildPacket>());
-
-                case "GUILD_ROLE_UPDATE":
-                    var role = token.ToObject<RoleEventArgs>();
-
-                    return OnGuildRoleUpdate.InvokeAsync(role.GuildId, role.Role);
-
-                case "GUILD_MEMBER_UPDATE":
-                    return OnGuildMemberUpdate.InvokeAsync(token.ToObject<GuildMemberUpdateEventArgs>());
-
-                case "GUILD_UPDATE":
-                    return OnGuildUpdate.InvokeAsync(token.ToObject<DiscordGuildPacket>());
-
-                case "GUILD_DELETE":
-                    return OnGuildDelete.InvokeAsync(token.ToObject<DiscordGuildUnavailablePacket>());
-
-                case "MESSAGE_CREATE":
-                    return OnMessageCreate.InvokeAsync(token.ToObject<DiscordMessagePacket>());
-
-                case "PRESENCE_UPDATE":
-                    return OnPresenceUpdate.InvokeAsync(token.ToObject<DiscordPresencePacket>());
-
                 case "CHANNEL_CREATE":
-                    return OnChannelCreate.InvokeAsync(token.ToObject<DiscordChannelPacket>());
-
-                case "CHANNEL_UPDATE":
-                    return OnChannelUpdate.InvokeAsync(token.ToObject<DiscordChannelPacket>());
+                    return OnChannelCreate.InvokeAsync(
+                        elem.ToObject<DiscordChannelPacket>(configuration.SerializerOptions));
 
                 case "CHANNEL_DELETE":
-                    return OnChannelDelete.InvokeAsync(token.ToObject<DiscordChannelPacket>());
+                    return OnChannelDelete.InvokeAsync(
+                        elem.ToObject<DiscordChannelPacket>(configuration.SerializerOptions));
+
+                case "CHANNEL_UPDATE":
+                    return OnChannelUpdate.InvokeAsync(
+                        elem.ToObject<DiscordChannelPacket>(configuration.SerializerOptions));
+
+                case "GUILD_CREATE":
+                    return OnGuildCreate.InvokeAsync(
+                        elem.ToObject<DiscordGuildPacket>(configuration.SerializerOptions));
+
+                case "GUILD_DELETE":
+                    return OnGuildDelete.InvokeAsync(
+                        elem.ToObject<DiscordGuildUnavailablePacket>(configuration.SerializerOptions));
+
+                case "GUILD_MEMBER_UPDATE":
+                    return OnGuildMemberUpdate.InvokeAsync(
+                        elem.ToObject<GuildMemberUpdateEventArgs>(configuration.SerializerOptions));
+
+                case "GUILD_ROLE_UPDATE":
+                    var role = elem.ToObject<RoleEventArgs>(configuration.SerializerOptions);
+                    return OnGuildRoleUpdate.InvokeAsync(role.GuildId, role.Role);
+
+                case "GUILD_UPDATE":
+                    return OnGuildUpdate.InvokeAsync(
+                        elem.ToObject<DiscordGuildPacket>(configuration.SerializerOptions));
+
+                case "MESSAGE_CREATE":
+                    return OnMessageCreate.InvokeAsync(
+                        elem.ToObject<DiscordMessagePacket>(configuration.SerializerOptions));
+
+                case "PRESENCE_UPDATE":
+                    return OnPresenceUpdate.InvokeAsync(
+                        elem.ToObject<DiscordPresencePacket>(configuration.SerializerOptions));
+
+                case "READY":
+                    return OnReady.InvokeAsync(
+                        elem.ToObject<GatewayReadyPacket>(configuration.SerializerOptions));
 
                 default:
                     Log.Debug($"{text.EventName} is not implemented.");
@@ -118,12 +128,12 @@
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            await _connection.SendCommandAsync(opcode, payload, _tokenSource.Token);
+            await connection.SendCommandAsync(opcode, payload, tokenSource.Token);
         }
 
         public void Dispose()
         {
-            _tokenSource.Dispose();
+            tokenSource.Dispose();
         }
 
         #region Events
@@ -153,8 +163,8 @@
         public event Func<GatewayMessage, Task> OnPacketSent;
         public event Func<GatewayMessage, Task> OnPacketReceived
         {
-            add => _connection.OnPacketReceived += value;
-            remove => _connection.OnPacketReceived -= value;
+            add => connection.OnPacketReceived += value;
+            remove => connection.OnPacketReceived -= value;
         }
         #endregion Events
     }

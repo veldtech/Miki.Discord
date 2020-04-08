@@ -1,7 +1,6 @@
 ﻿namespace Miki.Discord.Internal
 {
     using Miki.Discord.Common;
-    using Miki.Discord.Common.Packets;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -29,8 +28,10 @@
         public DateTimeOffset JoinedAt
             => new DateTimeOffset(packet.JoinedAt, new TimeSpan(0));
 
-        public DateTimeOffset PremiumSince
-            => new DateTimeOffset(packet.PremiumSince, new TimeSpan(0));
+        public DateTimeOffset? PremiumSince
+            => packet.PremiumSince.HasValue 
+                ? new DateTimeOffset(packet.PremiumSince.Value, new TimeSpan(0)) 
+                : (DateTimeOffset?) null;
 
         public async Task AddRoleAsync(IDiscordRole role)
         {

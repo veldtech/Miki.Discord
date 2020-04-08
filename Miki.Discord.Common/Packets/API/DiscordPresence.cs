@@ -4,20 +4,26 @@ using System.Runtime.Serialization;
 
 namespace Miki.Discord.Common
 {
+    using System.Text.Json.Serialization;
+
     [DataContract]
     public class DiscordPresence : IDiscordPresence
     {
+        [JsonPropertyName("game")]
         [DataMember(Name = "game", Order = 1)]
-        public DiscordActivity Activity { get; private set; }
+        public DiscordActivity Activity { get; set; }
 
+        [JsonPropertyName("status")]
         [DataMember(Name = "status", Order = 2)]
-        public UserStatus Status { get; private set; }
+        public UserStatus Status { get; set; }
 
+        [JsonPropertyName("since")]
         [DataMember(Name = "since", Order = 3)]
-        public long Since { get; private set; }
+        public long Since { get; set; }
 
+        [JsonPropertyName("afk")]
         [DataMember(Name = "afk", Order = 4)]
-        public bool IsAFK { get; private set; }
+        public bool IsAFK { get; set; }
 
         public DiscordPresence()
         {}

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>3.2.1</Version>
+    <Version>3.3.0</Version>
     <Copyright>Velddev</Copyright>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>velddev.pfx</AssemblyOriginatorKeyFile>
@@ -25,6 +25,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>D:\Projects\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
 
 </Project>

@@ -1,17 +1,15 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Events;
-using Miki.Discord.Common.Gateway;
-using Miki.Discord.Common.Gateway.Packets;
-using Miki.Discord.Common.Packets;
-using Miki.Discord.Common.Packets.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Gateway
+﻿namespace Miki.Discord.Gateway
 {
-    using Common.Packets.API;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Events;
+    using Miki.Discord.Common.Gateway;
+    using Miki.Discord.Common.Packets;
+    using Miki.Discord.Common.Packets.API;
+    using Miki.Discord.Common.Packets.Events;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public partial class GatewayCluster : IGateway
     {

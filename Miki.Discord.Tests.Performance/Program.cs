@@ -18,7 +18,7 @@
                 AfkChannelId = 245245,
                 AfkTimeout = 13,
                 ApplicationId = null,
-                CreatedAt = 422424,
+                CreatedAt = new DateTime(422424),
                 IsOwner = true,
                 IsLarge = false,
                 MemberCount = 10000,
@@ -57,7 +57,7 @@
                         23435234,
                         345342423
                     },
-                    JoinedAt = 23984923
+                    JoinedAt = new DateTime(314900)
                 };
             }
 

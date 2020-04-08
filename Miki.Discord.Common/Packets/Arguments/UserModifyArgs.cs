@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common.Packets.Arguments
+﻿namespace Miki.Discord.Common.Packets
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
+
     public class UserAvatar
     {
-        private static readonly byte[] JpegHeader = new byte[] { 0xff, 0xd8 };
-        private static readonly byte[] Gif89aHeader = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 };
-        private static readonly byte[] Gif87aHeader = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 };
-        private static readonly byte[] PngHeader = new byte[] { 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a };
+        private static readonly byte[] JpegHeader = { 0xff, 0xd8 };
+        private static readonly byte[] Gif89aHeader = { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 };
+        private static readonly byte[] Gif87aHeader = { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 };
+        private static readonly byte[] PngHeader = { 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a };
 
         public MemoryStream Stream { get; set; }
 
@@ -21,28 +22,30 @@ namespace Miki.Discord.Common.Packets.Arguments
             Stream = new MemoryStream();
             stream.CopyTo(Stream);
 
-            if(type == ImageType.AUTO)
+            if(type != ImageType.AUTO)
             {
-                var buffer = Stream.GetBuffer();
+                return;
+            }
 
-                if(Validate(buffer.Take(JpegHeader.Length), JpegHeader))
-                {
-                    Type = ImageType.JPEG;
-                    return;
-                }
+            var buffer = Stream.GetBuffer();
 
-                if(Validate(buffer.Take(Gif89aHeader.Length), Gif89aHeader)
-                    || Validate(buffer.Take(Gif87aHeader.Length), Gif87aHeader))
-                {
-                    Type = ImageType.GIF;
-                    return;
-                }
+            if(Validate(buffer.Take(JpegHeader.Length), JpegHeader))
+            {
+                Type = ImageType.JPEG;
+                return;
+            }
 
-                if(Validate(buffer.Take(PngHeader.Length), PngHeader))
-                {
-                    Type = ImageType.PNG;
-                    return;
-                }
+            if(Validate(buffer.Take(Gif89aHeader.Length), Gif89aHeader)
+               || Validate(buffer.Take(Gif87aHeader.Length), Gif87aHeader))
+            {
+                Type = ImageType.GIF;
+                return;
+            }
+
+            if(Validate(buffer.Take(PngHeader.Length), PngHeader))
+            {
+                Type = ImageType.PNG;
+                return;
             }
         }
 
@@ -72,9 +75,11 @@ namespace Miki.Discord.Common.Packets.Arguments
     [DataContract]
     public class UserModifyArgs
     {
+        [JsonPropertyName("avatar")]
         [DataMember(Name = "avatar")]
         public UserAvatar Avatar { get; set; }
 
+        [JsonPropertyName("username")]
         [DataMember(Name = "username")]
         public string Username { get; set; }
     }

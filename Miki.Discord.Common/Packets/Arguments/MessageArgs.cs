@@ -1,6 +1,7 @@
-﻿namespace Miki.Discord.Common.Arguments
+﻿namespace Miki.Discord.Common
 {
     using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
 
     [DataContract]
     public class EditMessageArgs
@@ -11,11 +12,13 @@
             Embed = embed;
         }
 
+        [JsonPropertyName("channels")]
         [DataMember(Name = "content")]
-        public string Content;
+        public string Content { get; set; }
 
+        [JsonPropertyName("channels")]
         [DataMember(Name = "embed")]
-        public DiscordEmbed Embed;
+        public DiscordEmbed Embed { get; set; }
     }
 
     [DataContract]
@@ -27,7 +30,8 @@
             TextToSpeech = tts;
         }
 
+        [JsonPropertyName("tts")]
         [DataMember(Name = "tts")]
-        public bool TextToSpeech;
+        public bool TextToSpeech { get; set; }
     }
 }

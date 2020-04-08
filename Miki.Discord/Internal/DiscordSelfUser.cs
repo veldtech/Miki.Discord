@@ -1,6 +1,5 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Common.Packets.Arguments;
 using System;
 using System.Threading.Tasks;
 

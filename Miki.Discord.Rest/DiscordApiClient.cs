@@ -11,7 +11,6 @@
     using Miki.Discord.Common.Events;
     using Miki.Discord.Common.Gateway;
     using Miki.Discord.Common.Packets;
-    using Miki.Discord.Common.Packets.Arguments;
     using Miki.Discord.Rest.Arguments;
     using Miki.Discord.Rest.Converters;
     using Miki.Discord.Rest.Exceptions;
@@ -20,7 +19,6 @@
     using Miki.Net.Http.Factories;
     using Newtonsoft.Json;
     using Common.Packets.API;
-    using Miki.Discord.Common.Arguments;
 
     /// <summary>
     /// A client for Discord's API. Used to perform calls to their RESTful API.

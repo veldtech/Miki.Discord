@@ -77,7 +77,7 @@ namespace Miki.Discord.Tests
             member = new DiscordGuildMemberPacket
             {
                 GuildId = 123,
-                JoinedAt = 0,
+                JoinedAt = new DateTime(0),
                 Deafened = false,
                 Muted = false,
                 Nickname = null,
@@ -329,13 +329,14 @@ namespace Miki.Discord.Tests
         {
             ResetObjects();
 
-            var now = DateTime.ParseExact("01/01/2019 00:00:00", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).Ticks;
+            var now = DateTime.ParseExact(
+                "01/01/2019 00:00:00", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).Ticks;
 
             CultureInfo.CurrentCulture = new CultureInfo("nl-NL");
 
             var guildPacket = new DiscordGuildPacket
             {
-                CreatedAt = now
+                CreatedAt = new DateTime(now)
             };
 
             await client.UpsertAsync("guild", guildPacket);
@@ -344,7 +345,7 @@ namespace Miki.Discord.Tests
 
             var cachedGuild = await client.GetAsync<DiscordGuildPacket>("guild");
 
-            Assert.Equal(now, cachedGuild.CreatedAt);
+            Assert.Equal(new DateTime(now), cachedGuild.CreatedAt);
         }
     }
 }

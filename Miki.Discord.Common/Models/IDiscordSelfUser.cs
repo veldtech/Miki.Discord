@@ -1,8 +1,8 @@
 ﻿namespace Miki.Discord.Common
 {
-    using Miki.Discord.Common.Packets.Arguments;
     using System;
     using System.Threading.Tasks;
+    using Miki.Discord.Common.Packets;
 
     public interface IDiscordSelfUser : IDiscordUser
     {

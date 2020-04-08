@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Miki.Discord</name>
+    </assembly>
+    <members>
+        <member name="P:Miki.Discord.BaseDiscordClient.ApiClient">
+            <summary>
+            The api client used in the discord client and was given in <see cref="T:Miki.Discord.DiscordClientConfigurations"/> at the beginning.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.BaseDiscordClient.Gateway">
+            <summary>
+            The gateway client used in the discord client and was given in <see cref="T:Miki.Discord.DiscordClientConfigurations"/> at the beginning.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordAttachment.FileName">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordAttachment.Height">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordAttachment.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordAttachment.ProxyUrl">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordAttachment.Size">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordAttachment.Url">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordAttachment.Width">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordGuildMessage.#ctor(Miki.Discord.Common.Packets.API.DiscordMessagePacket,Miki.Discord.Common.IDiscordClient)">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordGuildMessage.GuildId">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordGuildMessage.GetGuildAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.Attachments">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.Author">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.Content">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.ChannelId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.MentionedUserIds">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.Timestamp">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.DiscordMessage.Type">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.EditAsync(Miki.Discord.Common.EditMessageArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.GetChannelAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.GetReactionsAsync(Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.CreateReactionAsync(Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji,Miki.Discord.Common.IDiscordUser)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteAllReactionsAsync">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

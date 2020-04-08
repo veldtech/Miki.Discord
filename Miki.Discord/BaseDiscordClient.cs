@@ -1,7 +1,6 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Extensions;
 using Miki.Discord.Common.Gateway;
-using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Internal;
 using System;
@@ -13,7 +12,6 @@ using System.Threading.Tasks;
 namespace Miki.Discord
 {
     using Common.Packets.API;
-    using Miki.Discord.Common.Arguments;
 
     public abstract class BaseDiscordClient : IDiscordClient
     {

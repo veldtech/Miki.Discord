@@ -2,16 +2,21 @@
 
 namespace Miki.Discord.Common
 {
+    using System.Text.Json.Serialization;
+
     [DataContract]
     public class DiscordReactionPacket
     {
+        [JsonPropertyName("count")]
         [DataMember(Name = "count")]
-        public int Count;
+        public int Count { get; set; }
 
+        [JsonPropertyName("me")]
         [DataMember(Name = "me")]
-        public bool Me;
+        public bool Me { get; set; }
 
+        [JsonPropertyName("emoji")]
         [DataMember(Name = "emoji")]
-        public DiscordEmoji Emoji;
+        public DiscordEmoji Emoji { get; set; }
     }
 }

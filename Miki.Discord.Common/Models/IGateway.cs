@@ -3,11 +3,11 @@
     using Packets.API;
     using Miki.Discord.Common.Events;
     using Miki.Discord.Common.Gateway;
-    using Miki.Discord.Common.Gateway.Packets;
     using Miki.Discord.Common.Packets;
     using Miki.Discord.Common.Packets.Events;
     using System;
     using System.Threading.Tasks;
+
     public interface IGateway
     {
         #region Events

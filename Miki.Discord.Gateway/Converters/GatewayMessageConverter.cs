@@ -1,14 +1,18 @@
-﻿using Miki.Discord.Common.Gateway;
-using Miki.Discord.Common.Gateway.Packets;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-
-namespace Miki.Discord.Common.Converters
+﻿namespace Miki.Discord.Gateway.Converters
 {
+    using System;
+    using Miki.Discord.Common.Gateway;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+
     public class GatewayMessageConverter : JsonConverter<GatewayMessage>
     {
-        public override GatewayMessage ReadJson(JsonReader reader, Type objectType, GatewayMessage existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override GatewayMessage ReadJson(
+            JsonReader reader, 
+            Type objectType, 
+            GatewayMessage existingValue, 
+            bool hasExistingValue, 
+            JsonSerializer serializer)
         {
             var val = existingValue;
             if(!hasExistingValue)
@@ -38,7 +42,8 @@ namespace Miki.Discord.Common.Converters
             return val;
         }
 
-        public override void WriteJson(JsonWriter writer, GatewayMessage value, JsonSerializer serializer)
+        public override void WriteJson(
+            JsonWriter writer, GatewayMessage value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Miki.Discord.Rest</name>
+    </assembly>
+    <members>
+        <member name="T:Miki.Discord.Rest.DiscordApiClient">
+            <summary>
+            A client for Discord's API. Used to perform calls to their RESTful API.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.#ctor(Miki.Discord.Common.DiscordToken,Miki.Cache.ICacheClient)">
+            <summary>
+            Creates a new Discord API instance.
+            </summary>
+            <param name="token"></param>
+            <param name="cache"></param>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.AddGuildBanAsync(System.UInt64,System.UInt64,System.Int32,System.String)">
+            <summary>
+            Adds a user to a guild's ban list.
+            </summary>
+            <param name="guildId">Id of the guild you want to ban a user from</param>
+            <param name="userId">Id of the user you want to ban</param>
+            <param name="pruneDays">Amount of days you want to prune messages from the user</param>
+            <param name="reason">Reason for the ban</param>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.AddGuildMemberRoleAsync(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Adds a role to a guild member.
+            </summary>
+            <param name="guildId"></param>
+            <param name="userId"></param>
+            <param name="roleId"></param>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.CreateDMChannelAsync(System.UInt64)">
+            <summary>
+            Creates a Direct channel to a user.
+            </summary>
+            <param name="userId">Id of the user</param>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.CreateEmojiAsync(System.UInt64,Miki.Discord.Common.EmojiCreationArgs)">
+            <summary>
+            Creates and uploads a new emoji for a guild.
+            </summary>
+            <param name="guildId"></param>
+            <param name="args"></param>
+            <returns>The created emoji.</returns>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.CreateGuildRoleAsync(System.UInt64,Miki.Discord.Common.CreateRoleArgs)">
+            <summary>
+            Creates a new role in the guild specified.
+            </summary>
+            <param name="guildId">The guild in which you want to create a role.</param>
+            <param name="args">The properties of the role.</param>
+            <returns>The role you've created, if successful</returns>
+        </member>
+    </members>
+</doc>

@@ -3,44 +3,57 @@
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
 
     [Serializable]
     [DataContract]
     public class DiscordMessagePacket
     {
+        [JsonPropertyName("id")]
         [DataMember(Name = "id")]
         public ulong Id { get; set; }
 
+        [JsonPropertyName("channel_id")]
         [DataMember(Name = "channel_id")]
         public ulong ChannelId { get; set; }
 
+        [JsonPropertyName("guild_id")]
         [DataMember(Name = "guild_id")]
         public ulong? GuildId { get; set; }
 
+        [JsonPropertyName("author")]
         [DataMember(Name = "author")]
         public DiscordUserPacket Author { get; set; }
 
+        [JsonPropertyName("member")]
         [DataMember(Name = "member")]
         public DiscordGuildMemberPacket Member { get; set; }
 
+        [JsonPropertyName("type")]
         [DataMember(Name = "type")]
         public DiscordMessageType Type { get; set; }
 
+        [JsonPropertyName("content")]
         [DataMember(Name = "content")]
         public string Content { get; set; }
 
+        [JsonPropertyName("timestamp")]
         [DataMember(Name = "timestamp")]
         public DateTimeOffset Timestamp { get; set; }
 
+        [JsonPropertyName("tts")]
         [DataMember(Name = "tts")]
         public bool IsTTS { get; set; }
 
+        [JsonPropertyName("mention_everyone")]
         [DataMember(Name = "mention_everyone")]
         public bool MentionsEveryone { get; set; }
 
+        [JsonPropertyName("mentions")]
         [DataMember(Name = "mentions")]
         public List<DiscordUserPacket> Mentions { get; set; }
 
+        [JsonPropertyName("attachments")]
         [DataMember(Name = "attachments")]
         public List<DiscordAttachmentPacket> Attachments { get; set; }
     }

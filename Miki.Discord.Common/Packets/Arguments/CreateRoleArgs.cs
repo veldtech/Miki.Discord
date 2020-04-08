@@ -2,22 +2,29 @@
 
 namespace Miki.Discord.Common
 {
+    using System.Text.Json.Serialization;
+
     [DataContract]
     public class CreateRoleArgs
     {
+        [JsonPropertyName("name")]
         [DataMember(Name = "name")]
-        public string Name;
+        public string Name { get; set; }
 
+        [JsonPropertyName("permissions")]
         [DataMember(Name = "permissions")]
-        public GuildPermission? Permissions;
+        public GuildPermission? Permissions { get; set; }
 
+        [JsonPropertyName("color")]
         [DataMember(Name = "color")]
-        public int? Color;
+        public int? Color { get; set; }
 
+        [JsonPropertyName("hoist")]
         [DataMember(Name = "hoist")]
-        public bool? Hoisted;
+        public bool? Hoisted { get; set; }
 
+        [JsonPropertyName("mentionable")]
         [DataMember(Name = "mentionable")]
-        public bool? Mentionable;
+        public bool? Mentionable { get; set; }
     }
 }

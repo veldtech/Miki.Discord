@@ -1,12 +1,10 @@
 ﻿namespace Miki.Discord.Common
 {
-    using Miki.Discord.Common.Gateway.Packets;
-    using Miki.Discord.Common.Packets;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
-    using Miki.Discord.Common.Arguments;
+    using Miki.Discord.Common.Gateway;
 
     public interface IDiscordClient : IDisposable
     {

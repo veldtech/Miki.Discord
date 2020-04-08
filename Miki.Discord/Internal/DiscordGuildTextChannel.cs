@@ -1,15 +1,12 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
-    using Miki.Discord.Common.Arguments;
+    using Miki.Discord.Common;
+    using Miki.Discord.Helpers;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public class DiscordGuildTextChannel : DiscordGuildChannel, IDiscordTextChannel
     {

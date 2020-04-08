@@ -2,6 +2,7 @@
 {
     using System;
     using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// General ratelimit struct used to verify ratelimits and block potentially ratelimited requests.
@@ -12,24 +13,28 @@
         /// <summary>
         /// Remaining amount of entities that can be sent on this route.
         /// </summary>
+        [JsonPropertyName("remaining")]
         [DataMember(Name = "remaining", Order = 1)]
         public int Remaining { get; set; }
 
         /// <summary>
         /// Total limit of entities that can be sent until <see cref="Reset"/> occurs.
         /// </summary>
+        [JsonPropertyName("limit")]
         [DataMember(Name = "limit", Order = 2)]
         public int Limit { get; set; }
 
         /// <summary>
         /// Epoch until ratelimit resets values.
         /// </summary>
+        [JsonPropertyName("reset")]
         [DataMember(Name = "reset", Order = 3)]
         public long Reset { get; set; }
 
         /// <summary>
         /// An optional global value for a shared ratelimit value.
         /// </summary>
+        [JsonPropertyName("global")]
         [DataMember(Name = "global", Order = 4)]
         public int? Global { get; set; }
 

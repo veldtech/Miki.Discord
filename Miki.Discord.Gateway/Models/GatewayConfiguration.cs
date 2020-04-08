@@ -6,6 +6,10 @@ using System;
 
 namespace Miki.Discord.Gateway
 {
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using Miki.Discord.Gateway.Converters;
+
     public enum GatewayMode
     {
         Default,
@@ -17,7 +21,7 @@ namespace Miki.Discord.Gateway
         /// <summary>
         /// Discord token
         /// </summary>
-        public string Token;
+        public string Token { get; set; }
 
         /// <summary>
         /// Whether the gateway should receive gzip-compressed packets.
@@ -51,7 +55,21 @@ namespace Miki.Discord.Gateway
         /// </summary>
         public Func<GatewayProperties, IGateway> GatewayFactory = p => new GatewayShard(p);
 
-        public IGatewayRatelimiter Ratelimiter = new DefaultGatewayRatelimiter();
+        /// <summary>
+        /// 
+        /// </summary>
+        public IGatewayRatelimiter Ratelimiter { get; set; } = new DefaultGatewayRatelimiter();
+
+        /// <summary>
+        /// Json serializer options.
+        /// </summary>
+        public JsonSerializerOptions SerializerOptions { get; set; } = new JsonSerializerOptions
+        {
+            Converters =
+            {
+                new StringToUlongConverter()
+            }
+        };
 
         /// <summary>
         /// Allow events other than dispatch to be received in raw events?

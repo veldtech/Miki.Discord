@@ -1,5 +1,6 @@
 ﻿namespace Miki.Discord.Tests.Performance
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using BenchmarkDotNet.Attributes;
@@ -35,7 +36,7 @@
                 AfkChannelId = 245245,
                 AfkTimeout = 13,
                 ApplicationId = null,
-                CreatedAt = 422424,
+                CreatedAt = new DateTime(422424),
                 IsOwner = true,
                 IsLarge = false,
                 MemberCount = 420,
@@ -119,7 +120,7 @@
             member = new DiscordGuildMemberPacket
             {
                 GuildId = 34534534,
-                JoinedAt = 0,
+                JoinedAt = new DateTime(0),
                 Deafened = false,
                 Muted = false,
                 Nickname = null,

@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Miki.Discord.Gateway</name>
+    </assembly>
+    <members>
+        <member name="M:Miki.Discord.Gateway.Connection.GatewayConnection.#ctor(Miki.Discord.Gateway.GatewayProperties)">
+            <summary>
+            Creates a new gateway connection
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="T:Miki.Discord.Gateway.Connection.GatewayEncoding">
+            <summary>
+            Discord supported Gateway encoding formats
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.Connection.GatewayEncoding.Json">
+            <summary>
+            Plain-text Json
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.Connection.GatewayEncoding.ETF">
+            <summary>
+            Erlang binary format
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.#ctor(Miki.Discord.Gateway.GatewayProperties)">
+            <summary>
+            Spawn all shards in a single cluster
+            </summary>
+            <param name="properties">general gateway properties</param>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.#ctor(Miki.Discord.Gateway.GatewayProperties,System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Used to spawn specific shards only
+            </summary>
+            <param name="properties">general gateway properties</param>
+            <param name="shards">Which shards should this cluster spawn</param>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.Token">
+            <summary>
+            Discord token
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayProperties.Compressed">
+            <summary>
+            Whether the gateway should receive gzip-compressed packets.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayProperties.Encoding">
+            <summary>
+            What kind of encoding do you want receive.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayProperties.Version">
+            <summary>
+            If you are unsure what this should be, keep it null or GatewayConstants.DefaultVersion.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayProperties.ShardCount">
+            <summary>
+            Total shards running on this token
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayProperties.ShardId">
+            <summary>
+            The current shard's Id
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayProperties.GatewayFactory">
+            <summary>
+            The gateway factory used for spawning shards in <see cref="T:Miki.Discord.Gateway.GatewayCluster"/>.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.Ratelimiter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.SerializerOptions">
+            <summary>
+            Json serializer options.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayProperties.AllowNonDispatchEvents">
+            <summary>
+            Allow events other than dispatch to be received in raw events?
+            </summary>
+        </member>
+    </members>
+</doc>
