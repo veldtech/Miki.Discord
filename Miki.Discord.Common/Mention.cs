@@ -68,6 +68,12 @@
             content = content.TrimStart('<')
                 .TrimEnd('>');
 
+            if (content.Length == 0)
+            {
+                value = default;
+                return false;
+            }
+
             switch(content[0])
             {
                 case '@':

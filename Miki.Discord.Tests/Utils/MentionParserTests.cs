@@ -33,5 +33,13 @@
             Assert.Equal(expectedId, mention.Id);
             Assert.Equal(expectedData, mention.Data);
         }
+        
+        [Theory]
+        [InlineData("<")]
+        public void ParseInvalidAsync(string userData)
+        {
+            Assert.False(Mention.TryParse(userData, out _));
+        }
+        
     }
 }
