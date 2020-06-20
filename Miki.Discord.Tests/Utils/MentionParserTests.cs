@@ -21,10 +21,7 @@
         [InlineData("@everyone", MentionType.USER_ALL, 0, "everyone")]
         [InlineData("@here", MentionType.USER_ALL_ONLINE, 0, "here")]
         public void ParseValidAsync(
-            string userData, 
-            MentionType expectedType, 
-            ulong expectedId, 
-            string expectedData)
+            string userData, MentionType expectedType, ulong expectedId, string expectedData)
         {
             bool result = Mention.TryParse(userData, out var mention);
 

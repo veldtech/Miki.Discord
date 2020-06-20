@@ -10,10 +10,10 @@
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.5.0" />
     <PackageReference Include="Miki.Serialization.MsgPack" Version="1.0.0" />
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
+    <PackageReference Include="Moq" Version="4.5.28" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Miki.Discord.Tests.Dummy\Miki.Discord.Tests.Dummy.csproj" />
     <ProjectReference Include="..\Miki.Discord\Miki.Discord.csproj" />
   </ItemGroup>
 

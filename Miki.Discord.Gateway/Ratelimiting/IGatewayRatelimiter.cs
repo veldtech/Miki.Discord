@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace Miki.Discord.Gateway.Ratelimiting
+﻿namespace Miki.Discord.Gateway.Ratelimiting
 {
     using System.Threading;
+    using System.Threading.Tasks;
 
     public interface IGatewayRatelimiter
     {

@@ -39,7 +39,7 @@
         }
 
         public async Task<IDiscordGuild> GetGuildAsync()
-            => await client.GetGuildAsync(packet.GuildId);
+            => await client.GetGuildAsync(GuildId);
 
         public async Task KickAsync(string reason = null)
         {

@@ -8,9 +8,7 @@
     public static class DiscordChannelHelper
     {
         public static async Task<DiscordMessage> CreateMessageAsync(
-            IDiscordClient client,
-            DiscordChannelPacket channel,
-            MessageArgs args)
+            IDiscordClient client, DiscordChannelPacket channel, MessageArgs args)
         {
             var message = await client.ApiClient.SendMessageAsync(channel.Id, args);
             if(channel.Type == ChannelType.GuildText
@@ -25,9 +23,7 @@
         }
 
         public static GuildPermission GetOverwritePermissions(
-            IDiscordGuildUser user,
-            IDiscordGuildChannel channel,
-            GuildPermission basePermissions)
+            IDiscordGuildUser user, IDiscordGuildChannel channel, GuildPermission basePermissions)
         {
             var permissions = basePermissions;
             if(permissions.HasFlag(GuildPermission.Administrator))

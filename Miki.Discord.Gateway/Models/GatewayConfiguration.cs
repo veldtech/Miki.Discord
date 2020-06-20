@@ -1,21 +1,16 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Gateway.Connection;
-using Miki.Discord.Gateway.Ratelimiting;
-using Miki.Net.WebSockets;
-using System;
-
-namespace Miki.Discord.Gateway
+﻿namespace Miki.Discord.Gateway
 {
+    using Miki.Discord.Common;
+    using Miki.Discord.Gateway.Connection;
+    using Miki.Discord.Gateway.Ratelimiting;
+    using System;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using Miki.Discord.Gateway.Converters;
+    using Miki.Discord.Gateway.WebSocket;
 
-    public enum GatewayMode
-    {
-        Default,
-        RawOnly
-    }
-
+    /// <summary>
+    /// Configurable properties for the gateway client.
+    /// </summary>
     public class GatewayProperties
     {
         /// <summary>
@@ -24,36 +19,43 @@ namespace Miki.Discord.Gateway
         public string Token { get; set; }
 
         /// <summary>
-        /// Whether the gateway should receive gzip-compressed packets.
+        /// Whether the gateway should receive zlib-compressed packets.
+        /// <code>Warning: this is not supported in this library as of now. Please check the github
+        /// page.</code>
         /// </summary>
-        public bool Compressed;
+        public bool Compressed { get; set; }
 
         /// <summary>
         /// What kind of encoding do you want receive.
         /// </summary>
-        public GatewayEncoding Encoding = GatewayEncoding.Json;
+        public GatewayEncoding Encoding { get; set; } = GatewayEncoding.Json;
 
         /// <summary>
         /// If you are unsure what this should be, keep it null or GatewayConstants.DefaultVersion.
         /// </summary>
-        public int Version = GatewayConstants.DefaultVersion;
+        public int Version { get; set; } = GatewayConstants.DefaultVersion;
 
         /// <summary>
         /// Total shards running on this token
         /// </summary>
-        public int ShardCount = 1;
+        public int ShardCount { get; set; } = 1;
 
         /// <summary>
         /// The current shard's Id
         /// </summary>
-        public int ShardId;
-
-        public Func<IWebSocketClient> WebSocketClientFactory = () => new BasicWebSocketClient();
+        public int ShardId { get; set; }
 
         /// <summary>
         /// The gateway factory used for spawning shards in <see cref="GatewayCluster"/>.
         /// </summary>
-        public Func<GatewayProperties, IGateway> GatewayFactory = p => new GatewayShard(p);
+        public Func<GatewayProperties, IGateway> GatewayFactory { get; set; } 
+            = p => new GatewayShard(p);
+
+        /// <summary>
+        /// The websocket that will be used to connect to discord.
+        /// </summary>
+        public Func<IWebSocketClient> WebSocketFactory { get; set; }
+            = () => new DefaultWebSocketClient();
 
         /// <summary>
         /// 
@@ -74,6 +76,11 @@ namespace Miki.Discord.Gateway
         /// <summary>
         /// Allow events other than dispatch to be received in raw events?
         /// </summary>
-        public bool AllowNonDispatchEvents = false;
+        public bool AllowNonDispatchEvents { get; set; } = false;
+
+        /// <summary>
+        /// <see cref="GatewayIntents"/> to subscribe to events. If passed null, you'll subscribe to all events.
+        /// </summary>
+        public GatewayIntents Intents { get; set; } = GatewayIntents.AllDefault; 
     }
 }

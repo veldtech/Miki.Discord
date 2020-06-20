@@ -32,6 +32,10 @@ namespace Miki.Discord.Common.Gateway
         [JsonPropertyName("shard")]
         [DataMember(Name = "shard")] 
         public int[] Shard { get; set; }
+
+        [JsonPropertyName("intents")]
+        [DataMember(Name = "shard")]
+        public int Intent { get; set; }
     }
 
     [DataContract]

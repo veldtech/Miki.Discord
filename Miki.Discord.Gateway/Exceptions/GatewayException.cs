@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Miki.Discord.Gateway
+﻿namespace Miki.Discord.Gateway
 {
+    using System;
+
     public class GatewayException : Exception
     {
         public GatewayException(string message, Exception innerException)

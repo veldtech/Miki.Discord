@@ -1,7 +1,6 @@
-﻿using System.Runtime.Serialization;
-
-namespace Miki.Discord.Common
+﻿namespace Miki.Discord.Common
 {
+    using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
 
     [DataContract]

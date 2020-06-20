@@ -1,4 +1,4 @@
-﻿namespace Miki.Discord.Common.Extensions
+﻿namespace Miki.Discord.Common
 {
     using System;
     using System.Runtime.CompilerServices;

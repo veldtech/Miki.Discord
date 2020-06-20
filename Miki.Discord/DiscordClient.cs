@@ -1,19 +1,25 @@
-﻿using Miki.Cache;
-using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord
+﻿namespace Miki.Discord
 {
+    using Miki.Cache;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Packets;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Discord.Cache;
+
     public partial class DiscordClient : BaseDiscordClient
     {
         public IExtendedCacheClient CacheClient { get; }
 
+        private readonly ICacheHandler cacheHandler;
+
         public DiscordClient(DiscordClientConfigurations config)
             : this(config.ApiClient, config.Gateway, config.CacheClient)
         {
+            cacheHandler = config.CacheHandler.HasValue 
+                ? config.CacheHandler.Unwrap() 
+                : new DefaultCacheHandler(config.CacheClient);
         }
 
         public DiscordClient(IApiClient apiClient, IGateway gateway, IExtendedCacheClient cacheClient)
@@ -144,74 +150,56 @@ namespace Miki.Discord
 
         protected override async Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
         {
-            var packets = await CacheClient.HashValuesAsync<DiscordRolePacket>(
-                CacheUtils.GuildRolesKey(guildId));
-            if(packets != null && packets.Any())
+            var packets = await cacheHandler.GetGuildRolesAsync(guildId);
+            if(packets != null)
             {
                 return packets;
             }
 
-            packets = await ApiClient.GetRolesAsync(guildId);
+            packets = (await ApiClient.GetRolesAsync(guildId))?.ToList();
             if(packets != null && packets.Any())
             {
-                await CacheClient.HashUpsertAsync(
-                    CacheUtils.ChannelsKey(guildId),
-                    packets.Select(x => new KeyValuePair<string, DiscordRolePacket>(
-                        x.Id.ToString(), x)
-                    ));
+                await cacheHandler.SetGuildRolesAsync(guildId, packets);
             }
-
             return packets;
         }
 
         protected override async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
-        {   
-            var packet = await CacheClient.HashGetAsync<DiscordGuildPacket>(
-                CacheUtils.GuildsCacheKey, id.ToString());
+        {
+            var packet = await cacheHandler.GetGuildAsync(id);
             if(packet != null)
             {
                 return packet;
             }
 
             packet = await ApiClient.GetGuildAsync(id);
-            if(packet != null)
-            {
-                await CacheClient.HashUpsertAsync(CacheUtils.GuildsCacheKey, id.ToString(), packet);
-            }
+            await cacheHandler.SetGuildAsync(packet);
             return packet;
         }
 
         protected override async Task<DiscordUserPacket> GetUserPacketAsync(ulong id)
         {
-            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(
-                CacheUtils.UsersCacheKey, id.ToString());
-
-            if(packet == null)
+            var packet = await cacheHandler.GetUserAsync(id);
+            if(packet != null)
             {
-                packet = await ApiClient.GetUserAsync(id);
-                if(packet != null)
-                {
-                    await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, id.ToString(), packet);
-                }
+                return packet;
             }
 
+            packet = await ApiClient.GetUserAsync(id);
+            await cacheHandler.SetUserAsync(packet);
             return packet;
         }
 
         protected override async Task<DiscordUserPacket> GetCurrentUserPacketAsync()
         {
-            DiscordUserPacket packet = await CacheClient.HashGetAsync<DiscordUserPacket>(
-                CacheUtils.UsersCacheKey, "me");
-
-            if(packet == null)
+            var packet = await cacheHandler.GetCurrentUserAsync();
+            if(packet != null)
             {
-                packet = await ApiClient.GetCurrentUserAsync();
-                if(packet != null)
-                {
-                    await CacheClient.HashUpsertAsync(CacheUtils.UsersCacheKey, "me", packet);
-                }
+                return packet;
             }
 
+            packet = await ApiClient.GetCurrentUserAsync();
+            await cacheHandler.SetCurrentUserAsync(packet);
             return packet;
         }
 

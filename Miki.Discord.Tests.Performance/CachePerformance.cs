@@ -7,14 +7,14 @@
     using Miki.Discord.Common;
     using Miki.Discord.Common.Events;
     using Miki.Discord.Common.Packets;
-    using Miki.Discord.Tests.Dummy;
+    using Moq;
 
     [SimpleJob]
     [RPlotExporter, RankColumn]
     public class CachePerformance
     {
         private DiscordGuildPacket packet;
-        private DummyGateway gateway;
+        private IGateway gateway;
 
         private DiscordChannelPacket channel;
         private DiscordGuildMemberPacket member;
@@ -81,7 +81,7 @@
             packet.Channels.AddRange(channels);
             packet.Members.AddRange(members);
 
-            gateway = new DummyGateway();
+            gateway = new Mock<IGateway>().Object;
 
             role = new DiscordRolePacket
             {
@@ -135,33 +135,6 @@
                 RoleIds = new ulong[0],
                 User = user
             };
-        }
-
-        [Benchmark]
-        public async Task AllPackets()
-        {
-            await gateway.OnGuildCreate(packet);
-            await gateway.OnChannelCreate(channel);
-            await gateway.OnChannelUpdate(channel);
-            await gateway.OnChannelDelete(channel);
-            await gateway.OnGuildMemberAdd(member);
-            await gateway.OnGuildMemberUpdate(updateMember);
-            await gateway.OnGuildMemberRemove(packet.Id, user);
-            await gateway.OnGuildRoleCreate(packet.Id, role);
-            await gateway.OnGuildRoleUpdate(packet.Id, role);
-            await gateway.OnGuildRoleDelete(packet.Id, role.Id);
-            await gateway.OnUserUpdate(
-                new DiscordPresencePacket
-                {
-                    User = user,
-                    GuildId = packet.Id
-                });
-            await gateway.OnGuildUpdate(packet);
-            await gateway.OnGuildDelete(
-                new DiscordGuildUnavailablePacket
-                {
-                    GuildId = packet.Id, IsUnavailable = true
-                });
         }
     }
 }

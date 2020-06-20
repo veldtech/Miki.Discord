@@ -1,10 +1,10 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using System;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Packets;
+    using System;
+    using System.Threading.Tasks;
+
     public class DiscordSelfUser : DiscordUser, IDiscordSelfUser
     {
         public DiscordSelfUser(DiscordUserPacket user, IDiscordClient client)

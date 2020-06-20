@@ -72,7 +72,7 @@
             {
                 case '@':
                 {
-                    Mention m = ParseUserMention(content.Slice(1, content.Length - 1));
+                    Mention m = ParseUserMention(content[1..]);
                     value = m;
                     return m.Type != MentionType.NONE;
                 }
@@ -80,7 +80,7 @@
                 case '#':
                 {
                     if(ulong.TryParse(
-                        content.Slice(1, content.Length - 1).ToString(), 
+                        content[1..].ToString(), 
                         out ulong result))
                     {
                         value = new Mention(result, MentionType.CHANNEL);
@@ -134,14 +134,14 @@
             }
             else if(content[0] == '!')
             {
-                if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
+                if(ulong.TryParse(content[1..].ToString(), out ulong result))
                 {
                     return new Mention(result, MentionType.USER_NICKNAME);
                 }
             }
             else if(content[0] == '&')
             {
-                if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
+                if(ulong.TryParse(content[1..].ToString(), out ulong result))
                 {
                     return new Mention(result, MentionType.ROLE);
                 }

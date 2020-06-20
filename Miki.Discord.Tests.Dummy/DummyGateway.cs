@@ -59,9 +59,8 @@ namespace Miki.Discord.Tests.Dummy
 
         public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
 
-        public event Func<GatewayMessage, Task> OnPacketSent;
-
-        public event Func<GatewayMessage, Task> OnPacketReceived;
+        public Func<GatewayMessage, Task> OnPacketSent { get; set; }
+        public Func<GatewayMessage, Task> OnPacketReceived {get;set;}
 
         public Task RestartAsync()
         {

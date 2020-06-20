@@ -98,7 +98,7 @@
             ulong channelId,
             ulong messageId,
             DiscordEmoji emoji)
-            => $"{MessageReactions(channelId, messageId)}/{emoji.ToString()}";
+            => $"{MessageReactions(channelId, messageId)}/{emoji}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string MessageReaction(

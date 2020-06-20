@@ -1,9 +1,9 @@
-﻿using Miki.Discord.Common;
-using System;
-using System.Threading.Tasks;
-
-namespace Miki.Discord.Internal
+﻿namespace Miki.Discord.Internal
 {
+    using Miki.Discord.Common;
+    using System;
+    using System.Threading.Tasks;
+
     public class DiscordChannel : IDiscordChannel
     {
         protected DiscordChannelPacket packet;

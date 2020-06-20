@@ -3,7 +3,7 @@
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class MessageDeleteArgs
+    public class DiscordMessageDeleteArgs
     {
         [DataMember(Name = "id")]
         public ulong MessageId { get; set; }

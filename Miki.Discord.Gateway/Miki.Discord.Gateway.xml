@@ -4,6 +4,11 @@
         <name>Miki.Discord.Gateway</name>
     </assembly>
     <members>
+        <member name="P:Miki.Discord.Gateway.Connection.GatewayConnection.IsRunning">
+            <summary>
+            Shows whether the gateway is active at the moment.
+            </summary>
+        </member>
         <member name="M:Miki.Discord.Gateway.Connection.GatewayConnection.#ctor(Miki.Discord.Gateway.GatewayProperties)">
             <summary>
             Creates a new gateway connection
@@ -25,6 +30,14 @@
             Erlang binary format
             </summary>
         </member>
+        <member name="P:Miki.Discord.Gateway.GatewayCluster.Events">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayCluster.Shards">
+            <summary>
+            Currently running shards in this cluster.
+            </summary>
+        </member>
         <member name="M:Miki.Discord.Gateway.GatewayCluster.#ctor(Miki.Discord.Gateway.GatewayProperties)">
             <summary>
             Spawn all shards in a single cluster
@@ -38,37 +51,307 @@
             <param name="properties">general gateway properties</param>
             <param name="shards">Which shards should this cluster spawn</param>
         </member>
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.SendAsync(System.Int32,Miki.Discord.Common.Gateway.GatewayOpcode,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.RestartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.StartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.StopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.ChannelCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.ChannelDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.ChannelUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildEmojiUpdate">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildMemberCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildMemberDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildMemberUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildRoleCreate">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildRoleDelete">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.GuildRoleUpdate">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.MessageCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.MessageDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.MessageUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.MessageReactionCreate">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.MessageReactionDelete">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.PresenceUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.Ready">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.TypingStart">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayEventHandler.UserUpdate">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayEventHandler.OnPacketReceived(Miki.Discord.Common.Gateway.GatewayMessage)">
+            <summary>
+            Handles the observer's object to handle seperate typed observers.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Gateway.GatewayIntents">
+            <summary>
+            Intents to subscribe to specific events on the Discord Gateway.
+            <a href="https://discordapp.com/developers/docs/topics/gateway#gateway-intents">
+            Read more here</a>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.Guilds">
+            <summary>
+            Enables guild events for dispatch
+            <list type="bullet">
+            <item>GUILD_CREATE</item>
+            <item>GUILD_DELETE</item>
+            <item>GUILD_ROLE_CREATE</item>
+            <item>GUILD_ROLE_UPDATE</item>
+            <item>GUILD_ROLE_DELETE</item>
+            <item>CHANNEL_CREATE</item>
+            <item>CHANNEL_UPDATE</item>
+            <item>CHANNEL_DELETE</item>
+            <item>CHANNEL_PINS_UPDATE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildMembers">
+            <summary>
+            Enables member events for dispatch
+            <list type="bullet">
+            <item>GUILD_MEMBER_ADD</item>
+            <item>GUILD_MEMBER_UPDATE</item>
+            <item>GUILD_MEMBER_REMOVE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildBans">
+            <summary>
+            Enables guild ban events for dispatch
+            <list type="bullet">
+            <item>GUILD_BAN_ADD</item>
+            <item>GUILD_BAN_REMOVE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildEmojis">
+            <summary>
+            Enables guild emoji events for dispatch
+            <list type="bullet">
+            <item>GUILD_EMOJIS_UPDATE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildIntegrations">
+            <summary>
+            Enables guild integration events for dispatch
+            <list type="bullet">
+            <item>GUILD_INTEGRATIONS_UPDATE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildWebhooks">
+            <summary>
+            Enables guild webhook events for dispatch
+            <list type="bullet">
+            <item>WEBHOOKS_UPDATE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildInvites">
+            <summary>
+            Enables guild invite events for dispatch
+            <list type="bullet">
+            <item>INVITE_CREATE</item>
+            <item>INVITE_DELETE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildVoiceStates">
+            <summary>
+            Enables guild voice events for dispatch
+            <list type="bullet">
+            <item>VOICE_STATE_UPDATE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildPresences">
+            <summary>
+            Enables presence events for dispatch
+            <list type="bullet">
+            <item>PRESENCE_UPDATE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildMessages">
+            <summary>
+            Enables presence events for dispatch
+            <list type="bullet">
+            <item>MESSAGE_CREATE</item>
+            <item>MESSAGE_UPDATE</item>
+            <item>MESSAGE_DELETE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildMessageReactions">
+            <summary>
+            Enables presence events for dispatch
+            <list type="bullet">
+            <item>MESSAGE_REACTION_ADD</item>
+            <item>MESSAGE_REACTION_REMOVE</item>
+            <item>MESSAGE_REACTION_REMOVE_ALL</item>
+            <item>MESSAGE_REACTION_REMOVE_EMOJI</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.GuildMessageTyping">
+            <summary>
+            Enables presence events for dispatch
+            <list type="bullet">
+            <item>TYPING_START</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.DirectMessages">
+            <summary>
+            Enables presence events for dispatch
+            <list type="bullet">
+            <item>CHANNEL_CREATE</item>
+            <item>MESSAGE_CREATE</item>
+            <item>MESSAGE_UPDATE</item>
+            <item>MESSAGE_DELETE</item>
+            <item>CHANNEL_PINS_UPDATE</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.DirectMessageReactions">
+            <summary>
+            Enables presence events for dispatch
+            <list type="bullet">
+            <item>MESSAGE_REACTION_ADD</item>
+            <item>MESSAGE_REACTION_REMOVE</item>
+            <item>MESSAGE_REACTION_REMOVE_ALL</item>
+            <item>MESSAGE_REACTION_REMOVE_EMOJI</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.DirectMessageTyping">
+            <summary>
+            Enables presence events for dispatch
+            <list type="bullet">
+            <item>TYPING_START</item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.AllDefault">
+            <summary>
+            Default gateway intents if none is passed through.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.GatewayIntents.AllPrivileged">
+            <summary>
+            All intents, includes privileged routes such as <see cref="F:Miki.Discord.Gateway.GatewayIntents.GuildPresences"/> and
+            <see cref="F:Miki.Discord.Gateway.GatewayIntents.GuildMembers"/>.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayShard.Events">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayShard.RestartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayShard.StartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayShard.StopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayShard.SendAsync(System.Int32,Miki.Discord.Common.Gateway.GatewayOpcode,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.GatewayShard.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Miki.Discord.Gateway.GatewayProperties">
+            <summary>
+            Configurable properties for the gateway client.
+            </summary>
+        </member>
         <member name="P:Miki.Discord.Gateway.GatewayProperties.Token">
             <summary>
             Discord token
             </summary>
         </member>
-        <member name="F:Miki.Discord.Gateway.GatewayProperties.Compressed">
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.Compressed">
             <summary>
-            Whether the gateway should receive gzip-compressed packets.
+            Whether the gateway should receive zlib-compressed packets.
+            <code>Warning: this is not supported in this library as of now. Please check the github
+            page.</code>
             </summary>
         </member>
-        <member name="F:Miki.Discord.Gateway.GatewayProperties.Encoding">
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.Encoding">
             <summary>
             What kind of encoding do you want receive.
             </summary>
         </member>
-        <member name="F:Miki.Discord.Gateway.GatewayProperties.Version">
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.Version">
             <summary>
             If you are unsure what this should be, keep it null or GatewayConstants.DefaultVersion.
             </summary>
         </member>
-        <member name="F:Miki.Discord.Gateway.GatewayProperties.ShardCount">
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.ShardCount">
             <summary>
             Total shards running on this token
             </summary>
         </member>
-        <member name="F:Miki.Discord.Gateway.GatewayProperties.ShardId">
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.ShardId">
             <summary>
             The current shard's Id
             </summary>
         </member>
-        <member name="F:Miki.Discord.Gateway.GatewayProperties.GatewayFactory">
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.GatewayFactory">
             <summary>
             The gateway factory used for spawning shards in <see cref="T:Miki.Discord.Gateway.GatewayCluster"/>.
             </summary>
@@ -83,9 +366,104 @@
             Json serializer options.
             </summary>
         </member>
-        <member name="F:Miki.Discord.Gateway.GatewayProperties.AllowNonDispatchEvents">
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.AllowNonDispatchEvents">
             <summary>
             Allow events other than dispatch to be received in raw events?
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.Intents">
+            <summary>
+            <see cref="T:Miki.Discord.Gateway.GatewayIntents"/> to subscribe to events. If passed null, you'll subscribe to all events.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.Gateway.GatewayEventType">
+            <summary>
+            All Gateway Events.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelCreate">
+            <summary>
+            A new channel was created.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelDelete">
+            <summary>
+            A channel was deleted.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelUpdate">
+            <summary>
+            A channel was edited.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.ChannelPinsUpdate">
+            <summary>
+            A message was pinned on this channel.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildBanAdd">
+            <summary>
+            A member got banned.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildBanRemove">
+            <summary>
+            A member got unbanned.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildCreate">
+            <summary>
+            The bot joined a new guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildDelete">
+            <summary>
+            The bot left a guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildEmojisUpdate">
+            <summary>
+            A new emoji got added/removed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildIntegrationsUpdate">
+            <summary>
+            A new integration got added/removed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMemberAdd">
+            <summary>
+            A member joined a guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMemberRemove">
+            <summary>
+            A former member left a guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMemberUpdate">
+            <summary>
+            A guild member updated their profile/roles/nickname.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.GuildMembersChunk">
+            <summary>
+            Gateway requested members from this guild.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.Ready">
+            <summary>
+            Gateway is ready to go.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.Resumed">
+            <summary>
+            The connection was cut and got resumed.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.Gateway.GatewayEventType.Undefined">
+            <summary>
+            Catch-all for undefined event types.
             </summary>
         </member>
     </members>

@@ -11,10 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Rest", "Miki.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests", "Miki.Discord.Tests\Miki.Discord.Tests.csproj", "{1134FF5E-D9F0-4D78-8F02-207BDB5D3FD4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Dummy", "Miki.Discord.Tests.Dummy\Miki.Discord.Tests.Dummy.csproj", "{46ADCC96-0860-41B8-8794-74D76DC0BB3B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Tests.Performance", "Miki.Discord.Tests.Performance\Miki.Discord.Tests.Performance.csproj", "{C5BABE08-66DA-403E-8BD9-4562D4EA1031}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway", "Miki.Discord.Gateway\Miki.Discord.Gateway.csproj", "{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Example", "..\Miki.Discord.Example\Miki.Discord.Example\Miki.Discord.Example.csproj", "{D8997018-3405-46E6-8424-1660BB6C7838}"
@@ -45,14 +41,6 @@ Global
 		{1134FF5E-D9F0-4D78-8F02-207BDB5D3FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1134FF5E-D9F0-4D78-8F02-207BDB5D3FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1134FF5E-D9F0-4D78-8F02-207BDB5D3FD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46ADCC96-0860-41B8-8794-74D76DC0BB3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46ADCC96-0860-41B8-8794-74D76DC0BB3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46ADCC96-0860-41B8-8794-74D76DC0BB3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46ADCC96-0860-41B8-8794-74D76DC0BB3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C5BABE08-66DA-403E-8BD9-4562D4EA1031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C5BABE08-66DA-403E-8BD9-4562D4EA1031}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C5BABE08-66DA-403E-8BD9-4562D4EA1031}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C5BABE08-66DA-403E-8BD9-4562D4EA1031}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E4B8268-E0AB-4144-AD47-DDEDE1AB57B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -67,8 +55,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1134FF5E-D9F0-4D78-8F02-207BDB5D3FD4} = {17A727C8-38AF-417F-A09E-0585C01A63E7}
-		{46ADCC96-0860-41B8-8794-74D76DC0BB3B} = {17A727C8-38AF-417F-A09E-0585C01A63E7}
-		{C5BABE08-66DA-403E-8BD9-4562D4EA1031} = {17A727C8-38AF-417F-A09E-0585C01A63E7}
 		{D8997018-3405-46E6-8424-1660BB6C7838} = {F107170E-C462-4B43-9033-0A793625E3AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

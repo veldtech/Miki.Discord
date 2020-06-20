@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
     <PackageReference Include="Miki.Cache.InMemory" Version="1.5.0" />
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
+    <PackageReference Include="Moq" Version="4.14.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Miki.Discord.Gateway\Miki.Discord.Gateway.csproj" />
     <ProjectReference Include="..\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
-    <ProjectReference Include="..\Miki.Discord.Tests.Dummy\Miki.Discord.Tests.Dummy.csproj" />
     <ProjectReference Include="..\Miki.Discord\Miki.Discord.csproj" />
   </ItemGroup>
 

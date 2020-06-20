@@ -18,6 +18,8 @@
 
         public async Task<bool> CanIdentifyAsync(CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             try
             {
                 await cache.AcquireLockAsync(CacheKey, token);

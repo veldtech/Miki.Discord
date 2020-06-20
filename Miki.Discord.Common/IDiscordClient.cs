@@ -1,24 +1,13 @@
-﻿namespace Miki.Discord.Common
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Threading.Tasks;
-    using Miki.Discord.Common.Gateway;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Miki.Discord.Events;
 
+namespace Miki.Discord.Common
+{
     public interface IDiscordClient : IDisposable
     {
-        event Func<IDiscordMessage, Task> MessageCreate;
-        event Func<IDiscordMessage, Task> MessageUpdate;
-        event Func<IDiscordGuild, Task> GuildJoin;
-        event Func<IDiscordGuild, Task> GuildAvailable;
-        event Func<IDiscordGuildUser, Task> GuildMemberCreate;
-        event Func<IDiscordGuildUser, Task> GuildMemberDelete;
-        event Func<ulong, Task> GuildLeave;
-        event Func<ulong, Task> GuildUnavailable;
-        event Func<GatewayReadyPacket, Task> Ready;
-        event Func<IDiscordUser, IDiscordUser, Task> UserUpdate;
-
         /// <summary>
         /// The api client used in the discord client and was given in <see cref="DiscordClientConfigurations"/> at the beginning.
         /// </summary>
@@ -28,6 +17,8 @@
         /// The gateway client used in the discord client and was given in <see cref="DiscordClientConfigurations"/> at the beginning.
         /// </summary>
         IGateway Gateway { get; }
+
+        IDiscordEvents Events { get; }  
 
         Task<IDiscordMessage> EditMessageAsync(ulong channelId, ulong messageId, string text, DiscordEmbed embed = null);
 

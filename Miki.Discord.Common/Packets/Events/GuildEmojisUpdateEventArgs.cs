@@ -1,5 +1,6 @@
 ﻿namespace Miki.Discord.Common.Events
 {
+    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
 
@@ -8,10 +9,10 @@
     {
         [JsonPropertyName("guild_id")]
         [DataMember(Name = "guild_id")]
-        public ulong guildId { get; set; }
+        public ulong GuildId { get; set; }
 
         [JsonPropertyName("emojis")]
         [DataMember(Name = "emojis")]
-        public DiscordEmoji[] emojis { get; set; }
+        public IReadOnlyList<DiscordEmoji> Emojis { get; set; }
     }
 }

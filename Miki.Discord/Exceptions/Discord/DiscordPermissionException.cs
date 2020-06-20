@@ -1,8 +1,8 @@
-﻿using Miki.Discord.Common;
-using System;
-
-namespace Miki.Discord.Exceptions
+﻿namespace Miki.Discord.Exceptions
 {
+    using Miki.Discord.Common;
+    using System;
+
     public class DiscordPermissionException : Exception
     {
         public DiscordPermissionException(GuildPermission permissions)

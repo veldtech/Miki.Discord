@@ -1,17 +1,16 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Extensions;
-using Miki.Discord.Common.Gateway;
-using Miki.Discord.Common.Packets;
-using Miki.Discord.Internal;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Discord
+﻿namespace Miki.Discord
 {
-    using Common.Packets.API;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Gateway;
+    using Miki.Discord.Internal;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Discord.Common.Packets.API;
+    using Miki.Discord.Events;
+    using Miki.Discord.Cache;
 
     public abstract class BaseDiscordClient : IDiscordClient
     {
@@ -25,48 +24,19 @@ namespace Miki.Discord
         /// </summary>
         public IGateway Gateway { get; }
 
-        protected BaseDiscordClient(IApiClient apiClient, IGateway gateway)
+        public IDiscordEvents Events { get; }
+
+        private readonly ICacheHandler cache;
+
+        protected BaseDiscordClient(
+            IApiClient apiClient, IGateway gateway, ICacheHandler cache)
         {
+            this.cache = cache;
+
             ApiClient = apiClient;
             Gateway = gateway;
-
-            Gateway.OnMessageCreate += OnMessageCreate;
-            Gateway.OnMessageUpdate += OnMessageUpdate;
-
-            Gateway.OnGuildCreate += OnGuildJoin;
-            Gateway.OnGuildDelete += OnGuildLeave;
-
-            Gateway.OnGuildMemberAdd += OnGuildMemberCreate;
-            Gateway.OnGuildMemberRemove += OnGuildMemberDelete;
-
-            Gateway.OnUserUpdate += OnUserUpdate;
-
-            Gateway.OnReady += OnReady;
+            Events = new DiscordClientEventHandler(cache);
         }
-
-        protected abstract Task<DiscordUserPacket> GetCurrentUserPacketAsync();
-
-        protected abstract Task<DiscordUserPacket> GetUserPacketAsync(ulong id);
-
-        protected abstract Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id);
-
-        protected abstract Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(
-            ulong userId, ulong guildId);
-
-        protected abstract Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(
-            ulong guildId);
-
-        protected abstract Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(
-            ulong guildId);
-
-        protected abstract Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId);
-
-        protected abstract Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId);
-
-        protected abstract Task<DiscordChannelPacket> GetChannelPacketAsync(
-            ulong id, ulong? guildId = null);
-
-        protected abstract Task<bool> IsGuildNewAsync(ulong guildId);
 
         public virtual async Task<IDiscordMessage> EditMessageAsync(
             ulong channelId, ulong messageId, string text, DiscordEmbed embed = null)
@@ -79,8 +49,7 @@ namespace Miki.Discord
                 }));
         }
 
-        public virtual async Task<IDiscordTextChannel> CreateDMAsync(
-            ulong userid)
+        public virtual async Task<IDiscordTextChannel> CreateDMAsync(ulong userid)
         {
             var channel = await ApiClient.CreateDMChannelAsync(userid);
 
@@ -88,8 +57,7 @@ namespace Miki.Discord
         }
 
         public virtual async Task<IDiscordRole> CreateRoleAsync(
-            ulong guildId,
-            CreateRoleArgs args = null)
+            ulong guildId, CreateRoleArgs args = null)
         {
             return new DiscordRole(
                 await ApiClient.CreateGuildRoleAsync(guildId, args),
@@ -97,8 +65,7 @@ namespace Miki.Discord
             );
         }
 
-        public virtual async Task<IDiscordRole> EditRoleAsync(
-            ulong guildId, DiscordRolePacket role)
+        public virtual async Task<IDiscordRole> EditRoleAsync(ulong guildId, DiscordRolePacket role)
         {
             return new DiscordRole(await ApiClient.EditRoleAsync(guildId, role), this);
         }
@@ -118,15 +85,10 @@ the user without the guild ID. Use the cached client instead.");
 
             var guild = await GetGuildPacketAsync(guildId.Value);
             var presence = guild.Presences.FirstOrDefault(p => p.User.Id == userId);
-
-            return presence != null 
-                ? new DiscordPresence(presence) 
-                : null;
+            return presence != null ? new DiscordPresence(presence) : null;
         }
 
-        public virtual async Task<IDiscordRole> GetRoleAsync(
-            ulong guildId,
-            ulong roleId)
+        public virtual async Task<IDiscordRole> GetRoleAsync(ulong guildId, ulong roleId)
         {
             return new DiscordRole(await GetRolePacketAsync(roleId, guildId), this);
         }
@@ -141,7 +103,6 @@ the user without the guild ID. Use the cached client instead.");
         public virtual async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
         {
             var channelPackets = await GetGuildChannelPacketsAsync(guildId);
-
             return channelPackets.Select(x => ResolveChannel(x) as IDiscordGuildChannel);
         }
 
@@ -170,19 +131,12 @@ the user without the guild ID. Use the cached client instead.");
         public virtual async Task<IDiscordGuild> GetGuildAsync(ulong id)
         {
             var packet = await GetGuildPacketAsync(id);
-
-            return new DiscordGuild(
-                packet,
-                this
-            );
+            return new DiscordGuild(packet, this);
         }
 
         public virtual async Task<IDiscordGuildUser> GetGuildUserAsync(ulong id, ulong guildId)
         {
-            return new DiscordGuildUser(
-                await GetGuildMemberPacketAsync(id, guildId),
-                this
-            );
+            return new DiscordGuildUser(await GetGuildMemberPacketAsync(id, guildId), this);
         }
 
         public async Task<IEnumerable<IDiscordGuildUser>> GetGuildUsersAsync(ulong guildId)
@@ -263,86 +217,8 @@ the user without the guild ID. Use the cached client instead.");
             }
         }
 
-        public virtual event Func<IDiscordMessage, Task> MessageCreate;
-        public virtual event Func<IDiscordMessage, Task> MessageUpdate;
-
-        public virtual event Func<IDiscordGuild, Task> GuildJoin;
-        public virtual event Func<IDiscordGuild, Task> GuildAvailable;
-
-        public virtual event Func<IDiscordGuildUser, Task> GuildMemberCreate;
-        public virtual event Func<IDiscordGuildUser, Task> GuildMemberDelete;
-
-        public virtual event Func<ulong, Task> GuildLeave;
-        public virtual event Func<ulong, Task> GuildUnavailable;
-
-        public virtual event Func<GatewayReadyPacket, Task> Ready;
-
-        public virtual event Func<IDiscordUser, IDiscordUser, Task> UserUpdate;
-
-        private async Task OnGuildMemberDelete(ulong guildId, DiscordUserPacket packet)
-        {
-            DiscordGuildMemberPacket member = await GetGuildMemberPacketAsync(packet.Id, guildId);
-
-            await GuildMemberDelete.InvokeAsync(
-                new DiscordGuildUser(member, this)
-            );
-        }
-
-        private Task OnGuildMemberCreate(DiscordGuildMemberPacket packet)
-            => GuildMemberCreate?.InvokeAsync(new DiscordGuildUser(packet, this));
-
-        private Task OnMessageCreate(DiscordMessagePacket packet)
-            => MessageCreate?.InvokeAsync(ResolveMessage(packet));
-        private Task OnMessageUpdate(DiscordMessagePacket packet)
-            => MessageUpdate?.InvokeAsync(ResolveMessage(packet));
-
-        private async Task OnGuildJoin(DiscordGuildPacket guild)
-        {
-            var g = new DiscordGuild(guild, this);
-
-            if(await IsGuildNewAsync(guild.Id))
-            {
-                await GuildJoin.InvokeAsync(g);
-            }
-            else
-            {
-                await GuildAvailable.InvokeAsync(g);
-            }
-        }
-
-        private Task OnGuildLeave(DiscordGuildUnavailablePacket guild)
-        {
-            if(guild.IsUnavailable.GetValueOrDefault(false))
-            {
-                return GuildUnavailable.InvokeAsync(guild.GuildId);
-            }
-            return GuildLeave.InvokeAsync(guild.GuildId);
-        }
-
-        private async Task OnUserUpdate(DiscordPresencePacket user)
-        {
-            await UserUpdate.InvokeAsync(
-                await GetUserAsync(user.User.Id),
-                new DiscordUser(user.User, this));
-        }
-
-        private async Task OnReady(GatewayReadyPacket readyPacket)
-        {
-            await Ready.InvokeAsync(readyPacket);
-        }
-
         public virtual void Dispose()
         {
-            Gateway.OnMessageCreate -= OnMessageCreate;
-            Gateway.OnMessageUpdate -= OnMessageUpdate;
-
-            Gateway.OnGuildCreate -= OnGuildJoin;
-            Gateway.OnGuildDelete -= OnGuildLeave;
-
-            Gateway.OnGuildMemberAdd -= OnGuildMemberCreate;
-            Gateway.OnGuildMemberRemove -= OnGuildMemberDelete;
-
-            Gateway.OnUserUpdate -= OnUserUpdate;
         }
     }
 }
