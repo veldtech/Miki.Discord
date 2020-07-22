@@ -1,12 +1,12 @@
-﻿namespace Miki.Discord.Common
-{
-    using System;
-    using Miki.Discord.Common.Events;
-    using Miki.Discord.Common.Gateway;
-    using Miki.Discord.Common.Packets;
-    using Miki.Discord.Common.Packets.API;
-    using Miki.Discord.Common.Packets.Events;
+﻿using System;
+using Miki.Discord.Common.Events;
+using Miki.Discord.Common.Gateway;
+using Miki.Discord.Common.Packets;
+using Miki.Discord.Common.Packets.API;
+using Miki.Discord.Common.Packets.Events;
 
+namespace Miki.Discord.Common
+{
     public interface IGatewayEvents
     {
         IObservable<DiscordChannelPacket> ChannelCreate { get; }
@@ -25,8 +25,8 @@
         IObservable<DiscordMessagePacket> MessageCreate { get; }
         IObservable<DiscordMessageDeleteArgs> MessageDelete { get; }
         IObservable<DiscordMessagePacket> MessageUpdate { get; }
-        IObservable<DiscordMessageReactionAddEventArgs> MessageReactionCreate { get; }
-        IObservable<DiscordMessageReactionRemoveEventArgs> MessageReactionDelete { get; }
+        IObservable<DiscordReactionPacket> MessageReactionCreate { get; }
+        IObservable<DiscordReactionPacket> MessageReactionDelete { get; }
         IObservable<DiscordPresencePacket> PresenceUpdate { get; }
         IObservable<GatewayReadyPacket> Ready { get; }
         IObservable<TypingStartEventArgs> TypingStart { get; }

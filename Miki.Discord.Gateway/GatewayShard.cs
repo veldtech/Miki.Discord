@@ -1,4 +1,5 @@
-﻿using Miki.Discord.Common;
+﻿using Microsoft.Extensions.Hosting;
+using Miki.Discord.Common;
 using Miki.Discord.Common.Gateway;
 using Miki.Discord.Gateway.Connection;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Discord.Gateway
 {
-    public class GatewayShard : IDisposable, IGateway
+    public class GatewayShard : IDisposable, IGateway, IHostedService
     {
         private readonly GatewayConnection connection;
         private readonly GatewayEventHandler eventHandler;
@@ -27,12 +28,18 @@ namespace Miki.Discord.Gateway
         /// </summary>
         public ConnectionStatus Status => connection.ConnectionStatus;
 
+        public IObservable<GatewayMessage> PacketReceived => connection.OnPacketReceived;
+
         public GatewayShard(GatewayProperties configuration)
         {
             tokenSource = new CancellationTokenSource();
             connection = new GatewayConnection(configuration);
-            eventHandler = new GatewayEventHandler(
-                connection.OnPacketReceived, configuration.SerializerOptions);
+            
+            if (configuration.UseGatewayEvents)
+            {
+                eventHandler = new GatewayEventHandler(
+                    PacketReceived, configuration.SerializerOptions);
+            }
         }
 
         /// <inheritdoc/>
@@ -42,19 +49,19 @@ namespace Miki.Discord.Gateway
         }
 
         /// <inheritdoc/>
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken token)
         {
             if(isRunning)
             {
                 return;
             }
 
-            await connection.StartAsync();
+            await connection.StartAsync(token);
             isRunning = true;
         }
 
         /// <inheritdoc/>
-        public async Task StopAsync()
+        public async Task StopAsync(CancellationToken token)
         {
             if(!isRunning)
             {
@@ -62,7 +69,7 @@ namespace Miki.Discord.Gateway
             }
 
             tokenSource.Cancel();
-            await connection.StopAsync();
+            await connection.StopAsync(token);
             isRunning = false;
         }
 

@@ -5,14 +5,15 @@
     <AssemblyName>Miki.Discord</AssemblyName>
     <RootNamespace>Miki.Discord</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>3.3.0</Version>
+    <Version>4.0.0-rc.1</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Abstractified wrapper over Miki.Discord components. Used as a high level client relatable to other Discord libraries.</Description>
     <PackageTags>discord, api</PackageTags>
-    <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
+    <PackageIconUrl></PackageIconUrl>
     <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,6 +24,10 @@
     <None Remove=".gitignore" />
     <None Remove="LICENSE" />
     <None Remove="README.md" />
+    <None Include="..\.nuget\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -33,6 +38,7 @@
     <PackageReference Include="Miki.Functional" Version="0.1.3" />
     <PackageReference Include="Miki.Logging" Version="1.4.2" />
     <PackageReference Include="Miki.Cache" Version="1.5.0" />
+    <PackageReference Include="Miki.Patterns.Repositories" Version="4.1.0" />
     <PackageReference Include="System.Reactive" Version="4.4.1" />
   </ItemGroup>
 

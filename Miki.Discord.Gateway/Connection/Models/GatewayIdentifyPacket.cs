@@ -1,10 +1,9 @@
-﻿
+﻿using System;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 namespace Miki.Discord.Common.Gateway
 {
-    using System;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
-
     [DataContract]
     public class GatewayIdentifyPacket
     {

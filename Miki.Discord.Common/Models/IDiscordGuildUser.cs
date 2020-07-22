@@ -1,10 +1,10 @@
-﻿namespace Miki.Discord.Common
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Miki.Discord.Common.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Miki.Discord.Common.Models;
 
+namespace Miki.Discord.Common
+{
     public interface IDiscordGuildUser : IDiscordUser, IContainsGuild
     {
         string Nickname { get; }

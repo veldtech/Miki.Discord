@@ -4,6 +4,26 @@
         <name>Miki.Discord.Gateway</name>
     </assembly>
     <members>
+        <member name="T:Miki.Discord.Gateway.Connection.GatewayConnection">
+            <summary>
+            Basic managed connection with Discord's gateway.
+            </summary>
+        </member>
+        <member name="E:Miki.Discord.Gateway.Connection.GatewayConnection.OnConnect">
+            <summary>
+            Event that gets called when the connection connects successfully.
+            </summary>
+        </member>
+        <member name="E:Miki.Discord.Gateway.Connection.GatewayConnection.OnDisconnect">
+            <summary>
+            Event that gets called when the connection gets disconnected.
+            </summary>
+        </member>
+        <member name="E:Miki.Discord.Gateway.Connection.GatewayConnection.OnError">
+            <summary>
+            Event that gets called when an unexpected error gets thrown.
+            </summary>
+        </member>
         <member name="P:Miki.Discord.Gateway.Connection.GatewayConnection.IsRunning">
             <summary>
             Shows whether the gateway is active at the moment.
@@ -29,6 +49,15 @@
             <summary>
             Erlang binary format
             </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToUlongConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToUlongConverter.Write(System.Text.Json.Utf8JsonWriter,System.UInt64,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayCluster.PacketReceived">
+            <inheritdoc/>
         </member>
         <member name="P:Miki.Discord.Gateway.GatewayCluster.Events">
             <inheritdoc/>
@@ -57,10 +86,10 @@
         <member name="M:Miki.Discord.Gateway.GatewayCluster.RestartAsync">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Gateway.GatewayCluster.StartAsync">
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Gateway.GatewayCluster.StopAsync">
+        <member name="M:Miki.Discord.Gateway.GatewayCluster.StopAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="P:Miki.Discord.Gateway.GatewayEventHandler.ChannelCreate">
@@ -299,13 +328,23 @@
         <member name="P:Miki.Discord.Gateway.GatewayShard.Events">
             <inheritdoc/>
         </member>
+        <member name="P:Miki.Discord.Gateway.GatewayShard.ShardId">
+            <summary>
+            Index of the shard.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Gateway.GatewayShard.Status">
+            <summary>
+            Current status of the connection.
+            </summary>
+        </member>
         <member name="M:Miki.Discord.Gateway.GatewayShard.RestartAsync">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Gateway.GatewayShard.StartAsync">
+        <member name="M:Miki.Discord.Gateway.GatewayShard.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Gateway.GatewayShard.StopAsync">
+        <member name="M:Miki.Discord.Gateway.GatewayShard.StopAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:Miki.Discord.Gateway.GatewayShard.SendAsync(System.Int32,Miki.Discord.Common.Gateway.GatewayOpcode,System.Object)">
@@ -356,6 +395,11 @@
             The gateway factory used for spawning shards in <see cref="T:Miki.Discord.Gateway.GatewayCluster"/>.
             </summary>
         </member>
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.WebSocketFactory">
+            <summary>
+            The websocket that will be used to connect to discord.
+            </summary>
+        </member>
         <member name="P:Miki.Discord.Gateway.GatewayProperties.Ratelimiter">
             <summary>
             
@@ -371,9 +415,96 @@
             Allow events other than dispatch to be received in raw events?
             </summary>
         </member>
+        <member name="P:Miki.Discord.Gateway.GatewayProperties.UseGatewayEvents">
+            <summary>
+            Initializes <see cref="T:Miki.Discord.Common.IGatewayEvents"/> for rich events.
+            </summary>
+        </member>
         <member name="P:Miki.Discord.Gateway.GatewayProperties.Intents">
             <summary>
             <see cref="T:Miki.Discord.Gateway.GatewayIntents"/> to subscribe to events. If passed null, you'll subscribe to all events.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Ratelimiting.CacheBasedRatelimiter.CanIdentifyAsync(System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Ratelimiting.DefaultGatewayRatelimiter.CanIdentifyAsync(System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Miki.Discord.Gateway.Ratelimiting.IGatewayRatelimiter">
+            <summary>
+            Ratelimits identify calls on websocket.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Ratelimiting.IGatewayRatelimiter.CanIdentifyAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Returns whether it can identify or not.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient">
+            <summary>
+            Default WebSocket implementation with <see cref="T:System.Net.WebSockets.ClientWebSocket"/>.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.#ctor">
+            <summary>
+            Creates a new instance of the websocket.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.CloseStatus">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.CloseStatusDescription">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.ConnectAsync(System.Uri,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.ReceiveAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.DefaultWebSocketClient.SendAsync(System.ArraySegment{System.Byte},System.Net.WebSockets.WebSocketMessageType,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Miki.Discord.Gateway.WebSocket.IWebSocketClient">
+            <summary>
+            Abstraction for websockets.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Gateway.WebSocket.IWebSocketClient.CloseStatus">
+            <summary>
+            Current reason if websocket is closed.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Gateway.WebSocket.IWebSocketClient.CloseStatusDescription">
+            <summary>
+            Additional server-fed data sent with a close.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.IWebSocketClient.CloseAsync(System.Net.WebSockets.WebSocketCloseStatus,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Closes the WebSocket connection.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.IWebSocketClient.ConnectAsync(System.Uri,System.Threading.CancellationToken)">
+            <summary>
+            Connects a WebSocket.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.IWebSocketClient.ReceiveAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Receive a buffer from the WebSocket stream.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.WebSocket.IWebSocketClient.SendAsync(System.ArraySegment{System.Byte},System.Net.WebSockets.WebSocketMessageType,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Send a message to the server.
             </summary>
         </member>
         <member name="T:Miki.Discord.Common.Gateway.GatewayEventType">

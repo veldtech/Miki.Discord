@@ -53,11 +53,11 @@ namespace Miki.Discord.Gateway
         public IObservable<DiscordMessagePacket> MessageUpdate => messageUpdateSubject;
 
         /// <inheritdoc />
-        public IObservable<DiscordMessageReactionAddEventArgs> MessageReactionCreate
+        public IObservable<DiscordReactionPacket> MessageReactionCreate
             => messageReactionCreateSubject;
 
         /// <inheritdoc />
-        public IObservable<DiscordMessageReactionRemoveEventArgs> MessageReactionDelete
+        public IObservable<DiscordReactionPacket> MessageReactionDelete
             => messageReactionDeleteSubject;
 
         /// <inheritdoc/>
@@ -86,8 +86,8 @@ namespace Miki.Discord.Gateway
         private readonly Subject<DiscordMessagePacket> messageCreateSubject;
         private readonly Subject<DiscordMessageDeleteArgs> messageDeleteSubject;
         private readonly Subject<DiscordMessagePacket> messageUpdateSubject;
-        private readonly Subject<DiscordMessageReactionAddEventArgs> messageReactionCreateSubject;
-        private readonly Subject<DiscordMessageReactionRemoveEventArgs> messageReactionDeleteSubject;
+        private readonly Subject<DiscordReactionPacket> messageReactionCreateSubject;
+        private readonly Subject<DiscordReactionPacket> messageReactionDeleteSubject;
         private readonly Subject<DiscordPresencePacket> presenceUpdateSubject;
         private readonly Subject<GatewayReadyPacket> readySubject;
         private readonly Subject<TypingStartEventArgs> typingStartSubject;
@@ -117,7 +117,8 @@ namespace Miki.Discord.Gateway
             messageCreateSubject = new Subject<DiscordMessagePacket>();
             messageUpdateSubject = new Subject<DiscordMessagePacket>();
             messageDeleteSubject = new Subject<DiscordMessageDeleteArgs>();
-            messageReactionCreateSubject = new Subject<DiscordMessageReactionAddEventArgs>();
+            messageReactionCreateSubject = new Subject<DiscordReactionPacket>();
+            messageReactionDeleteSubject = new Subject<DiscordReactionPacket>();
             presenceUpdateSubject = new Subject<DiscordPresencePacket>();
             readySubject = new Subject<GatewayReadyPacket>();
             typingStartSubject = new Subject<TypingStartEventArgs>();
@@ -197,6 +198,16 @@ namespace Miki.Discord.Gateway
                         elem.ToObject<DiscordMessageDeleteArgs>(serializerOptions));
                     break;
 
+                case "MESSAGE_REACTION_ADD":
+                    messageReactionCreateSubject.OnNext(
+                        elem.ToObject<DiscordReactionPacket>(serializerOptions));
+                    break;
+                
+                case "MESSAGE_REACTION_REMOVE":
+                    messageReactionDeleteSubject.OnNext(
+                        elem.ToObject<DiscordReactionPacket>(serializerOptions));
+                    break;
+                
                 case "MESSAGE_UPDATE":
                     messageUpdateSubject.OnNext(
                         elem.ToObject<DiscordMessagePacket>(serializerOptions));

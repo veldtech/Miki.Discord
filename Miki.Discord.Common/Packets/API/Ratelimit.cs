@@ -1,9 +1,9 @@
-﻿namespace Miki.Discord.Rest
-{
-    using System;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Rest
+{
     /// <summary>
     /// General ratelimit struct used to verify ratelimits and block potentially ratelimited requests.
     /// </summary>

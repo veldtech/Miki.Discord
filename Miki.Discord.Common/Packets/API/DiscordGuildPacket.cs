@@ -1,12 +1,12 @@
-﻿namespace Miki.Discord.Common
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
-    using Miki.Discord.Common.Packets;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Miki.Discord.Common.Packets;
 
+namespace Miki.Discord.Common
+{
     /// <summary>
     /// The root of the Guild Packet. This class is used internally and should not be used. Use
     /// <see cref="DiscordGuildPacket"/> instead.

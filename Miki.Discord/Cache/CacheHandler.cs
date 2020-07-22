@@ -1,147 +1,124 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Events;
-using Miki.Discord.Common.Packets;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Events;
 using Miki.Discord.Common.Gateway;
+using Miki.Discord.Common.Packets;
 
-namespace Miki.Discord
+namespace Miki.Discord.Cache
 {
-    public partial class DiscordClient
+    /// <summary>
+    /// Handles gateway caching.
+    /// </summary>
+    public class EventCacheHandler : IDisposable
     {
-        private void AttachHandlers()
+        private readonly List<IDisposable> disposables = new List<IDisposable>();
+        private readonly ICacheHandler cacheHandler;
+        private readonly IGateway gateway;
+
+        public EventCacheHandler(IGateway gateway, ICacheHandler cacheHandler)
         {
-            Gateway.Events.ChannelCreate.SubscribeTask(OnChannelCreate);
-            Gateway.Events.ChannelUpdate.SubscribeTask(OnChannelCreate);
-            Gateway.Events.ChannelDelete.SubscribeTask(OnChannelDelete);
-            Gateway.Events.GuildCreate.SubscribeTask(OnGuildCreate);
-            Gateway.Events.GuildUpdate.SubscribeTask(OnGuildUpdate);
-            Gateway.Events.GuildDelete.SubscribeTask(OnGuildDelete);
-            Gateway.Events.GuildEmojiUpdate.SubscribeTask(OnGuildEmojiUpdate);
-            Gateway.Events.GuildMemberCreate.SubscribeTask(OnGuildMemberAdd);
-            Gateway.Events.GuildMemberDelete.SubscribeTask(OnGuildMemberRemove);
-            Gateway.Events.GuildMemberUpdate.SubscribeTask(OnGuildMemberUpdate);
-            Gateway.Events.GuildRoleCreate.SubscribeTask(OnRoleCreate);
-            Gateway.Events.GuildRoleUpdate.SubscribeTask(OnRoleCreate);
-            Gateway.Events.GuildRoleDelete.SubscribeTask(OnRoleDelete);
-            Gateway.Events.UserUpdate.SubscribeTask(OnUserUpdate);
-            Gateway.Events.Ready.SubscribeTask(OnReady);
+            this.gateway = gateway;
+            this.cacheHandler = cacheHandler;
+            
+            disposables.AddRange(
+                new [] {
+                    gateway.Events.ChannelCreate.SubscribeTask(OnChannelCreate),
+                    gateway.Events.ChannelUpdate.SubscribeTask(OnChannelCreate),
+                    gateway.Events.ChannelDelete.SubscribeTask(OnChannelDelete),
+                    gateway.Events.GuildCreate.SubscribeTask(OnGuildCreate),
+                    gateway.Events.GuildUpdate.SubscribeTask(OnGuildUpdate),
+                    gateway.Events.GuildDelete.SubscribeTask(OnGuildDelete),
+                    gateway.Events.GuildEmojiUpdate.SubscribeTask(OnGuildEmojiUpdate),
+                    gateway.Events.GuildMemberCreate.SubscribeTask(OnGuildMemberAdd),
+                    gateway.Events.GuildMemberDelete.SubscribeTask(OnGuildMemberRemove),
+                    gateway.Events.GuildMemberUpdate.SubscribeTask(OnGuildMemberUpdate),
+                    gateway.Events.GuildRoleCreate.SubscribeTask(OnRoleCreate),
+                    gateway.Events.GuildRoleUpdate.SubscribeTask(OnRoleCreate),
+                    gateway.Events.GuildRoleDelete.SubscribeTask(OnRoleDelete),
+                    gateway.Events.UserUpdate.SubscribeTask(OnUserUpdate),
+                    gateway.Events.Ready.SubscribeTask(OnReady) 
+                });
         }
 
         private async Task OnGuildEmojiUpdate(GuildEmojisUpdateEventArgs eventArgs)
         {
-            var guild = await CacheClient.HashGetAsync<DiscordGuildPacket>(
-                CacheUtils.GuildsCacheKey, eventArgs.GuildId.ToString());
-
-            if(guild != null)
-            {
-                guild.Emojis = eventArgs.Emojis.ToArray();
-                await CacheClient.HashUpsertAsync(
-                    CacheUtils.GuildsCacheKey, eventArgs.GuildId.ToString(), guild);
-            }
+            var guild = await cacheHandler.Guilds.GetAsync(eventArgs.GuildId)
+                        ?? new DiscordGuildPacket {Id = eventArgs.GuildId};
+            guild.Emojis = eventArgs.Emojis.ToArray();
+            await cacheHandler.Guilds.EditAsync(guild);
         }
 
         private async Task OnRoleDelete(RoleDeleteEventArgs eventArgs)
         {
-            await CacheClient.HashDeleteAsync(
-                CacheUtils.GuildRolesKey(eventArgs.GuildId),
-                eventArgs.RoleId.ToString());
+            await cacheHandler.Roles.DeleteAsync(new DiscordRolePacket
+            {
+                Id = eventArgs.RoleId,
+                GuildId = eventArgs.GuildId
+            });
         }
 
         private async Task OnRoleCreate(RoleEventArgs eventArgs)
         {
-            await CacheClient.HashUpsertAsync(
-                CacheUtils.GuildRolesKey(eventArgs.GuildId),
-                eventArgs.Role.Id.ToString(),
-                eventArgs.Role);
+            await cacheHandler.Roles.AddAsync(eventArgs.Role);
         }
 
-        private Task OnReady(GatewayReadyPacket ready)
+        private async Task OnReady(GatewayReadyPacket ready)
         {
-            var readyPackets = new KeyValuePair<string, DiscordGuildPacket>[ready.Guilds.Count()];
-
-            for(int i = 0, max = readyPackets.Length; i < max; i++)
-            {
-                readyPackets[i] = new KeyValuePair<string, DiscordGuildPacket>(
-                    ready.Guilds[i].Id.ToString(),
-                    ready.Guilds[i]);
-            }
-
-            return Task.WhenAll(
-                CacheClient.HashUpsertAsync(
-                    CacheUtils.GuildsCacheKey,
-                    readyPackets),
-                CacheClient.HashUpsertAsync(
-                    CacheUtils.UsersCacheKey,
-                    ready.CurrentUser.Id.ToString(),
-                    ready.CurrentUser)
-            );
+            await Task.WhenAll(
+                cacheHandler.Guilds.AddAsync(ready.Guilds).AsTask(),
+                cacheHandler.Users.AddAsync(ready.CurrentUser).AsTask(),
+                cacheHandler.SetCurrentUserAsync(ready.CurrentUser).AsTask());
         }
 
         private async Task OnUserUpdate(DiscordUserPacket user)
         {
-            await cacheHandler.SetUserAsync(user);
+            await cacheHandler.Users.EditAsync(user);
         }
 
-        private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs member)
+        private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs updateEventArgs)
         {
-            var m = await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(
-                CacheUtils.GuildMembersKey(member.GuildId), member.User.Id.ToString());
+            var member = await cacheHandler.Members.GetAsync(updateEventArgs.GuildId, updateEventArgs.User.Id) 
+                         ?? new DiscordGuildMemberPacket();
 
-            if(m == null)
+            member.User = updateEventArgs.User;
+            member.Roles = updateEventArgs.RoleIds.ToList();
+            member.Nickname = updateEventArgs.Nickname;
+
+            await cacheHandler.Members.EditAsync(member);
+        }
+
+        private async Task OnGuildMemberRemove(GuildIdUserArgs args)
+        {
+            await cacheHandler.Members.DeleteAsync(new DiscordGuildMemberPacket
             {
-                m = new DiscordGuildMemberPacket();
-            }
-
-            m.User = member.User;
-            m.Roles = member.RoleIds.ToList();
-            m.Nickname = member.Nickname;
-
-            await CacheClient.HashUpsertAsync(
-                CacheUtils.GuildMembersKey(member.GuildId), member.User.Id.ToString(), m);
+                User =  args.User,
+                GuildId = args.GuildId
+            });
         }
 
-        private Task OnGuildMemberRemove(GuildIdUserArgs args)
+        private async Task OnGuildMemberAdd(DiscordGuildMemberPacket member)
         {
-            return CacheClient.HashDeleteAsync(
-                CacheUtils.GuildMembersKey(args.GuildId), args.User.Id.ToString());
+            await cacheHandler.Members.AddAsync(member);
         }
 
-        private Task OnGuildMemberAdd(DiscordGuildMemberPacket member)
+        private async Task OnGuildDelete(DiscordGuildUnavailablePacket unavailableGuild)
         {
-            return CacheClient.HashUpsertAsync(
-                CacheUtils.GuildMembersKey(member.GuildId),
-                member.User.Id.ToString(),
-                member);
-        }
-
-        private Task OnGuildDelete(DiscordGuildUnavailablePacket unavailableGuild)
-        {
-            return CacheClient.HashDeleteAsync(
-                CacheUtils.GuildsCacheKey,
-                unavailableGuild.GuildId.ToString());
+            await cacheHandler.Guilds.DeleteAsync(new DiscordGuildPacket
+            {
+                Id  = unavailableGuild.GuildId
+            });
         }
 
         private async Task OnGuildUpdate(DiscordGuildPacket arg1)
         {
-            var guild = await CacheClient.HashGetAsync<DiscordGuildPacket>(
-                CacheUtils.GuildsCacheKey,
-                arg1.Id.ToString());
-
-            if(guild == null)
-            {
-                guild = arg1;
-            }
-            else
-            {
-                guild.OverwriteContext(arg1);
-            }
-
-            await CacheClient.HashUpsertAsync(
-                CacheUtils.GuildsCacheKey,
-                guild.Id.ToString(),
-                guild);
+            var guild = await cacheHandler.Guilds.GetAsync(arg1.Id) ?? arg1;
+            
+            guild.OverwriteContext(arg1);
+            
+            await cacheHandler.Guilds.EditAsync(guild);
         }
 
         private Task OnGuildCreate(DiscordGuildPacket guild)
@@ -149,47 +126,46 @@ namespace Miki.Discord
             guild.Members.RemoveAll(x => x == null);
 
             return Task.WhenAll(
-                CacheClient.HashUpsertAsync(
-                    CacheUtils.GuildsCacheKey, guild.Id.ToString(), guild),
-                CacheClient.HashUpsertAsync(
-                    CacheUtils.ChannelsKey(guild.Id),
+                cacheHandler.Guilds.AddAsync(guild).AsTask(),
+                cacheHandler.Channels.AddAsync(
                     guild.Channels.Select(x =>
-                {
-                    x.GuildId = guild.Id;
-                    return new KeyValuePair<string, DiscordChannelPacket>(x.Id.ToString(), x);
-                })),
-                CacheClient.HashUpsertAsync(
-                    CacheUtils.GuildMembersKey(guild.Id),
+                    {
+                         x.GuildId = guild.Id;
+                         return x;
+                    })).AsTask(),
+                cacheHandler.Members.AddAsync(
                     guild.Members.Select(x =>
-                {
-                    x.GuildId = guild.Id;
-                    return new KeyValuePair<string, DiscordGuildMemberPacket>(x.User.Id.ToString(), x);
-                })),
-                CacheClient.HashUpsertAsync(
-                    CacheUtils.GuildRolesKey(guild.Id),
+                    {
+                        x.GuildId = guild.Id;
+                        return x;
+                    })).AsTask(),
+                cacheHandler.Roles.AddAsync(
                     guild.Roles.Select(x =>
-                {
-                    return new KeyValuePair<string, DiscordRolePacket>(x.Id.ToString(), x);
-                })),
-                CacheClient.HashUpsertAsync(
-                    CacheUtils.UsersCacheKey,
-                    guild.Members.Select(x =>
-                {
-                    return new KeyValuePair<string, DiscordUserPacket>(x.User.Id.ToString(), x.User);
-                }))
-            );
+                    {
+                        x.GuildId = guild.Id;
+                        return x;
+                    })).AsTask(),
+                cacheHandler.Users.AddAsync(
+                    guild.Members.Select(x => x.User)).AsTask());
         }
 
-        private Task OnChannelCreate(DiscordChannelPacket channel)
+        private async Task OnChannelCreate(DiscordChannelPacket channel)
         {
-            return CacheClient.HashUpsertAsync(
-                CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString(), channel);
+            await cacheHandler.Channels.AddAsync(channel); 
         }
 
-        private Task OnChannelDelete(DiscordChannelPacket channel)
+        private async Task OnChannelDelete(DiscordChannelPacket channel)
         {
-            return CacheClient.HashDeleteAsync(
-                CacheUtils.ChannelsKey(channel.GuildId), channel.Id.ToString());
+            await cacheHandler.Channels.DeleteAsync(channel);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            foreach (var d in disposables)
+            {
+                d.Dispose();
+            }
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿namespace Miki.Discord.Gateway.WebSocket
-{
-    using System;
-    using System.Net.WebSockets;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Gateway.WebSocket
+{
     /// <summary>
     /// Default WebSocket implementation with <see cref="System.Net.WebSockets.ClientWebSocket"/>.
     /// </summary>

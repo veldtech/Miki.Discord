@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Common.Packets
-{
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Common.Packets
+{
     [DataContract]
     public class DiscordGuildUnavailablePacket
     {

@@ -1,9 +1,9 @@
-﻿namespace Miki.Discord.Common.Events
-{
-    using System.Collections.Generic;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Common.Events
+{
     [DataContract]
     public class GuildEmojisUpdateEventArgs
     {

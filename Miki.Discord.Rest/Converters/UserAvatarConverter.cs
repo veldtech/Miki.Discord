@@ -1,9 +1,9 @@
-﻿namespace Miki.Discord.Rest.Converters
-{
-    using Newtonsoft.Json;
-    using System;
-    using Miki.Discord.Common.Packets;
+﻿using Newtonsoft.Json;
+using System;
+using Miki.Discord.Common.Packets;
 
+namespace Miki.Discord.Rest.Converters
+{
     public class UserAvatarConverter : JsonConverter<UserAvatar>
     {
         public override UserAvatar ReadJson(

@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Rest
-{
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Rest
+{
     [DataContract]
     public class EmojiModifyArgs
     {

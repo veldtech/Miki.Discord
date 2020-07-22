@@ -1,13 +1,13 @@
-﻿namespace Miki.Discord.Gateway
-{
-    using Miki.Discord.Common;
-    using Miki.Discord.Gateway.Connection;
-    using Miki.Discord.Gateway.Ratelimiting;
-    using System;
-    using System.Text.Json;
-    using Miki.Discord.Gateway.Converters;
-    using Miki.Discord.Gateway.WebSocket;
+﻿using Miki.Discord.Common;
+using Miki.Discord.Gateway.Connection;
+using Miki.Discord.Gateway.Ratelimiting;
+using System;
+using System.Text.Json;
+using Miki.Discord.Gateway.Converters;
+using Miki.Discord.Gateway.WebSocket;
 
+namespace Miki.Discord.Gateway
+{
     /// <summary>
     /// Configurable properties for the gateway client.
     /// </summary>
@@ -77,6 +77,11 @@
         /// Allow events other than dispatch to be received in raw events?
         /// </summary>
         public bool AllowNonDispatchEvents { get; set; } = false;
+
+        /// <summary>
+        /// Initializes <see cref="IGatewayEvents"/> for rich events.
+        /// </summary>
+        public bool UseGatewayEvents { get; set; } = true;
 
         /// <summary>
         /// <see cref="GatewayIntents"/> to subscribe to events. If passed null, you'll subscribe to all events.

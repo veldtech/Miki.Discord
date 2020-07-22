@@ -1,7 +1,7 @@
-﻿namespace Miki.Discord.Common.Events
-{
-    using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
+namespace Miki.Discord.Common.Events
+{
     [DataContract]
     public class ModifyGuildMemberArgs
     {

@@ -1,11 +1,11 @@
-﻿namespace Miki.Discord.Common.Packets
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Common.Packets
+{
     public class UserAvatar
     {
         private static readonly byte[] JpegHeader = { 0xff, 0xd8 };

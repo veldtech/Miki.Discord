@@ -1,212 +1,288 @@
-﻿namespace Miki.Discord
-{
-    using Miki.Cache;
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Packets;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Discord.Cache;
+﻿#nullable enable
 
-    public partial class DiscordClient : BaseDiscordClient
+using Microsoft.Extensions.Hosting;
+using Miki.Cache;
+using Miki.Discord.Cache;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Gateway;
+using Miki.Discord.Events;
+using Miki.Discord.Helpers;
+using Miki.Discord.Internal.Data;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Miki.Discord
+{
+    public class DiscordClient : IDiscordClient, IHostedService
     {
-        public IExtendedCacheClient CacheClient { get; }
+        /// <summary>
+        /// The api client used in the discord client and was given in 
+        /// <see cref="DiscordClientConfiguration"/>
+        /// at the beginning.
+        /// </summary>
+        public IApiClient ApiClient { get; }
+
+        /// <summary>
+        /// The gateway client used in the discord client and was given in 
+        /// <see cref="DiscordClientConfiguration"/>
+        /// at the beginning.
+        /// </summary>
+        public IGateway Gateway { get; }
+
+        /// <summary>
+        /// Managed gateway events.
+        /// </summary>
+        public IDiscordEvents Events { get; }
 
         private readonly ICacheHandler cacheHandler;
 
-        public DiscordClient(DiscordClientConfigurations config)
-            : this(config.ApiClient, config.Gateway, config.CacheClient)
+        private readonly EventCacheHandler eventCacheHandler;
+
+        /// <summary>
+        /// Creates a new discord client.
+        /// </summary>
+        public DiscordClient(DiscordClientConfiguration configurations)
+            : this(configurations.ApiClient, configurations.Gateway, configurations.CacheClient)
         {
-            cacheHandler = config.CacheHandler.HasValue 
-                ? config.CacheHandler.Unwrap() 
-                : new DefaultCacheHandler(config.CacheClient);
         }
 
+        /// <summary>
+        /// Constructs a default implementation of Miki.Discord for dependency injection.
+        /// </summary>
         public DiscordClient(IApiClient apiClient, IGateway gateway, IExtendedCacheClient cacheClient)
-            : base(apiClient, gateway)
         {
-            CacheClient = cacheClient;
-            AttachHandlers();
+            ApiClient = apiClient;
+            Gateway = gateway;
+            cacheHandler = new DefaultCacheHandler(cacheClient, apiClient);
+
+            Events = new DiscordEventHandler(this, cacheHandler);
+            Events.SubscribeTo(Gateway);
+
+            eventCacheHandler = new EventCacheHandler(gateway, cacheHandler);
         }
 
-        protected override async Task<DiscordChannelPacket> GetChannelPacketAsync(
-            ulong id, ulong? guildId = null)
+        /// <summary>
+        /// Constructs a fully customized implementation of Miki.Discord.
+        /// </summary>
+        /// <param name="apiClient"></param>
+        /// <param name="gateway"></param>
+        /// <param name="cacheHandler"></param>
+        /// <param name="eventHandler"></param>
+        public DiscordClient(
+            IApiClient apiClient, 
+            IGateway gateway, 
+            ICacheHandler cacheHandler,
+            IDiscordEvents eventHandler)
         {
-            var packet = await CacheClient.HashGetAsync<DiscordChannelPacket>(
-                CacheUtils.ChannelsKey(guildId),
-                id.ToString());
+            ApiClient = apiClient;
+            Gateway = gateway;
+            Events = eventHandler;
+            this.cacheHandler = cacheHandler;
+        }
 
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordTextChannel> CreateDMAsync(ulong userid)
+        {
+            var channel = await ApiClient.CreateDMChannelAsync(userid);
+            if(!(AbstractionHelpers.ResolveChannel(this, channel) is IDiscordTextChannel textChannel))
+            {
+                throw new InvalidDataException("DM channel was not a text channel");
+            }
+
+            return textChannel;
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordRole> CreateRoleAsync(ulong guildId, CreateRoleArgs? args)
+        {
+            return new DiscordRole(
+                await ApiClient.CreateGuildRoleAsync(guildId, args),
+                this
+            );
+        }
+
+        /// <inheritdoc/>
+        public virtual void Dispose()
+        {
+            eventCacheHandler.Dispose();
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordMessage> EditMessageAsync(
+            ulong channelId, ulong messageId, string text, DiscordEmbed? embed)
+        {
+            return AbstractionHelpers.ResolveMessage(this, await ApiClient.EditMessageAsync(
+                channelId, messageId, new EditMessageArgs
+                {
+                    Content = text,
+                    Embed = embed
+                }));
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordRole> EditRoleAsync(ulong guildId, DiscordRolePacket role)
+        {
+            return new DiscordRole(await ApiClient.EditRoleAsync(guildId, role), this);
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordPresence?> GetUserPresence(
+            ulong userId, ulong? guildId = null)
+        {
+            if(!guildId.HasValue)
+            {
+                throw new NotSupportedException(
+                    @"The default Discord Client cannot get the presence of 
+the user without the guild ID. Use the cached client instead.");
+            }
+
+            // We have to get the guild because there is no API end-point for user presence.
+            // This is a known issue: https://github.com/discordapp/discord-api-docs/issues/666
+
+            var guild = await cacheHandler.Guilds.GetAsync(guildId.Value);
+            var presence = guild.Presences.FirstOrDefault(p => p.User.Id == userId);
+            return presence != null ? new DiscordPresence(presence, this) : null;
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordRole?> GetRoleAsync(ulong guildId, ulong roleId)
+        {
+            var role = await cacheHandler.Roles.GetAsync(roleId, guildId);
+            if(role == null)
+            {
+                return null;
+            }
+
+            return new DiscordRole(role, this);
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<IDiscordRole>> GetRolesAsync(ulong guildId)
+        {
+            return (await cacheHandler.GetRolesFromGuildAsync(guildId))
+                .Select(x => new DiscordRole(x, this))
+                .ToList();
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId)
+        {
+            var channelPackets = await cacheHandler.GetChannelsFromGuildAsync(guildId);
+            if(channelPackets == null)
+            {
+                return new List<IDiscordGuildChannel>();
+            }
+
+            return channelPackets
+                .Select(x => AbstractionHelpers.ResolveChannelAs<IDiscordGuildChannel>(this, x))
+                .Where(x => x != null);
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
+        {
+            var channel = await cacheHandler.Channels.GetAsync(id, guildId);
+
+            return AbstractionHelpers.ResolveChannel(this, channel);
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordSelfUser> GetSelfAsync()
+            => new DiscordSelfUser(await cacheHandler.GetCurrentUserAsync(), this);
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordGuild?> GetGuildAsync(ulong id)
+        {
+            var packet = await cacheHandler.Guilds.GetAsync(id);
             if(packet == null)
             {
-                packet = await ApiClient.GetChannelAsync(id);
-                if(packet != null)
-                {
-                    await CacheClient.HashUpsertAsync(
-                        CacheUtils.ChannelsKey(),
-                        id.ToString(),
-                        packet);
-                }
+                return null;
             }
-            return packet;
+
+            return new DiscordGuild(packet, this);
         }
 
-        protected override async Task<bool> IsGuildNewAsync(ulong guildId)
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordGuildUser> GetGuildUserAsync(ulong id, ulong guildId)
         {
-            return !await CacheClient.HashExistsAsync(CacheUtils.GuildsCacheKey, guildId.ToString());
+            return new DiscordGuildUser(await cacheHandler.Members.GetAsync(id, guildId), this);
         }
 
-        protected override async Task<IEnumerable<DiscordGuildMemberPacket>> GetGuildMembersPacketAsync(
-            ulong guildId)
+        /// <inheritdoc/>
+        public async Task<IEnumerable<IDiscordGuildUser>> GetGuildUsersAsync(ulong guildId)
         {
-            IReadOnlyList<DiscordGuildMemberPacket> packets =
-                (await CacheClient.HashValuesAsync<DiscordGuildMemberPacket>(
-                    CacheUtils.GuildMembersKey(guildId)))?.ToArray();
+            return (await cacheHandler.GetMembersFromGuildAsync(guildId))
+                .Select(x => new DiscordGuildUser(x, this));
+        }
 
-            if(packets == null || packets.Count == 0)
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<IDiscordUser>> GetReactionsAsync(
+            ulong channelId, ulong messageId, DiscordEmoji emoji)
+        {
+            var users = await ApiClient.GetReactionsAsync(channelId, messageId, emoji);
+            if(users == null)
             {
-                packets = (await ApiClient.GetGuildAsync(guildId)).Members;
-
-                if(packets.Count > 0)
-                {
-                    await CacheClient.HashUpsertAsync(
-                        CacheUtils.ChannelsKey(guildId),
-                        packets.Select(x => new KeyValuePair<string, DiscordGuildMemberPacket>(
-                            x.User.Id.ToString(), x)
-                        ));
-                }
+                return new List<IDiscordUser>();
             }
 
-            return packets;
+            return users.Where(x => x != null).Select(x => new DiscordUser(x, this));
         }
 
-        protected override async Task<IEnumerable<DiscordChannelPacket>> GetGuildChannelPacketsAsync(
-            ulong guildId)
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordUser?> GetUserAsync(ulong id)
         {
-            IReadOnlyList<DiscordChannelPacket> packets =
-                (await CacheClient.HashValuesAsync<DiscordChannelPacket>(
-                    CacheUtils.ChannelsKey(guildId)))?.ToArray();
-
-            if(packets == null || packets.Count == 0)
-            {
-                var result = await ApiClient.GetChannelsAsync(guildId);
-
-                packets = result as IReadOnlyList<DiscordChannelPacket> ?? result.ToArray();
-
-                if(packets.Any())
-                {
-                    await CacheClient.HashUpsertAsync(
-                        CacheUtils.ChannelsKey(guildId),
-                        packets.Select(x => new KeyValuePair<string, DiscordChannelPacket>(
-                            x.Id.ToString(), x))
-                    );
-                }
-            }
-
-            return packets;
-        }
-
-        protected override async Task<DiscordGuildMemberPacket> GetGuildMemberPacketAsync(
-            ulong userId, ulong guildId)
-        {
-            DiscordGuildMemberPacket packet = await CacheClient.HashGetAsync<DiscordGuildMemberPacket>(
-                CacheUtils.GuildMembersKey(guildId), userId.ToString());
-
+            var packet = await cacheHandler.Users.GetAsync(id);
             if(packet == null)
             {
-                packet = await ApiClient.GetGuildUserAsync(userId, guildId);
-
-                if(packet != null)
-                {
-                    packet.GuildId = guildId;
-                    await CacheClient.HashUpsertAsync(
-                        CacheUtils.GuildMembersKey(guildId), 
-                        userId.ToString(), 
-                        packet);
-                }
+                return null;
             }
-            return packet;
+
+            return new DiscordUser(packet, this);
         }
 
-        protected override async Task<DiscordRolePacket> GetRolePacketAsync(ulong roleId, ulong guildId)
+        /// <inheritdoc/>
+        public virtual async Task SetGameAsync(int shardId, DiscordStatus status)
         {
-            DiscordRolePacket packet =
-                await CacheClient.HashGetAsync<DiscordRolePacket>(
-                    CacheUtils.GuildRolesKey(guildId), roleId.ToString());
-
-            if(packet == null)
-            {
-                packet = (await ApiClient.GetRolesAsync(guildId))
-                    .FirstOrDefault(x => x.Id == roleId);
-
-                if(packet != null)
-                {
-                    await CacheClient.HashUpsertAsync(
-                        CacheUtils.GuildRolesKey(guildId), roleId.ToString(), packet);
-                }
-            }
-
-            return packet;
+            await Gateway.SendAsync(shardId, GatewayOpcode.StatusUpdate, status);
         }
 
-        protected override async Task<IEnumerable<DiscordRolePacket>> GetRolePacketsAsync(ulong guildId)
-        {
-            var packets = await cacheHandler.GetGuildRolesAsync(guildId);
-            if(packets != null)
-            {
-                return packets;
-            }
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordMessage> SendFileAsync(
+            ulong channelId, Stream stream, string fileName, MessageArgs? message)
+            => AbstractionHelpers.ResolveMessage(
+                this, await ApiClient.SendFileAsync(channelId, stream, fileName, message));
 
-            packets = (await ApiClient.GetRolesAsync(guildId))?.ToList();
-            if(packets != null && packets.Any())
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordMessage> SendMessageAsync(
+            ulong channelId, MessageArgs message)
+            => AbstractionHelpers.ResolveMessage(
+                this, await ApiClient.SendMessageAsync(channelId, message));
+
+        /// <inheritdoc/>
+        public virtual async Task<IDiscordMessage> SendMessageAsync(
+            ulong channelId, string text, DiscordEmbed? embed)
+        {
+            return await SendMessageAsync(channelId, new MessageArgs
             {
-                await cacheHandler.SetGuildRolesAsync(guildId, packets);
-            }
-            return packets;
+                Content = text,
+                Embed = embed
+            });
         }
 
-        protected override async Task<DiscordGuildPacket> GetGuildPacketAsync(ulong id)
+        /// <inheritdoc/>
+        public async Task StartAsync(CancellationToken token)
         {
-            var packet = await cacheHandler.GetGuildAsync(id);
-            if(packet != null)
-            {
-                return packet;
-            }
-
-            packet = await ApiClient.GetGuildAsync(id);
-            await cacheHandler.SetGuildAsync(packet);
-            return packet;
+            await Gateway.StartAsync(token);
         }
 
-        protected override async Task<DiscordUserPacket> GetUserPacketAsync(ulong id)
+        /// <inheritdoc/>
+        public async Task StopAsync(CancellationToken token)
         {
-            var packet = await cacheHandler.GetUserAsync(id);
-            if(packet != null)
-            {
-                return packet;
-            }
-
-            packet = await ApiClient.GetUserAsync(id);
-            await cacheHandler.SetUserAsync(packet);
-            return packet;
-        }
-
-        protected override async Task<DiscordUserPacket> GetCurrentUserPacketAsync()
-        {
-            var packet = await cacheHandler.GetCurrentUserAsync();
-            if(packet != null)
-            {
-                return packet;
-            }
-
-            packet = await ApiClient.GetCurrentUserAsync();
-            await cacheHandler.SetCurrentUserAsync(packet);
-            return packet;
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            DetachHandlers();
+            await Gateway.StopAsync(token);
         }
     }
 }

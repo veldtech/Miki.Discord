@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Gateway.Connection
-{
-    using System.Text.Json.Serialization;
-    using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
+namespace Miki.Discord.Gateway.Connection
+{
     public class GatewayResumePacket
     {
         [JsonProperty("token")]

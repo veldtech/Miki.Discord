@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Common
-{
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Common
+{
     public interface IDiscordChannel : ISnowflake
     {
         bool IsNsfw { get; }

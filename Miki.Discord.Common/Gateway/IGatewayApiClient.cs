@@ -1,7 +1,7 @@
-﻿namespace Miki.Discord.Common.Gateway
-{
-    using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
+namespace Miki.Discord.Common.Gateway
+{
     public interface IGatewayApiClient
     {
         Task<GatewayConnectionPacket> GetGatewayAsync();

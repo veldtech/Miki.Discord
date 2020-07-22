@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Common.Gateway
-{
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Common.Gateway
+{
     [DataContract]
     public class GatewayHelloPacket
     {

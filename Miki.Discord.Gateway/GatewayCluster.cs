@@ -1,25 +1,29 @@
-﻿namespace Miki.Discord.Gateway
-{
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Events;
-    using Miki.Discord.Common.Gateway;
-    using Miki.Discord.Common.Packets;
-    using Miki.Discord.Common.Packets.API;
-    using Miki.Discord.Common.Packets.Events;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using System.Reactive.Subjects;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Gateway;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Extensions.Hosting;
 
-    public class GatewayCluster : IGateway
+namespace Miki.Discord.Gateway
+{
+    public class GatewayCluster : IGateway, IHostedService
     {
+        /// <inheritdoc/>
+        public IObservable<GatewayMessage> PacketReceived => messageSubject;
+
         /// <inheritdoc/>
         public IGatewayEvents Events { get; }
 
         /// <summary>
         /// Currently running shards in this cluster.
         /// </summary>
-        public Dictionary<int, IGateway> Shards { get; set; } = new Dictionary<int, IGateway>();
+        public Dictionary<int, IGateway> Shards { get; } = new Dictionary<int, IGateway>();
+
+        private Subject<GatewayMessage> messageSubject;
 
         /// <summary>
         /// Spawn all shards in a single cluster
@@ -27,7 +31,8 @@
         /// <param name="properties">general gateway properties</param>
         public GatewayCluster(GatewayProperties properties)
             : this(properties, Enumerable.Range(0, properties.ShardCount))
-        {}
+        {
+        }
 
         /// <summary>
         /// Used to spawn specific shards only
@@ -40,6 +45,8 @@
             {
                 throw new ArgumentException("shards cannot be null.");
             }
+            
+            messageSubject = new Subject<GatewayMessage>();
 
             foreach(var i in shards)
             {
@@ -55,11 +62,16 @@
                     Intents = properties.Intents,
                     AllowNonDispatchEvents = properties.AllowNonDispatchEvents,
                     GatewayFactory = properties.GatewayFactory,
-                    SerializerOptions = properties.SerializerOptions
+                    SerializerOptions = properties.SerializerOptions,
+                    UseGatewayEvents =  false
                 };
 
-                Shards.Add(i, properties.GatewayFactory(shardProperties));
+                var shard = properties.GatewayFactory(shardProperties);
+                Shards.Add(i, shard);
+                shard.PacketReceived.Subscribe(messageSubject.OnNext);
             }
+            
+            Events = new GatewayEventHandler(messageSubject, properties.SerializerOptions);
         }
 
         /// <inheritdoc/>
@@ -81,22 +93,21 @@
         }
 
         /// <inheritdoc/>
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken token = default)
         {
             foreach(var shard in Shards.Values)
             {
-                await shard.StartAsync()
+                await shard.StartAsync(token)
                     .ConfigureAwait(false);
             }
         }
 
         /// <inheritdoc/>
-        public async Task StopAsync()
+        public async Task StopAsync(CancellationToken token = default)
         {
             foreach(var shard in Shards.Values)
             {
-      
-                await shard.StopAsync()
+                await shard.StopAsync(token)
                     .ConfigureAwait(false);
             }
         }

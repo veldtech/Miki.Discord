@@ -1,7 +1,7 @@
-﻿namespace Miki.Discord.Common
-{
-    using Miki.Discord.Common.Packets;
+﻿using Miki.Discord.Common.Packets;
 
+namespace Miki.Discord.Common
+{
     public interface IDiscordPresence
     {
         DiscordActivity Activity { get; }

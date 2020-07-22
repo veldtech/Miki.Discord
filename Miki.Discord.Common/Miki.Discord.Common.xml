@@ -4,17 +4,22 @@
         <name>Miki.Discord.Common</name>
     </assembly>
     <members>
-        <member name="M:Miki.Discord.Common.CacheUtils.ChannelsKey(System.Nullable{System.UInt64})">
+        <member name="M:Miki.Discord.Common.Color.#ctor(System.Single,System.Single,System.Single)">
             <summary>
-            Returns a DM channel cache key collection
+            Creates a color from floats ranging from 0.0 to 1.0.
             </summary>
-            <returns></returns>
         </member>
-        <member name="F:Miki.Discord.Common.CacheUtils.UsersCacheKey">
-            <summary>
-            Returns a user collection cache key
-            </summary>
-            <returns></returns>
+        <member name="M:Miki.Discord.Common.Color.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Common.Color.Equals(Miki.Discord.Common.Color)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Common.Color.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Common.Color.ToString">
+            <inheritdoc/>
         </member>
         <member name="T:Miki.Discord.Common.DiscordToken">
             <summary>
@@ -55,9 +60,23 @@
             Gets the formatted type. e.g. Bot, Bearer.
             </summary>
         </member>
+        <member name="M:Miki.Discord.Common.DiscordToken.IsValidToken">
+            <summary>
+            Verifies if the token is somewhat
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordToken.ToString">
+            <inheritdoc/>
+        </member>
         <member name="M:Miki.Discord.Common.DiscordToken.op_Implicit(System.String)~Miki.Discord.Common.DiscordToken">
             <summary>
             Implicitely takes a string and parses it into a token.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.ReactiveExtensions.SubscribeTask``1(System.IObservable{``0},System.Func{``0,System.Threading.Tasks.Task},System.Func{System.Exception,System.Threading.Tasks.Task})">
+            <summary>
+            Subscribes with an asynchronous task and handles errors in case of error.
             </summary>
         </member>
         <member name="T:Miki.Discord.Common.Gateway.GatewayConnectionPacket">
@@ -159,6 +178,93 @@
             Milliseconds until this session refreshes.
             </summary>
         </member>
+        <member name="T:Miki.Discord.Common.CacheHelpers">
+            <summary>
+            Helper class for cache related operations in Miki.Discord.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.CacheHelpers.ChannelsKey(System.Nullable{System.UInt64})">
+            <summary>
+            Returns a DM channel cache key collection
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Miki.Discord.Common.CacheHelpers.UsersCacheKey">
+            <summary>
+            Returns a user collection cache key
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.CacheHelpers.GuildsCacheKey">
+            <summary>
+            Guilds collection cache key.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.CacheHelpers.GuildMembersKey(System.UInt64)">
+            <summary>
+            Guild members cache key, indexes all members per guild.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.CacheHelpers.GuildRolesKey(System.UInt64)">
+            <summary>
+            Guild roles cache key, indexes all roles per guild.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.CacheHelpers.GuildPresencesKey">
+            <summary>
+            Guild presences cache key, indexes all presences per guild.
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Common.DiscordHelpers">
+            <summary>
+            Helper methods and properties for Discord related objects.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.DiscordHelpers.BasePath">
+            <summary>
+            API base path.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.DiscordHelpers.DiscordEpoch">
+            <summary>
+            Discord's snowflake start epoch. Used to find the creation date of a snowflake.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.DiscordHelpers.DiscordUrl">
+            <summary>
+            Discord base URL. Links to the website.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.DiscordHelpers.CdnUrl">
+            <summary>
+            CDN base URL. Used to fetch resources from Discord's CDN.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordHelpers.GetAvatarUrl(Miki.Discord.Common.Packets.DiscordUserPacket,Miki.Discord.Common.ImageType,Miki.Discord.Common.ImageSize)">
+            <summary>
+            Helper function to automatically get either custom or default avatar based on the
+            values received from a <see cref="T:Miki.Discord.Common.Packets.DiscordUserPacket"/>.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordHelpers.GetAvatarUrl(System.UInt64,System.String,Miki.Discord.Common.ImageType,Miki.Discord.Common.ImageSize)">
+            <summary>
+            Gets user's custom avatar URL.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordHelpers.GetAvatarUrl(System.Int16)">
+            <summary>
+            Gets the default Discord avatars based on the user's discriminator.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordHelpers.GetIconUrl(Miki.Discord.Common.DiscordGuildPacket,Miki.Discord.Common.ImageType,Miki.Discord.Common.ImageSize)">
+            <summary>
+            Get a guild icon URL
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordHelpers.GetCreationTime(Miki.Discord.Common.ISnowflake)">
+            <summary>
+            Gets the time of creation for a snowflake.
+            </summary>
+        </member>
         <member name="P:Miki.Discord.Common.IDiscordClient.ApiClient">
             <summary>
             The api client used in the discord client and was given in <see cref="!:DiscordClientConfigurations"/> at the beginning.
@@ -167,6 +273,26 @@
         <member name="P:Miki.Discord.Common.IDiscordClient.Gateway">
             <summary>
             The gateway client used in the discord client and was given in <see cref="!:DiscordClientConfigurations"/> at the beginning.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.IDiscordClient.Events">
+            <summary>
+            Object containing all Discord gateway events.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordClient.SendFileAsync(System.UInt64,System.IO.Stream,System.String,Miki.Discord.Common.MessageArgs)">
+            <summary>
+            Sends a file from containing <paramref name="stream"/>.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordClient.SendMessageAsync(System.UInt64,Miki.Discord.Common.MessageArgs)">
+            <summary>
+            Sends a message to <paramref name="channelId"/>.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordClient.SendMessageAsync(System.UInt64,System.String,Miki.Discord.Common.DiscordEmbed)">
+            <summary>
+            Sends a message to <paramref name="channelId"/>.
             </summary>
         </member>
         <member name="T:Miki.Discord.Common.MentionType">
@@ -199,6 +325,16 @@
             Channel ping.
             </summary>
         </member>
+        <member name="F:Miki.Discord.Common.MentionType.EMOJI">
+            <summary>
+            Static emoji
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Common.MentionType.ANIMATED_EMOJI">
+            <summary>
+            Animated (gif) emoji
+            </summary>
+        </member>
         <member name="F:Miki.Discord.Common.MentionType.USER_ALL">
             <summary>
             Everyone ping
@@ -209,11 +345,65 @@
             Here ping
             </summary>
         </member>
+        <member name="T:Miki.Discord.Common.Mention">
+            <summary>
+            Mention to a Discord entity.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Mention.Id">
+            <summary>
+            ID of entity.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Mention.Type">
+            <summary>
+            Type of entity mentioned.
+            </summary>
+        </member>
         <member name="P:Miki.Discord.Common.Mention.Data">
             <summary>
-            Data is used for mentions that hold more info than only an <see cref="P:Miki.Discord.Common.Mention.Id"/>.
-            <see cref="T:Miki.Discord.Common.DiscordEmoji"/>
+            Data is used for mentions that hold more info than only an <see cref="P:Miki.Discord.Common.Mention.Id"/> 
+            (e.g. <see cref="T:Miki.Discord.Common.DiscordEmoji"/>).
             </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IApiClient.AddGuildBanAsync(System.UInt64,System.UInt64,System.Int32,System.String)">
+            <summary>
+            Adds a user to a guild's ban list.
+            </summary>
+            <param name="guildId">Id of the guild you want to ban a user from</param>
+            <param name="userId">Id of the user you want to ban</param>
+            <param name="pruneDays">Amount of days you want to prune messages from the user</param>
+            <param name="reason">Reason for the ban</param>
+        </member>
+        <member name="M:Miki.Discord.Common.IApiClient.AddGuildMemberRoleAsync(System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Adds a role to a guild member.
+            </summary>
+            <param name="guildId"></param>
+            <param name="userId"></param>
+            <param name="roleId"></param>
+        </member>
+        <member name="M:Miki.Discord.Common.IApiClient.CreateDMChannelAsync(System.UInt64)">
+            <summary>
+            Creates a Direct Message channel to a user.
+            </summary>
+            <param name="userId">Id of the user</param>
+        </member>
+        <member name="M:Miki.Discord.Common.IApiClient.CreateEmojiAsync(System.UInt64,Miki.Discord.Common.EmojiCreationArgs)">
+            <summary>
+            Creates and uploads a new emoji for a guild.
+            </summary>
+            <param name="guildId"></param>
+            <param name="args"></param>
+            <returns>The created emoji.</returns>
+        </member>
+        <member name="M:Miki.Discord.Common.IApiClient.CreateGuildRoleAsync(System.UInt64,Miki.Discord.Common.CreateRoleArgs)">
+            <summary>
+            Creates a new role in the guild specified.
+            </summary>
+            <param name="guildId">The guild in which you want to create a role.</param>
+            <param name="args">The properties of the role.</param>
+            <returns>The role you've created, if successful</returns>
         </member>
         <member name="T:Miki.Discord.Common.Models.IContainsGuild">
             <summary>
@@ -409,14 +599,29 @@
             Deletes this message.
             </summary>
         </member>
+        <member name="P:Miki.Discord.Common.IDiscordReaction.ChannelId">
+            <summary>
+            Channel where the message contained into.
+            </summary>
+        </member>
         <member name="P:Miki.Discord.Common.IDiscordReaction.Emoji">
             <summary>
             The emoji information.
             </summary>
         </member>
-        <member name="P:Miki.Discord.Common.IDiscordReaction.User">
+        <member name="P:Miki.Discord.Common.IDiscordReaction.MessageId">
             <summary>
-            The user information.
+            ID of the message that was reacted on.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordReaction.GetUserAsync">
+            <summary>
+            User who reacted.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.IDiscordReaction.GetChannelAsync">
+            <summary>
+            Gets the channel where the message appeared.
             </summary>
         </member>
         <member name="P:Miki.Discord.Common.IDiscordRole.Name">
@@ -522,6 +727,46 @@
             A guild member joined, and the discord guild has default join events turned on.
             </summary>
         </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.Id">
+            <summary>
+            Internal Discord ID.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.Username">
+            <summary>
+            User's name.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.Discriminator">
+            <summary>
+            User discriminator, aka the #1234 after someone's name.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.IsBot">
+            <summary>
+            Is the user a bot?
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.Avatar">
+            <summary>
+            Avatar MD5 hash.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.Verified">
+            <summary>
+            User verified their phone?
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.Email">
+            <summary>
+            Email address user signed up with, only available in OAuth.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.Packets.DiscordUserPacket.MfaEnabled">
+            <summary>
+            Multi-factor authentication enabled.
+            </summary>
+        </member>
         <member name="F:Miki.Discord.Common.ChannelType.GuildText">
             <summary>
             A text channel within a Discord server.
@@ -557,10 +802,83 @@
             A game store channel to sell games on Discord.
             </summary>
         </member>
+        <member name="T:Miki.Discord.Common.DiscordEmoji">
+            <summary>
+            Discord Emoji payload.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordEmoji.#ctor">
+            <summary>
+            Empty constructor for modern builder pattern.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordEmoji.#ctor(System.String)">
+            <summary>
+            Creates an unicode emoji.
+            <code>new DiscordEmoji("🚀");</code> 
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordEmoji.Id">
+            <summary>
+            The Discord ID belonging to this emoji, if this value is set it means it's a custom Discord 
+            emoji.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordEmoji.Name">
+            <summary>
+            Emoji name or unicode.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordEmoji.Animated">
+            <summary>
+            Checks if the emoji is animated.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordEmoji.TryParse(System.String,Miki.Discord.Common.DiscordEmoji@)">
+            <summary>
+            Parses an discord emoji from either a mention.
+            </summary>
+            <param name="text"></param>
+            <param name="emoji"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Miki.Discord.Common.DiscordEmoji.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:Miki.Discord.Common.DiscordGuildPacket">
             <summary>
             The root of the Guild Packet. This class is used internally and should not be used. Use
             <see cref="T:Miki.Discord.Common.DiscordGuildPacket"/> instead.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordReactionPacket.UserId">
+            <summary>
+            Id of the user reacting.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordReactionPacket.ChannelId">
+            <summary>
+            Channel where the message was posted.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordReactionPacket.MessageId">
+            <summary>
+            Message ID of the reaction added.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordReactionPacket.GuildId">
+            <summary>
+            Guild Id if the channel is in a guild.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordReactionPacket.Member">
+            <summary>
+            Guild member if the message was in a guild.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Common.DiscordReactionPacket.Emoji">
+            <summary>
+            The emoji which was reacted.
             </summary>
         </member>
         <member name="T:Miki.Discord.Common.ImageSize">

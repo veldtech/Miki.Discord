@@ -1,10 +1,10 @@
-﻿namespace Miki.Discord.Common
-{
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Common
+{
     [DataContract]
-    public class DiscordReactionPacket
+    public class DiscordReactionCountPacket
     {
         [JsonPropertyName("count")]
         [DataMember(Name = "count")]
