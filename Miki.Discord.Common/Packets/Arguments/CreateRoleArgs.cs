@@ -1,9 +1,8 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Miki.Discord.Common
 {
-    using System.Text.Json.Serialization;
-
     [DataContract]
     public class CreateRoleArgs
     {

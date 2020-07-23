@@ -1,9 +1,9 @@
-﻿namespace Miki.Discord.Common
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Common
+{
     public interface IDiscordTextChannel : IDiscordChannel
     {
         Task DeleteMessagesAsync(params ulong[] id);

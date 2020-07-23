@@ -1,24 +1,14 @@
-﻿namespace Miki.Discord.Common
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Miki.Discord.Events;
+
+namespace Miki.Discord.Common
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Threading.Tasks;
-    using Miki.Discord.Common.Gateway;
-
-    public interface IDiscordClient : IDisposable
+    public interface IDiscordClient : IDisposable, IHostedService
     {
-        event Func<IDiscordMessage, Task> MessageCreate;
-        event Func<IDiscordMessage, Task> MessageUpdate;
-        event Func<IDiscordGuild, Task> GuildJoin;
-        event Func<IDiscordGuild, Task> GuildAvailable;
-        event Func<IDiscordGuildUser, Task> GuildMemberCreate;
-        event Func<IDiscordGuildUser, Task> GuildMemberDelete;
-        event Func<ulong, Task> GuildLeave;
-        event Func<ulong, Task> GuildUnavailable;
-        event Func<GatewayReadyPacket, Task> Ready;
-        event Func<IDiscordUser, IDiscordUser, Task> UserUpdate;
-
         /// <summary>
         /// The api client used in the discord client and was given in <see cref="DiscordClientConfigurations"/> at the beginning.
         /// </summary>
@@ -28,6 +18,11 @@
         /// The gateway client used in the discord client and was given in <see cref="DiscordClientConfigurations"/> at the beginning.
         /// </summary>
         IGateway Gateway { get; }
+
+        /// <summary>
+        /// Object containing all Discord gateway events.
+        /// </summary>
+        IDiscordEvents Events { get; }
 
         Task<IDiscordMessage> EditMessageAsync(ulong channelId, ulong messageId, string text, DiscordEmbed embed = null);
 
@@ -46,9 +41,7 @@
         Task<IEnumerable<IDiscordGuildChannel>> GetChannelsAsync(ulong guildId);
 
         Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null);
-
-        Task<T> GetChannelAsync<T>(ulong id, ulong? guildId = null) where T : class, IDiscordChannel;
-
+        
         Task<IDiscordSelfUser> GetSelfAsync();
 
         Task<IDiscordGuild> GetGuildAsync(ulong id);
@@ -63,10 +56,19 @@
 
         Task SetGameAsync(int shardId, DiscordStatus status);
 
+        /// <summary>
+        /// Sends a file from containing <paramref name="stream"/>.
+        /// </summary>
         Task<IDiscordMessage> SendFileAsync(ulong channelId, Stream stream, string fileName, MessageArgs message = null);
 
+        /// <summary>
+        /// Sends a message to <paramref name="channelId"/>.
+        /// </summary>
         Task<IDiscordMessage> SendMessageAsync(ulong channelId, MessageArgs message);
 
+        /// <summary>
+        /// Sends a message to <paramref name="channelId"/>.
+        /// </summary>
         Task<IDiscordMessage> SendMessageAsync(ulong channelId, string text, DiscordEmbed embed = null);
     }
 }

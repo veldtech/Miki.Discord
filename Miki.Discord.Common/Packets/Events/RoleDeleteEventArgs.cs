@@ -6,9 +6,9 @@ namespace Miki.Discord.Common.Events
     public class RoleDeleteEventArgs
     {
         [DataMember(Name = "guild_id")]
-        public ulong GuildId;
+        public ulong GuildId { get; set; }
 
         [DataMember(Name = "role_id")]
-        public ulong RoleId;
+        public ulong RoleId { get; set; }
     }
 }

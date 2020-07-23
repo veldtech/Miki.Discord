@@ -1,10 +1,10 @@
-﻿namespace Miki.Discord.Common
-{
-    using System.IO;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
-    using Miki.Discord.Rest;
+﻿using System.IO;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Miki.Discord.Rest;
 
+namespace Miki.Discord.Common
+{
     /// <summary>
     /// Data structure to create an emoji.
     /// </summary>

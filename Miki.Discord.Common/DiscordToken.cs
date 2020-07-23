@@ -1,4 +1,6 @@
-﻿namespace Miki.Discord.Common
+﻿using System;
+
+namespace Miki.Discord.Common
 {
     /// <summary>
     /// Discord Token wrapper object to abstractify the bare token away.
@@ -61,6 +63,32 @@
                 .ToCharArray();
             x[0] = char.ToUpperInvariant(x[0]);
             return new string(x);
+        }
+
+        /// <summary>
+        /// Verifies if the token is somewhat
+        /// </summary>
+        /// <returns></returns>
+        public bool IsValidToken()
+        {
+            if (Token == null)
+            {
+                return false;
+            }
+
+            var segments = Token.Split('.');
+            if (segments.Length != 3)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return GetOAuthType() + " " + Token;
         }
 
         /// <summary>

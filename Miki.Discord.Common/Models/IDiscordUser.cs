@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Common
-{
-    using System;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Common
+{
     public interface IDiscordUser : ISnowflake
     {
         string AvatarId { get; }
@@ -11,7 +11,7 @@
 
         string Username { get; }
 
-        string Discriminator { get; }
+        short Discriminator { get; }
 
         DateTimeOffset CreatedAt { get; }
 

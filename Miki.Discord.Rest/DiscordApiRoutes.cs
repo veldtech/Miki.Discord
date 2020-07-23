@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Rest
-{
-    using Miki.Discord.Common;
-    using System.Runtime.CompilerServices;
+﻿using Miki.Discord.Common;
+using System.Runtime.CompilerServices;
 
+namespace Miki.Discord.Rest
+{
     internal static class DiscordApiRoutes
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -98,7 +98,7 @@
             ulong channelId,
             ulong messageId,
             DiscordEmoji emoji)
-            => $"{MessageReactions(channelId, messageId)}/{emoji.ToString()}";
+            => $"{MessageReactions(channelId, messageId)}/{emoji}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string MessageReaction(

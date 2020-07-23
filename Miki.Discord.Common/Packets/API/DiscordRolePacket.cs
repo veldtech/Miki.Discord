@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Common
-{
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.Discord.Common
+{
     [DataContract]
     public class DiscordRolePacket
     {
@@ -37,5 +37,7 @@
         [JsonPropertyName("mentionable")]
         [DataMember(Name = "mentionable", Order = 8)]
         public bool Mentionable { get; set; }
+        
+        public ulong GuildId { get; set; }
     }
 }

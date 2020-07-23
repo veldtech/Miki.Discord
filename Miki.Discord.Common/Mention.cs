@@ -1,7 +1,7 @@
-﻿namespace Miki.Discord.Common
-{
-    using System;
+﻿using System;
 
+namespace Miki.Discord.Common
+{
     /// <summary>
     /// What type of mention has been parsed.
     /// </summary>
@@ -31,7 +31,15 @@
         /// Channel ping.
         /// </summary>
         CHANNEL,
+
+        /// <summary>
+        /// Static emoji
+        /// </summary>
         EMOJI,
+        
+        /// <summary>
+        /// Animated (gif) emoji
+        /// </summary>
         ANIMATED_EMOJI,
 
         /// <summary>
@@ -45,14 +53,24 @@
         USER_ALL_ONLINE,
     }
 
+    /// <summary>
+    /// Mention to a Discord entity.
+    /// </summary>
     public struct Mention : ISnowflake
     {
+        /// <summary>
+        /// ID of entity.
+        /// </summary>
         public ulong Id { get; }
+
+        /// <summary>
+        /// Type of entity mentioned.
+        /// </summary>
         public MentionType Type { get; }
 
         /// <summary>
-        /// Data is used for mentions that hold more info than only an <see cref="Id"/>.
-        /// <see cref="DiscordEmoji"/>
+        /// Data is used for mentions that hold more info than only an <see cref="Id"/> 
+        /// (e.g. <see cref="DiscordEmoji"/>).
         /// </summary>
         public string Data { get; }
 
@@ -62,7 +80,6 @@
             Type = type;
             Data = data;
         }
-
         public static bool TryParse(ReadOnlySpan<char> content, out Mention value)
         {
             content = content.TrimStart('<')
@@ -78,7 +95,7 @@
             {
                 case '@':
                 {
-                    Mention m = ParseUserMention(content.Slice(1, content.Length - 1));
+                    Mention m = ParseUserMention(content[1..]);
                     value = m;
                     return m.Type != MentionType.NONE;
                 }
@@ -86,7 +103,7 @@
                 case '#':
                 {
                     if(ulong.TryParse(
-                        content.Slice(1, content.Length - 1).ToString(), 
+                        content[1..].ToString(), 
                         out ulong result))
                     {
                         value = new Mention(result, MentionType.CHANNEL);
@@ -140,14 +157,14 @@
             }
             else if(content[0] == '!')
             {
-                if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
+                if(ulong.TryParse(content[1..].ToString(), out ulong result))
                 {
                     return new Mention(result, MentionType.USER_NICKNAME);
                 }
             }
             else if(content[0] == '&')
             {
-                if(ulong.TryParse(content.Slice(1, content.Length - 1).ToString(), out ulong result))
+                if(ulong.TryParse(content[1..].ToString(), out ulong result))
                 {
                     return new Mention(result, MentionType.ROLE);
                 }

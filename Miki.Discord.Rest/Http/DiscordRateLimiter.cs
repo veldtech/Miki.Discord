@@ -1,11 +1,11 @@
-﻿namespace Miki.Discord.Rest.Http
-{
-    using Miki.Cache;
-    using Miki.Net.Http;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using Miki.Cache;
+using Miki.Net.Http;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Rest.Http
+{
     public class DiscordRateLimiter : IRateLimiter
     {
         private readonly ICacheClient cache;

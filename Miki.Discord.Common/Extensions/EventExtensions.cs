@@ -1,9 +1,9 @@
-﻿namespace Miki.Discord.Common.Extensions
-{
-    using System;
-    using System.Runtime.CompilerServices;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Common
+{
     public static class EventExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

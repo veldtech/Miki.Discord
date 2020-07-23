@@ -1,7 +1,7 @@
-﻿namespace Miki.Discord.Common.Gateway
-{
-    using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
+namespace Miki.Discord.Common.Gateway
+{
     /// <summary>
     /// Gateway bot connection recommended amount.
     /// </summary>

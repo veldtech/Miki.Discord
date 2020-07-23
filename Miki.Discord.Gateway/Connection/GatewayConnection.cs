@@ -1,92 +1,74 @@
-﻿namespace Miki.Discord.Gateway.Connection
-{
-    using System;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Net.WebSockets;
-    using System.Text;
-    using System.Text.Json;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.IO;
-    using Miki.Discord.Common.Extensions;
-    using Miki.Discord.Common.Gateway;
-    using Miki.Discord.Gateway.Utils;
-    using Miki.Logging;
-    using Miki.Net.WebSockets;
-    using Miki.Net.WebSockets.Exceptions;
+﻿#nullable enable
 
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Net.WebSockets;
+using System.Reactive.Subjects;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Miki.Discord.Common.Gateway;
+using Miki.Discord.Gateway.Utils;
+using Miki.Discord.Gateway.WebSocket;
+using Miki.Logging;
+
+namespace Miki.Discord.Gateway.Connection
+{
     public enum ConnectionStatus
     {
         Connecting,
         Connected,
         Identifying,
         Resuming,
-        Disconnecting,
         Disconnected,
+        Cancelled,
         Error
     }
 
-    internal class SourceStream : Stream
+    /// <summary>
+    /// Basic managed connection with Discord's gateway.
+    /// </summary>
+    public class GatewayConnection : IHostedService
     {
-        public Stream BaseStream;
-
-        public override void Flush()
-        {
-            BaseStream.Flush();
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            return BaseStream.Read(buffer, offset, count);
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            return BaseStream.Seek(offset, origin);
-        }
-
-        public override void SetLength(long value)
-        {
-            BaseStream.SetLength(value);
-        }
-
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            BaseStream.Write(buffer, offset, count);
-        }
-
-        public override bool CanRead => true;
-
-        public override bool CanSeek => BaseStream?.CanSeek ?? false;
-
-        public override bool CanWrite => BaseStream?.CanWrite ?? false;
-
-        public override long Length => BaseStream?.Length ?? 0;
-
-        public override long Position
-        {
-            get => BaseStream.Position;
-            set => BaseStream.Position = value;
-        }
-    }
-
-    public class GatewayConnection
-    {
-        private static readonly RecyclableMemoryStreamManager streamManager 
-            = new RecyclableMemoryStreamManager();
-
+        /// <summary>
+        /// Event that gets called when the connection connects successfully.
+        /// </summary>
         public event Func<Task> OnConnect;
-        public event Func<Exception, Task> OnDisconnect;
-        public event Func<GatewayMessage, Task> OnPacketReceived;
 
-        public ConnectionStatus ConnectionStatus { get; private set; } = ConnectionStatus.Disconnected;
+        /// <summary>
+        /// Event that gets called when the connection gets disconnected.
+        /// </summary>
+        public event Func<Exception?, Task> OnDisconnect;
+
+        /// <summary>
+        /// Event that gets called when an unexpected error gets thrown.
+        /// </summary>
+        public event Func<Exception, Task> OnError;
+
+        public IObservable<GatewayMessage> OnPacketReceived => packageReceiveSubject;
+
+        public ConnectionStatus ConnectionStatus
+        {
+            get => connectionStatus;
+            private set
+            {
+                lastConnectionStatus = connectionStatus;
+                connectionStatus = value;
+            }
+        }
 
         public int ShardId => configuration.ShardId;
 
         public string[] TraceServers { get; private set; }
 
-        private readonly IWebSocketClient webSocketClient;
+        private readonly Subject<GatewayMessage> packageReceiveSubject;
+
+        private ConnectionStatus lastConnectionStatus = ConnectionStatus.Disconnected;
+        private ConnectionStatus connectionStatus = ConnectionStatus.Disconnected;
+
+        private IWebSocketClient webSocketClient;
         private readonly GatewayProperties configuration;
 
         private Task runTask;
@@ -95,14 +77,19 @@
         private int? sequenceNumber;
         private string sessionId;
 
-        private readonly byte[] receivePacket = new byte[GatewayConstants.WebSocketReceiveSize];
+        private readonly Memory<byte> receivePacket 
+            = new byte[GatewayConstants.WebSocketReceiveSize];
 
-        private readonly SourceStream compressedStream = new SourceStream();
-        private readonly SourceStream uncompressStream = new SourceStream();
+        private readonly MemoryStream receiveStream = new MemoryStream();
+        private readonly MemoryStream uncompressedStream = new MemoryStream();
         private readonly DeflateStream deflateStream;
+
         private CancellationTokenSource connectionToken;
         private SemaphoreSlim heartbeatLock;
 
+        /// <summary>
+        /// Shows whether the gateway is active at the moment.
+        /// </summary>
         public bool IsRunning => runTask != null && !connectionToken.IsCancellationRequested;
 
         /// <summary>
@@ -115,23 +102,38 @@
             {
                 throw new ArgumentNullException(nameof(configuration.Token));
             }
-            webSocketClient = configuration.WebSocketClientFactory();
+
+            if(configuration.Compressed 
+               || configuration.Encoding == GatewayEncoding.ETF)
+            {
+                throw new NotSupportedException("Compressed and ETF connections are not supported.");
+            }
+
             this.configuration = configuration;
-            this.deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress);
+            
+            deflateStream = new DeflateStream(receiveStream, CompressionMode.Decompress);
+            packageReceiveSubject = new Subject<GatewayMessage>();
         }
 
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             // Check all possible statuses before reconnecting.
             if(ConnectionStatus == ConnectionStatus.Connected
                || ConnectionStatus == ConnectionStatus.Connecting
-               || ConnectionStatus == ConnectionStatus.Resuming
-               || ConnectionStatus == ConnectionStatus.Identifying)
+                || ConnectionStatus == ConnectionStatus.Identifying)
             {
                 throw new InvalidOperationException("Shard has already started.");
             }
 
+            if(lastConnectionStatus == ConnectionStatus.Resuming)
+            {
+                sequenceNumber = null;
+            }
+
             ConnectionStatus = ConnectionStatus.Connecting;
+
             var hello = await InitGateway();
             TraceServers = hello.TraceServers;
 
@@ -148,23 +150,55 @@
             else
             {
                 ConnectionStatus = ConnectionStatus.Identifying;
-                await IdentifyAsync(new CancellationTokenSource().Token);
+                await IdentifyAsync(token);
             }
 
             heartbeatTask = HeartbeatAsync(hello.HeartbeatInterval);
-            runTask = RunAsync();
-            ConnectionStatus = ConnectionStatus.Connected;
+            runTask = RunAsync(connectionToken.Token);
         }
 
         public async Task CloseAsync()
         {
-            await StopAsync();
+            await StopAsync(default);
             sessionId = null;
         }
 
-        public async Task StopAsync()
+        private async Task IdentifyAsync(CancellationToken token)
         {
-            ConnectionStatus = ConnectionStatus.Disconnecting;
+            GatewayIdentifyPacket identifyPacket = new GatewayIdentifyPacket
+            {
+                Compressed = configuration.Compressed,
+                Token = configuration.Token,
+                LargeThreshold = 250,
+                Shard = new[] { configuration.ShardId, configuration.ShardCount },
+                Intent = (int)configuration.Intents
+            };
+
+            while (true)
+            {
+                var canIdentify = await configuration.Ratelimiter
+                    .CanIdentifyAsync(configuration.ShardId, token)
+                    .ConfigureAwait(false);
+
+                if (canIdentify)
+                {
+                    await SendCommandAsync(
+                            GatewayOpcode.Identify,
+                            identifyPacket,
+                            connectionToken.Token)
+                        .ConfigureAwait(false);
+                    break;
+                }
+
+                Log.Debug("Could not identify yet, retrying in 5 seconds.");
+                await Task.Delay(5000, token).ConfigureAwait(false);
+            }
+        }
+
+        public async Task StopAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            
             if(connectionToken == null || runTask == null)
             {
                 throw new InvalidOperationException("This gateway client is not running!");
@@ -179,12 +213,20 @@
             }
             catch(Exception ex)
             {
-                Log.Error(ex);
+                
             }
 
             try
             {
-                await webSocketClient.CloseAsync(connectionToken.Token);
+                await webSocketClient.CloseAsync(
+                    WebSocketCloseStatus.NormalClosure, 
+                    string.Empty,
+                    token);
+                ConnectionStatus = ConnectionStatus.Disconnected;
+            }
+            catch (TaskCanceledException)
+            {
+                ConnectionStatus = ConnectionStatus.Cancelled;
             }
             catch(ObjectDisposedException)
             {
@@ -192,23 +234,25 @@
             }
             catch(Exception ex)
             {
-                Log.Error(ex);
+                ConnectionStatus = ConnectionStatus.Error;
+                await OnError(ex);
             }
+
+            webSocketClient.Dispose();
+            webSocketClient = null;
 
             connectionToken = null;
             heartbeatTask = null;
             runTask = null;
-            ConnectionStatus = ConnectionStatus.Disconnected;
         }
 
-        public async Task RunAsync()
+        private async Task RunAsync(CancellationToken token)
         {
-
-            while(!connectionToken.IsCancellationRequested)
+            while(!token.IsCancellationRequested)
             {
                 try
                 {
-                    var msg = await ReceivePacketAsync().ConfigureAwait(false);
+                    var msg = await ReceivePacketAsync(token).ConfigureAwait(false);
                     if(!msg.OpCode.HasValue)
                     {
                         continue;
@@ -218,6 +262,8 @@
                     {
                         case GatewayOpcode.Dispatch:
                         {
+                            Log.Debug("<= " + msg.EventName);
+
                             sequenceNumber = msg.SequenceNumber;
 
                             if(msg.EventName == "READY")
@@ -227,6 +273,7 @@
                                 sessionId = readyPacket.SessionId;
                                 TraceServers = readyPacket.TraceGuilds;
                                 heartbeatLock.Release();
+                                ConnectionStatus = ConnectionStatus.Connected;
                             }
 
                             if(msg.EventName == "RESUMED")
@@ -235,15 +282,16 @@
                                     .ToObject<GatewayReadyPacket>(configuration.SerializerOptions);
                                 TraceServers = readyPacket.TraceGuilds;
                                 heartbeatLock.Release();
+                                ConnectionStatus = ConnectionStatus.Connected;
                             }
 
-                            await OnPacketReceived.InvokeAsync(msg);
+                            packageReceiveSubject.OnNext(msg);
                         }
                             break;
 
                         case GatewayOpcode.InvalidSession:
                         {
-                            var canResume = ((JsonElement)msg.Data).GetBoolean();
+                            var canResume = ((JsonElement) msg.Data).GetBoolean();
                             if(!canResume)
                             {
                                 sequenceNumber = null;
@@ -275,20 +323,14 @@
                 catch(WebSocketException w)
                 {
                     Log.Error(w);
-                    _ = Task.Run(() => ReconnectAsync())
+                    _ = HandleGatewayErrorsAsync(w)
                         .ConfigureAwait(false);
-                    break;
-                }
-                catch(WebSocketCloseException c)
-                {
-                    Log.Error(c);
-                    _ = HandleGatewayErrorsAsync(c)
-                        .ConfigureAwait(false);
-                    break;
+                    return;
                 }
                 catch(TaskCanceledException)
                 {
-                    break;
+                    ConnectionStatus = ConnectionStatus.Cancelled;
+                    return;
                 }
                 catch(Exception e)
                 {
@@ -297,17 +339,34 @@
             }
         }
 
-        private Task HandleGatewayErrorsAsync(WebSocketCloseException w)
+        private Task HandleGatewayErrorsAsync(WebSocketException w)
         {
-            switch(w.ErrorCode)
+            if(!CanRecoverFrom(w))
             {
-                default:
-                {
-                    Log.Warning($"Connection closed with unknown error code. ({w.ErrorCode})");
-                    sequenceNumber = null;
-                    return Task.Run(() => ReconnectAsync());
-                }
-                
+                sequenceNumber = null;
+            }
+
+            return Task.Run(() => ReconnectAsync());
+        }
+
+        private bool CanRecoverFrom(WebSocketException ex)
+        {
+            if(ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+            {
+                return true;
+            }
+
+            if(webSocketClient.CloseStatus != null
+               && (webSocketClient.CloseStatus.Value == WebSocketCloseStatus.Empty
+               || webSocketClient.CloseStatus.Value == WebSocketCloseStatus.NormalClosure
+               || webSocketClient.CloseStatus.Value == WebSocketCloseStatus.InternalServerError
+               || webSocketClient.CloseStatus.Value == WebSocketCloseStatus.ProtocolError))
+            {
+                return true;
+            }
+
+            switch(ex.ErrorCode)
+            {
                 case 1011: // server-side error
                 case 4000: // unknown error
                 case 4001: // unknown opcode
@@ -319,19 +378,20 @@
                 case 4007: // invalid seq
                 case 4009: // session timeout
                 {
-                    sequenceNumber = null;
-                    return Task.Run(() => ReconnectAsync());
+                    return true;
                 }
 
                 case 4010: // invalid shard
                 case 4011: // sharding required
                 {
-                    return Task.Run(CloseAsync);
+                    throw new GatewayException(
+                        "Invalid configuration data caused the websocket to close irrecoverably.", ex);
                 }
             }
+            return false;
         }
 
-        public async Task HeartbeatAsync(int latency)
+        private async Task HeartbeatAsync(int latency)
         {
             // Will stop running heartbeat if connectionToken is cancelled.
             while(!connectionToken.IsCancellationRequested)
@@ -362,37 +422,6 @@
             }
         }
 
-        public async Task IdentifyAsync(CancellationToken token)
-        {
-            GatewayIdentifyPacket identifyPacket = new GatewayIdentifyPacket
-            {
-                Compressed = configuration.Compressed,
-                Token = configuration.Token,
-                LargeThreshold = 250,
-                Shard = new[] {configuration.ShardId, configuration.ShardCount}
-            };
-
-            var canIdentify = await configuration.Ratelimiter.CanIdentifyAsync(token)
-                .ConfigureAwait(false);
-            while(true)
-            {
-                if(canIdentify)
-                {
-                    await SendCommandAsync(GatewayOpcode.Identify, identifyPacket, connectionToken.Token)
-                        .ConfigureAwait(false);
-                    break;
-                }
-                else
-                {
-                    Log.Debug("Could not identify yet, retrying in 5 seconds.");
-                    await Task.Delay(5000, token)
-                        .ConfigureAwait(false);
-                    canIdentify = await configuration.Ratelimiter.CanIdentifyAsync(token)
-                        .ConfigureAwait(false);
-                }
-            }
-        }
-
         private async Task ResumeAsync(GatewayResumePacket packet)
         {
             await SendCommandAsync(GatewayOpcode.Resume, packet, connectionToken.Token)
@@ -406,13 +435,13 @@
             var delay = initialDelay;
             bool connected = false;
 
-            await StopAsync().ConfigureAwait(false);
+            await StopAsync(default).ConfigureAwait(false);
 
             while(!connected)
             {
                 try
                 {
-                    await StartAsync().ConfigureAwait(false);
+                    await StartAsync(default).ConfigureAwait(false);
                     connected = true;
                 }
                 catch(Exception e)
@@ -422,7 +451,7 @@
                         $"Reconnection failed with reason: {e.Message}, will retry in {delay / 1000} seconds");
                     await Task.Delay(delay)
                         .ConfigureAwait(false);
-                    if(shouldIncrease)
+                    if(shouldIncrease)  
                     {
                         delay += initialDelay;
                     }
@@ -444,15 +473,31 @@
                 .ConfigureAwait(false);
         }
 
+        private async Task ReportErrorAsync(Exception exception)
+        {
+            if(OnError == null)
+            {
+                return;
+            }
+
+            await OnError(exception);
+        }
+
         private async Task SendCommandAsync(GatewayMessage msg, CancellationToken token)
         {
-            var json = JsonSerializer.Serialize(
-                msg, typeof(GatewayMessage), configuration.SerializerOptions);
+            await using var stream = new MemoryStream();
+            await JsonSerializer.SerializeAsync(
+                stream, msg, typeof(GatewayMessage), configuration.SerializerOptions, token);
 
-            Log.Debug($"=> {msg.OpCode.ToString()}");
-            Log.Trace($"    json packet: {json}");
+            Log.Debug($"=> {msg.OpCode}");
 
-            await webSocketClient.SendAsync(json, token)
+            if(!stream.TryGetBuffer(out var buffer))
+            {
+                Log.Warning($"Message with opcode '{msg.OpCode}' did not send.");
+                return;
+            }
+
+            await webSocketClient.SendAsync(buffer, WebSocketMessageType.Text, true, token)
                 .ConfigureAwait(false);
         }
 
@@ -469,6 +514,7 @@
 
         private async Task<GatewayHelloPacket> InitGateway()
         {
+            webSocketClient = configuration.WebSocketFactory();
             heartbeatLock = new SemaphoreSlim(0, 1);
             connectionToken = new CancellationTokenSource();
 
@@ -479,102 +525,82 @@
                 .Build();
 
             await webSocketClient.ConnectAsync(new Uri(connectionUri), connectionToken.Token);
-            var msg = await ReceivePacketAsync();
+            var msg = await ReceivePacketAsync(connectionToken.Token);
             return ((JsonElement) msg.Data).ToObject<GatewayHelloPacket>(
                 configuration.SerializerOptions);
         }
 
-        private async Task<WebSocketPacket> ReceivePacketBytesAsync()
+        private async Task ReceivePacketBytesAsync(CancellationToken token)
         {
-            await using var receiveStream = streamManager.GetStream();
-            WebSocketResponse response;
+            receiveStream.Position = 0;
+            receiveStream.SetLength(0);
+
+            ValueWebSocketReceiveResult response;
             do
             {
-                if(connectionToken.IsCancellationRequested)
-                {
-                    throw new OperationCanceledException();
-                }
+                token.ThrowIfCancellationRequested();
 
-                response = await webSocketClient.ReceiveAsync(
-                        new ArraySegment<byte>(receivePacket), connectionToken.Token)
+                response = await webSocketClient.ReceiveAsync(receivePacket, token)
                     .ConfigureAwait(false);
+                if(response.MessageType == WebSocketMessageType.Close)
+                {
+                    throw new WebSocketException(
+                        (int)(webSocketClient.CloseStatus ?? WebSocketCloseStatus.Empty),
+                        webSocketClient.CloseStatusDescription);
+                }
 
                 if(response.Count + receiveStream.Position > receiveStream.Capacity)
                 {
-                    receiveStream.Capacity = (int)(response.Count + receiveStream.Position);
+                    receiveStream.Capacity += GatewayConstants.WebSocketReceiveSize;
                 }
 
-                await receiveStream.WriteAsync(receivePacket, 0, response.Count, connectionToken.Token)
+                var currentPosition = receiveStream.Position;
+
+                await receiveStream.WriteAsync(receivePacket, token)
                     .ConfigureAwait(false);
+                receiveStream.SetLength(currentPosition + response.Count);
+                receiveStream.Position = receiveStream.Length;
+
             } while(!response.EndOfMessage);
-
-            response.Count = (int) receiveStream.Position;
-            Memory<byte> p = receiveStream.GetBuffer();
-
-            return new WebSocketPacket(response, p);
         }
 
-        private async Task<GatewayMessage> ReceivePacketAsync()
+        private async Task<GatewayMessage> ReceivePacketAsync(CancellationToken token)
         {
-            var response = await ReceivePacketBytesAsync()
-                .ConfigureAwait(false);
-            await using var resultStream = streamManager.GetStream();
-            uncompressStream.BaseStream = resultStream;
+            token.ThrowIfCancellationRequested();
+
+            await ReceivePacketBytesAsync(token).ConfigureAwait(false);
+
+            uncompressedStream.Position = 0;
+            uncompressedStream.SetLength(0);
+
+            receiveStream.Position = 0;
 
             if(configuration.Compressed)
             {
-                await using var stream = streamManager.GetStream();
-                compressedStream.BaseStream = stream;
-
-                if(response.Packet.Span[0] == 0x78)
+                int header = receiveStream.ReadByte();
+                if(header == 0x78) // If header is zlib header, strip header.
                 {
-                    //Strip the zlib header
-                    await compressedStream.WriteAsync(
-                        response.Packet.ToArray(), 2, response.Response.Count - 2);
+                    receiveStream.Position = 2;
+                    receiveStream.SetLength(receiveStream.Length - 2);
                 }
                 else
                 {
-                    await compressedStream.WriteAsync(
-                        response.Packet.ToArray(), 0, response.Response.Count);
+                    receiveStream.Position = 0;
                 }
-                
-                compressedStream.Position = 0;
-                await deflateStream.CopyToAsync(uncompressStream);
-            }
-            else
-            {
-                await uncompressStream.WriteAsync(
-                    response.Packet.ToArray(), 0, response.Response.Count);
-                uncompressStream.SetLength(response.Response.Count);
-            }
 
-            uncompressStream.Position = 0;
+                await deflateStream.CopyToAsync(uncompressedStream, token);
+                uncompressedStream.Position = 0;
+            }
 
             if(configuration.Encoding != GatewayEncoding.Json)
             {
                 return default;
             }
+
             return await JsonSerializer.DeserializeAsync<GatewayMessage>(
-                uncompressStream, configuration.SerializerOptions);
-        }
-    }
-
-    public struct GatewayPacket
-    {
-        public GatewayMessage Message;
-        public WebSocketPacket Packet;
-    }
-
-    public struct WebSocketPacket
-    {
-        public WebSocketResponse Response { get; }
-
-        public Memory<byte> Packet { get; }
-
-        public WebSocketPacket(WebSocketResponse r, Memory<byte> packet)
-        {
-            Packet = packet;
-            Response = r;
+                configuration.Compressed ? uncompressedStream : receiveStream, 
+                configuration.SerializerOptions,
+                token);
         }
     }
 }

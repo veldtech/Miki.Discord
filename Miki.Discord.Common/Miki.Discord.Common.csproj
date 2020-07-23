@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>3.3.0</Version>
+    <Version>4.0.0-rc.1</Version>
     <Copyright>Velddev</Copyright>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>velddev.pfx</AssemblyOriginatorKeyFile>
@@ -13,9 +13,10 @@
     <Product>Miki</Product>
     <PackageProjectUrl>https://github.com/mikibot/miki.discord</PackageProjectUrl>
     <PackageTags>Discord Bot Miki</PackageTags>
-    <PackageIconUrl>https://cdn.miki.ai/nuget/miki-discord-logo@0.5x.png</PackageIconUrl>
+    <PackageIconUrl></PackageIconUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Company>mikibot</Company>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -32,6 +33,10 @@
     <None Remove=".gitignore" />
     <None Remove="LICENSE" />
     <None Remove="README.md" />
+    <None Include="..\.nuget\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -39,8 +44,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.6" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
-    <PackageReference Include="System.Text.Json" Version="4.7.1" />
+    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
 
 </Project>

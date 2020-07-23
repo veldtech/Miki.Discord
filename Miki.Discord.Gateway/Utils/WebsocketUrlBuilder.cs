@@ -6,7 +6,8 @@ namespace Miki.Discord.Gateway.Utils
 {
     public static class DictionaryUtils
     {
-        public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value)
+        public static void AddOrUpdate<TKey, TValue>(
+            this Dictionary<TKey, TValue> dict, TKey key, TValue value)
         {
             if(dict.ContainsKey(key))
             {

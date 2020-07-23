@@ -1,16 +1,15 @@
-﻿namespace Miki.Discord.Helpers
-{
-    using System.Linq;
-    using Miki.Discord.Common;
-    using Miki.Discord.Internal;
-    using System.Threading.Tasks;
+﻿using Miki.Discord.Internal.Data;
+using System.Linq;
+using Miki.Discord.Common;
+using Miki.Discord.Internal;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Helpers
+{
     public static class DiscordChannelHelper
     {
         public static async Task<DiscordMessage> CreateMessageAsync(
-            IDiscordClient client,
-            DiscordChannelPacket channel,
-            MessageArgs args)
+            IDiscordClient client, DiscordChannelPacket channel, MessageArgs args)
         {
             var message = await client.ApiClient.SendMessageAsync(channel.Id, args);
             if(channel.Type == ChannelType.GuildText
@@ -25,9 +24,7 @@
         }
 
         public static GuildPermission GetOverwritePermissions(
-            IDiscordGuildUser user,
-            IDiscordGuildChannel channel,
-            GuildPermission basePermissions)
+            IDiscordGuildUser user, IDiscordGuildChannel channel, GuildPermission basePermissions)
         {
             var permissions = basePermissions;
             if(permissions.HasFlag(GuildPermission.Administrator))

@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Common
-{
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
+namespace Miki.Discord.Common
+{
     /// <summary>
     /// A managed Discord guild object.
     /// </summary>

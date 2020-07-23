@@ -1,9 +1,9 @@
-﻿namespace Miki.Discord.Common
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Discord.Common.Packets;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Discord.Common.Packets;
 
+namespace Miki.Discord.Common
+{
     public interface IDiscordSelfUser : IDiscordUser
     {
         /// <summary>

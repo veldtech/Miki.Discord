@@ -1,8 +1,8 @@
-﻿namespace Miki.Discord.Common.Events
-{
-    using Miki.Discord.Common.Packets;
-    using System.Runtime.Serialization;
+﻿using Miki.Discord.Common.Packets;
+using System.Runtime.Serialization;
 
+namespace Miki.Discord.Common.Events
+{
     [DataContract]
     public class RoleEventArgs
     {

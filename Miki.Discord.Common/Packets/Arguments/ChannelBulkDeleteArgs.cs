@@ -1,10 +1,8 @@
-﻿
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Miki.Discord.Rest.Arguments
 {
-    using System.Text.Json.Serialization;
-
     [DataContract]
     public class ChannelBulkDeleteArgs
     {

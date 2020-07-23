@@ -17,43 +17,133 @@
             <param name="cache"></param>
         </member>
         <member name="M:Miki.Discord.Rest.DiscordApiClient.AddGuildBanAsync(System.UInt64,System.UInt64,System.Int32,System.String)">
-            <summary>
-            Adds a user to a guild's ban list.
-            </summary>
-            <param name="guildId">Id of the guild you want to ban a user from</param>
-            <param name="userId">Id of the user you want to ban</param>
-            <param name="pruneDays">Amount of days you want to prune messages from the user</param>
-            <param name="reason">Reason for the ban</param>
+            <inheritdoc/>
         </member>
         <member name="M:Miki.Discord.Rest.DiscordApiClient.AddGuildMemberRoleAsync(System.UInt64,System.UInt64,System.UInt64)">
-            <summary>
-            Adds a role to a guild member.
-            </summary>
-            <param name="guildId"></param>
-            <param name="userId"></param>
-            <param name="roleId"></param>
+            <inheritdoc/>
         </member>
         <member name="M:Miki.Discord.Rest.DiscordApiClient.CreateDMChannelAsync(System.UInt64)">
-            <summary>
-            Creates a Direct channel to a user.
-            </summary>
-            <param name="userId">Id of the user</param>
+            <inheritdoc/>
         </member>
         <member name="M:Miki.Discord.Rest.DiscordApiClient.CreateEmojiAsync(System.UInt64,Miki.Discord.Common.EmojiCreationArgs)">
-            <summary>
-            Creates and uploads a new emoji for a guild.
-            </summary>
-            <param name="guildId"></param>
-            <param name="args"></param>
-            <returns>The created emoji.</returns>
+            <inheritdoc/>
         </member>
         <member name="M:Miki.Discord.Rest.DiscordApiClient.CreateGuildRoleAsync(System.UInt64,Miki.Discord.Common.CreateRoleArgs)">
-            <summary>
-            Creates a new role in the guild specified.
-            </summary>
-            <param name="guildId">The guild in which you want to create a role.</param>
-            <param name="args">The properties of the role.</param>
-            <returns>The role you've created, if successful</returns>
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.CreateReactionAsync(System.UInt64,System.UInt64,Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteChannelAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteGuildAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteEmojiAsync(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteMessageAsync(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteMessagesAsync(System.UInt64,System.UInt64[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteReactionAsync(System.UInt64,System.UInt64,Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteReactionAsync(System.UInt64,System.UInt64,Miki.Discord.Common.DiscordEmoji,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.DeleteReactionsAsync(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.EditEmojiAsync(System.UInt64,System.UInt64,Miki.Discord.Rest.EmojiModifyArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.EditMessageAsync(System.UInt64,System.UInt64,Miki.Discord.Common.EditMessageArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.EditRoleAsync(System.UInt64,Miki.Discord.Common.DiscordRolePacket)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetCurrentUserAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetChannelAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetChannelsAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetDMChannelsAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetEmojiAsync(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetEmojisAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetGuildAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetGuildUserAsync(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetMessageAsync(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetMessagesAsync(System.UInt64,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetPruneCountAsync(System.UInt64,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetReactionsAsync(System.UInt64,System.UInt64,Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetRolesAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetUserAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.ModifySelfAsync(Miki.Discord.Common.Packets.UserModifyArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.ModifyGuildMemberAsync(System.UInt64,System.UInt64,Miki.Discord.Common.Events.ModifyGuildMemberArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.PruneGuildMembersAsync(System.UInt64,System.Int32,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.RemoveGuildBanAsync(System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.RemoveGuildMemberAsync(System.UInt64,System.UInt64,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.RemoveGuildMemberRoleAsync(System.UInt64,System.UInt64,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.SendFileAsync(System.UInt64,System.IO.Stream,System.String,Miki.Discord.Common.MessageArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.SendMessageAsync(System.UInt64,Miki.Discord.Common.MessageArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.TriggerTypingAsync(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetGatewayAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Rest.DiscordApiClient.GetGatewayBotAsync">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

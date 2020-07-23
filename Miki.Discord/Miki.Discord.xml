@@ -4,96 +4,476 @@
         <name>Miki.Discord</name>
     </assembly>
     <members>
-        <member name="P:Miki.Discord.BaseDiscordClient.ApiClient">
+        <member name="T:Miki.Discord.Cache.EventCacheHandler">
             <summary>
-            The api client used in the discord client and was given in <see cref="T:Miki.Discord.DiscordClientConfigurations"/> at the beginning.
+            Handles gateway caching.
             </summary>
         </member>
-        <member name="P:Miki.Discord.BaseDiscordClient.Gateway">
+        <member name="M:Miki.Discord.Cache.EventCacheHandler.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Miki.Discord.Cache.DefaultCacheHandler">
             <summary>
-            The gateway client used in the discord client and was given in <see cref="T:Miki.Discord.DiscordClientConfigurations"/> at the beginning.
+            Handles entity caching
             </summary>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordAttachment.FileName">
-            <inheritdoc/>
-        </member>
-        <member name="P:Miki.Discord.Internal.DiscordAttachment.Height">
-            <inheritdoc/>
-        </member>
-        <member name="P:Miki.Discord.Internal.DiscordAttachment.Id">
-            <inheritdoc/>
-        </member>
-        <member name="P:Miki.Discord.Internal.DiscordAttachment.ProxyUrl">
-            <inheritdoc/>
-        </member>
-        <member name="P:Miki.Discord.Internal.DiscordAttachment.Size">
-            <inheritdoc/>
-        </member>
-        <member name="P:Miki.Discord.Internal.DiscordAttachment.Url">
-            <inheritdoc/>
-        </member>
-        <member name="P:Miki.Discord.Internal.DiscordAttachment.Width">
-            <inheritdoc/>
-        </member>
-        <member name="M:Miki.Discord.Internal.DiscordGuildMessage.#ctor(Miki.Discord.Common.Packets.API.DiscordMessagePacket,Miki.Discord.Common.IDiscordClient)">
+        <member name="P:Miki.Discord.Cache.DefaultCacheHandler.Channels">
             <inheritdoc />
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordGuildMessage.GuildId">
+        <member name="P:Miki.Discord.Cache.DefaultCacheHandler.Guilds">
             <inheritdoc />
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordGuildMessage.GetGuildAsync">
+        <member name="P:Miki.Discord.Cache.DefaultCacheHandler.Members">
             <inheritdoc />
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.Attachments">
+        <member name="P:Miki.Discord.Cache.DefaultCacheHandler.Roles">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Cache.DefaultCacheHandler.Users">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Cache.DefaultCacheHandler.#ctor(Miki.Cache.IExtendedCacheClient,Miki.Discord.Common.IApiClient)">
+            <summary>
+            Default caching strategy for Miki.Discord
+            </summary>
+            <param name="cache">Cache provider</param>
+        </member>
+        <member name="M:Miki.Discord.Cache.DefaultCacheHandler.GetCurrentUserAsync">
+            <inhericdoc />
+        </member>
+        <member name="M:Miki.Discord.Cache.DefaultCacheHandler.SetCurrentUserAsync(Miki.Discord.Common.Packets.DiscordUserPacket)">
+            <inheritdoc />
+        </member>
+        <member name="T:Miki.Discord.Cache.ICacheHandler">
+            <summary>
+            Cache service for Miki.Discord.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Cache.ICacheHandler.Channels">
+            <summary>
+            Channel repository
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Cache.ICacheHandler.Guilds">
+            <summary>
+            Guild repository
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Cache.ICacheHandler.Members">
+            <summary>
+            Guild Member repository
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Cache.ICacheHandler.Roles">
+            <summary>
+            Guild Role repository
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Cache.ICacheHandler.Users">
+            <summary>
+            User repository
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Cache.ICacheHandler.GetCurrentUserAsync">
+            <summary>
+            Gets the current bot connected to the gateway.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Cache.ICacheHandler.SetCurrentUserAsync(Miki.Discord.Common.Packets.DiscordUserPacket)">
+            <summary>
+            Sets the current user connected to the gateway.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.DiscordClient.ApiClient">
+            <summary>
+            The api client used in the discord client and was given in 
+            <see cref="T:Miki.Discord.DiscordClientConfiguration"/>
+            at the beginning.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.DiscordClient.Gateway">
+            <summary>
+            The gateway client used in the discord client and was given in 
+            <see cref="T:Miki.Discord.DiscordClientConfiguration"/>
+            at the beginning.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.DiscordClient.Events">
+            <summary>
+            Managed gateway events.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.#ctor(Miki.Discord.DiscordClientConfiguration)">
+            <summary>
+            Creates a new discord client.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.#ctor(Miki.Discord.Common.IApiClient,Miki.Discord.Common.IGateway,Miki.Cache.IExtendedCacheClient)">
+            <summary>
+            Constructs a default implementation of Miki.Discord for dependency injection.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.#ctor(Miki.Discord.Common.IApiClient,Miki.Discord.Common.IGateway,Miki.Discord.Cache.ICacheHandler,Miki.Discord.Events.IDiscordEvents)">
+            <summary>
+            Constructs a fully customized implementation of Miki.Discord.
+            </summary>
+            <param name="apiClient"></param>
+            <param name="gateway"></param>
+            <param name="cacheHandler"></param>
+            <param name="eventHandler"></param>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.CreateDMAsync(System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.Author">
+        <member name="M:Miki.Discord.DiscordClient.CreateRoleAsync(System.UInt64,Miki.Discord.Common.CreateRoleArgs)">
             <inheritdoc/>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.Content">
+        <member name="M:Miki.Discord.DiscordClient.Dispose">
             <inheritdoc/>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.ChannelId">
+        <member name="M:Miki.Discord.DiscordClient.EditMessageAsync(System.UInt64,System.UInt64,System.String,Miki.Discord.Common.DiscordEmbed)">
             <inheritdoc/>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.MentionedUserIds">
+        <member name="M:Miki.Discord.DiscordClient.EditRoleAsync(System.UInt64,Miki.Discord.Common.DiscordRolePacket)">
             <inheritdoc/>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.Timestamp">
+        <member name="M:Miki.Discord.DiscordClient.GetUserPresence(System.UInt64,System.Nullable{System.UInt64})">
             <inheritdoc/>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.Id">
+        <member name="M:Miki.Discord.DiscordClient.GetRoleAsync(System.UInt64,System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="P:Miki.Discord.Internal.DiscordMessage.Type">
+        <member name="M:Miki.Discord.DiscordClient.GetRolesAsync(System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.EditAsync(Miki.Discord.Common.EditMessageArgs)">
+        <member name="M:Miki.Discord.DiscordClient.GetChannelsAsync(System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteAsync">
+        <member name="M:Miki.Discord.DiscordClient.GetChannelAsync(System.UInt64,System.Nullable{System.UInt64})">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.GetChannelAsync">
+        <member name="M:Miki.Discord.DiscordClient.GetSelfAsync">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.GetReactionsAsync(Miki.Discord.Common.DiscordEmoji)">
+        <member name="M:Miki.Discord.DiscordClient.GetGuildAsync(System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.CreateReactionAsync(Miki.Discord.Common.DiscordEmoji)">
+        <member name="M:Miki.Discord.DiscordClient.GetGuildUserAsync(System.UInt64,System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji)">
+        <member name="M:Miki.Discord.DiscordClient.GetGuildUsersAsync(System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji,Miki.Discord.Common.IDiscordUser)">
+        <member name="M:Miki.Discord.DiscordClient.GetReactionsAsync(System.UInt64,System.UInt64,Miki.Discord.Common.DiscordEmoji)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji,System.UInt64)">
+        <member name="M:Miki.Discord.DiscordClient.GetUserAsync(System.UInt64)">
             <inheritdoc/>
         </member>
-        <member name="M:Miki.Discord.Internal.DiscordMessage.DeleteAllReactionsAsync">
+        <member name="M:Miki.Discord.DiscordClient.SetGameAsync(System.Int32,Miki.Discord.Common.DiscordStatus)">
             <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.SendFileAsync(System.UInt64,System.IO.Stream,System.String,Miki.Discord.Common.MessageArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.SendMessageAsync(System.UInt64,Miki.Discord.Common.MessageArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.SendMessageAsync(System.UInt64,System.String,Miki.Discord.Common.DiscordEmbed)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.DiscordClient.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Miki.Discord.DiscordClientConfiguration">
+            <summary>
+            Configuration properties for DiscordClient.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.DiscordClientConfiguration.#ctor(Miki.Discord.Common.IApiClient,Miki.Discord.Common.IGateway,Miki.Cache.IExtendedCacheClient)">
+            <summary>
+            Creates a new Configuration setup. 
+            </summary>
+        </member>
+        <member name="T:Miki.Discord.Events.DiscordEventHandler">
+            <summary>
+            Wraps gateway events into managed events.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.ChannelCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.ChannelDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.ChannelUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildEmojiUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="F:Miki.Discord.Events.DiscordEventHandler.guildMemberCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildMemberDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildMemberUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildRoleCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildRoleDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildRoleUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.MessageCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.MessageDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.MessageUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.MessageReactionCreate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.MessageReactionDelete">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.PresenceUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.TypingStart">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.UserUpdate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordAttachment.FileName">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordAttachment.Height">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordAttachment.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordAttachment.ProxyUrl">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordAttachment.Size">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordAttachment.Url">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordAttachment.Width">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.IconUrl">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.OwnerId">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.MemberCount">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.Permissions">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.PremiumSubscriberCount">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuild.PremiumTier">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.AddBanAsync(Miki.Discord.Common.IDiscordGuildUser,System.Int32,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.CreateRoleAsync(Miki.Discord.Common.CreateRoleArgs)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetChannelAsync(System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetChannelsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetDefaultChannelAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetMemberAsync(System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetMembersAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetOwnerAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetPermissionsAsync(Miki.Discord.Common.IDiscordGuildUser)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetPruneCountAsync(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetRoleAsync(System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetRolesAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.GetSelfAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.PruneMembersAsync(System.Int32,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuild.RemoveBanAsync(Miki.Discord.Common.IDiscordGuildUser)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuildMessage.#ctor(Miki.Discord.Common.Packets.API.DiscordMessagePacket,Miki.Discord.Common.IDiscordClient)">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordGuildMessage.GuildId">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordGuildMessage.GetGuildAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.Attachments">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.Author">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.Content">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.ChannelId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.MentionedUserIds">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.Timestamp">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordMessage.Type">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.EditAsync(Miki.Discord.Common.EditMessageArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.DeleteAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.GetChannelAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.GetReactionsAsync(Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.CreateReactionAsync(Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji,Miki.Discord.Common.IDiscordUser)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.DeleteReactionAsync(Miki.Discord.Common.DiscordEmoji,System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordMessage.DeleteAllReactionsAsync">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordPresence.Activity">
+            <inheritdoc />
+        </member>
+        <member name="P:Miki.Discord.Internal.Data.DiscordPresence.Status">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordReaction.GetChannelAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordReaction.GetUserAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Data.DiscordSelfUser.#ctor(Miki.Discord.Common.Packets.DiscordUserPacket,Miki.Discord.Common.IDiscordClient)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.GetCacheKey(`0)">
+            <summary>
+            Gets the cache key for this entity.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.GetMemberKey(`0)">
+            <summary>
+            Gets the inner hash key for this entity.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.GetFromCacheAsync(System.Object[])">
+            <summary>
+            Get entity from cache operation.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.GetFromApiAsync(System.Object[])">
+            <summary>
+            Get entity from api operation. Gets called when the object does not exist in cache.
+            </summary>
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.GetAsync(System.Object[])">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.ListAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.AddAsync(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.AddAsync(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.EditAsync(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.EditAsync(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.DeleteAsync(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:Miki.Discord.Internal.Repositories.BaseCacheRepository`1.DeleteAsync(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc />
         </member>
     </members>
 </doc>

@@ -1,19 +1,29 @@
-﻿namespace Miki.Discord.Gateway
-{
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Events;
-    using Miki.Discord.Common.Gateway;
-    using Miki.Discord.Common.Packets;
-    using Miki.Discord.Common.Packets.API;
-    using Miki.Discord.Common.Packets.Events;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using System.Reactive.Subjects;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Gateway;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Extensions.Hosting;
 
-    public partial class GatewayCluster : IGateway
+namespace Miki.Discord.Gateway
+{
+    public class GatewayCluster : IGateway, IHostedService
     {
-        public Dictionary<int, IGateway> Shards { get; set; } = new Dictionary<int, IGateway>();
+        /// <inheritdoc/>
+        public IObservable<GatewayMessage> PacketReceived => messageSubject;
+
+        /// <inheritdoc/>
+        public IGatewayEvents Events { get; }
+
+        /// <summary>
+        /// Currently running shards in this cluster.
+        /// </summary>
+        public Dictionary<int, IGateway> Shards { get; } = new Dictionary<int, IGateway>();
+
+        private Subject<GatewayMessage> messageSubject;
 
         /// <summary>
         /// Spawn all shards in a single cluster
@@ -35,25 +45,36 @@
             {
                 throw new ArgumentException("shards cannot be null.");
             }
+            
+            messageSubject = new Subject<GatewayMessage>();
 
             foreach(var i in shards)
             {
                 var shardProperties = new GatewayProperties
                 {
-                    WebSocketClientFactory = properties.WebSocketClientFactory,
                     Encoding = properties.Encoding,
                     Compressed = properties.Compressed,
                     Ratelimiter = properties.Ratelimiter,
                     ShardCount = properties.ShardCount,
                     ShardId = i,
                     Token = properties.Token,
-                    Version = properties.Version
+                    Version = properties.Version,
+                    Intents = properties.Intents,
+                    AllowNonDispatchEvents = properties.AllowNonDispatchEvents,
+                    GatewayFactory = properties.GatewayFactory,
+                    SerializerOptions = properties.SerializerOptions,
+                    UseGatewayEvents =  false
                 };
 
-                Shards.Add(i, properties.GatewayFactory(shardProperties));
+                var shard = properties.GatewayFactory(shardProperties);
+                Shards.Add(i, shard);
+                shard.PacketReceived.Subscribe(messageSubject.OnNext);
             }
+            
+            Events = new GatewayEventHandler(messageSubject, properties.SerializerOptions);
         }
 
+        /// <inheritdoc/>
         public async Task SendAsync(int shardId, GatewayOpcode opcode, object payload)
         {
             if(Shards.TryGetValue(shardId, out var shard))
@@ -62,6 +83,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public async Task RestartAsync()
         {
             foreach(var shard in Shards.Values)
@@ -70,101 +92,24 @@
             }
         }
 
-        public async Task StartAsync()
+        /// <inheritdoc/>
+        public async Task StartAsync(CancellationToken token = default)
         {
             foreach(var shard in Shards.Values)
             {
-                shard.OnChannelCreate += OnChannelCreate;
-                shard.OnChannelDelete += OnChannelDelete;
-                shard.OnChannelUpdate += OnChannelUpdate;
-                shard.OnGuildBanAdd += OnGuildBanAdd;
-                shard.OnGuildBanRemove += OnGuildBanRemove;
-                shard.OnGuildCreate += OnGuildCreate;
-                shard.OnGuildUpdate += OnGuildUpdate;
-                shard.OnGuildDelete += OnGuildDelete;
-                shard.OnGuildMemberAdd += OnGuildMemberAdd;
-                shard.OnGuildMemberRemove += OnGuildMemberRemove;
-                shard.OnGuildMemberUpdate += OnGuildMemberUpdate;
-                shard.OnGuildEmojiUpdate += OnGuildEmojiUpdate;
-                shard.OnGuildRoleCreate += OnGuildRoleCreate;
-                shard.OnGuildRoleDelete += OnGuildRoleDelete;
-                shard.OnGuildRoleDelete += OnGuildRoleDelete;
-                shard.OnMessageCreate += OnMessageCreate;
-                shard.OnMessageUpdate += OnMessageUpdate;
-                shard.OnMessageDelete += OnMessageDelete;
-                shard.OnMessageDeleteBulk += OnMessageDeleteBulk;
-                shard.OnPresenceUpdate += OnPresenceUpdate;
-                shard.OnReady += OnReady;
-                shard.OnTypingStart += OnTypingStart;
-                shard.OnUserUpdate += OnUserUpdate;
-                shard.OnPacketReceived += OnPacketReceived;
-
-                await shard.StartAsync()
+                await shard.StartAsync(token)
                     .ConfigureAwait(false);
             }
         }
 
-        public async Task StopAsync()
+        /// <inheritdoc/>
+        public async Task StopAsync(CancellationToken token = default)
         {
             foreach(var shard in Shards.Values)
             {
-                shard.OnChannelCreate -= OnChannelCreate;
-                shard.OnChannelDelete -= OnChannelDelete;
-                shard.OnChannelUpdate -= OnChannelUpdate;
-                shard.OnGuildBanAdd -= OnGuildBanAdd;
-                shard.OnGuildBanRemove -= OnGuildBanRemove;
-                shard.OnGuildCreate -= OnGuildCreate;
-                shard.OnGuildUpdate -= OnGuildUpdate;
-                shard.OnGuildDelete -= OnGuildDelete;
-                shard.OnGuildMemberAdd -= OnGuildMemberAdd;
-                shard.OnGuildMemberRemove -= OnGuildMemberRemove;
-                shard.OnGuildMemberUpdate -= OnGuildMemberUpdate;
-                shard.OnGuildEmojiUpdate -= OnGuildEmojiUpdate;
-                shard.OnGuildRoleCreate -= OnGuildRoleCreate;
-                shard.OnGuildRoleDelete -= OnGuildRoleDelete;
-                shard.OnGuildRoleDelete -= OnGuildRoleDelete;
-                shard.OnMessageCreate -= OnMessageCreate;
-                shard.OnMessageUpdate -= OnMessageUpdate;
-                shard.OnMessageDelete -= OnMessageDelete;
-                shard.OnMessageDeleteBulk -= OnMessageDeleteBulk;
-                shard.OnPresenceUpdate -= OnPresenceUpdate;
-                shard.OnReady -= OnReady;
-                shard.OnTypingStart -= OnTypingStart;
-                shard.OnUserUpdate -= OnUserUpdate;
-                shard.OnPacketReceived -= OnPacketReceived;
-
-                await shard.StopAsync()
+                await shard.StopAsync(token)
                     .ConfigureAwait(false);
             }
         }
-    }
-
-    public partial class GatewayCluster
-    {
-        public Func<DiscordChannelPacket, Task> OnChannelCreate { get; set; }
-        public Func<DiscordChannelPacket, Task> OnChannelUpdate { get; set; }
-        public Func<DiscordChannelPacket, Task> OnChannelDelete { get; set; }
-        public Func<DiscordGuildPacket, Task> OnGuildCreate { get; set; }
-        public Func<DiscordGuildPacket, Task> OnGuildUpdate { get; set; }
-        public Func<DiscordGuildUnavailablePacket, Task> OnGuildDelete { get; set; }
-        public Func<DiscordGuildMemberPacket, Task> OnGuildMemberAdd { get; set; }
-        public Func<ulong, DiscordUserPacket, Task> OnGuildMemberRemove { get; set; }
-        public Func<GuildMemberUpdateEventArgs, Task> OnGuildMemberUpdate { get; set; }
-        public Func<ulong, DiscordUserPacket, Task> OnGuildBanAdd { get; set; }
-        public Func<ulong, DiscordUserPacket, Task> OnGuildBanRemove { get; set; }
-        public Func<ulong, DiscordEmoji[], Task> OnGuildEmojiUpdate { get; set; }
-        public Func<ulong, DiscordRolePacket, Task> OnGuildRoleCreate { get; set; }
-        public Func<ulong, DiscordRolePacket, Task> OnGuildRoleUpdate { get; set; }
-        public Func<ulong, ulong, Task> OnGuildRoleDelete { get; set; }
-        public Func<DiscordMessagePacket, Task> OnMessageCreate { get; set; }
-        public Func<DiscordMessagePacket, Task> OnMessageUpdate { get; set; }
-        public Func<MessageDeleteArgs, Task> OnMessageDelete { get; set; }
-        public Func<MessageBulkDeleteEventArgs, Task> OnMessageDeleteBulk { get; set; }
-        public Func<DiscordPresencePacket, Task> OnPresenceUpdate { get; set; }
-        public Func<GatewayReadyPacket, Task> OnReady { get; set; }
-        public Func<TypingStartEventArgs, Task> OnTypingStart { get; set; }
-        public Func<DiscordPresencePacket, Task> OnUserUpdate { get; set; }
-        public event Func<GatewayMessage, Task> OnPacketSent;
-        public event Func<GatewayMessage, Task> OnPacketReceived;
     }
 }
