@@ -428,9 +428,7 @@ namespace Miki.Discord.Gateway.Connection
                 .ConfigureAwait(false);
         }
 
-        public async Task ReconnectAsync(
-            int initialDelay = 1000,
-            bool shouldIncrease = true)
+        public async Task ReconnectAsync(int initialDelay = 1000, bool shouldIncrease = true)
         {
             var delay = initialDelay;
             bool connected = false;

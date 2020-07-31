@@ -21,7 +21,7 @@ namespace Miki.Discord.Internal.Data
             => user.Username;
 
         public short Discriminator
-            => user.Discriminator;
+            => short.Parse(user.Discriminator);
 
         public bool IsBot
             => user.IsBot;

@@ -25,7 +25,7 @@ namespace Miki.Discord.Common.Packets
         /// </summary>
         [JsonPropertyName("discriminator")]
         [DataMember(Name = "discriminator", Order = 3)]
-        public short Discriminator { get; set; }
+        public string Discriminator { get; set; }
 
         /// <summary>
         /// Is the user a bot?

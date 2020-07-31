@@ -11,26 +11,38 @@ namespace Miki.Discord.Extensions.DependencyInjection
     {
         public static IServiceCollection UseDiscord(
             this IServiceCollection collection, Action<DiscordConfiguration> configFactory)
+            => collection.UseDiscord((provider, config) => configFactory(config));
+
+        public static IServiceCollection UseDiscord(
+            this IServiceCollection collection,
+            Action<IServiceProvider, DiscordConfiguration> configFactory)
         {
-            var config = new DiscordConfiguration();
-            configFactory(config);
-
-            if (!config.Token.IsValidToken())
+            collection.AddSingleton(x =>
             {
-                throw new ArgumentException("Invalid Token");
-            }
+                var config = new DiscordConfiguration();
+                configFactory(x, config);
+                if (!config.Token.IsValidToken())
+                {
+                    throw new ArgumentException("Invalid Token");
+                }
 
-            if(config.GatewayProperties.Token == null)
+                if (config.GatewayProperties.Token == null)
+                {
+                    config.GatewayProperties.Token = config.Token.ToString();
+                }
+
+                return config;
+            });
+
+            collection.AddSingleton<IApiClient>(x =>
             {
-                config.GatewayProperties.Token = config.Token.ToString();
-            }
-
-            collection.AddSingleton<IApiClient>(
-                x => new DiscordApiClient(config.Token, x.GetRequiredService<ICacheClient>()));
-            collection.AddSingleton<IGateway>(
-                new GatewayCluster(config.GatewayProperties));
+                return new DiscordApiClient(
+                    x.GetRequiredService<DiscordConfiguration>().Token,
+                    x.GetRequiredService<ICacheClient>());
+            });
+            collection.AddSingleton<IGateway>(x => 
+                new GatewayCluster(x.GetRequiredService<DiscordConfiguration>().GatewayProperties));
             collection.AddSingleton<IDiscordClient, DiscordClient>();
-
             return collection;
         }
     }

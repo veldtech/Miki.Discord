@@ -167,7 +167,13 @@ namespace Miki.Discord.Events
 
             gateway.Events.GuildCreate
                 .Select(x => new DiscordGuild(x, client))
-                .Subscribe(guildCreate.OnNext);
+                .SubscribeTask(async x => 
+                {
+                    if (!await cacheHandler.HasGuildAsync(x.Id))
+                    {
+                        guildCreate.OnNext(x);
+                    }
+                });
             
             gateway.Events.GuildDelete
                 .SubscribeTask(async x =>

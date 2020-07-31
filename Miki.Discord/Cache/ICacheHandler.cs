@@ -43,7 +43,9 @@ namespace Miki.Discord.Cache
         ValueTask<IReadOnlyList<DiscordChannelPacket>> GetChannelsFromGuildAsync(ulong guildId);
         ValueTask<IReadOnlyList<DiscordGuildMemberPacket>> GetMembersFromGuildAsync(ulong guildId);
         ValueTask<IReadOnlyList<DiscordRolePacket>> GetRolesFromGuildAsync(ulong guildId);
-        
+
+        ValueTask<bool> HasGuildAsync(ulong guildId);
+
         /// <summary>
         /// Sets the current user connected to the gateway.
         /// </summary>

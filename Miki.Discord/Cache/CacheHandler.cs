@@ -80,7 +80,8 @@ namespace Miki.Discord.Cache
 
         private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs updateEventArgs)
         {
-            var member = await cacheHandler.Members.GetAsync(updateEventArgs.GuildId, updateEventArgs.User.Id) 
+            var member = await cacheHandler.Members.GetAsync(
+                updateEventArgs.GuildId, updateEventArgs.User.Id) 
                          ?? new DiscordGuildMemberPacket();
 
             member.User = updateEventArgs.User;

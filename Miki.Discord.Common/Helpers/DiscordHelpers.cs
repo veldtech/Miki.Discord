@@ -41,7 +41,12 @@ namespace Miki.Discord.Common
             {
                 return GetAvatarUrl(packet.Id, packet.Avatar, type, size);
             }
-            return GetAvatarUrl(packet.Discriminator);
+
+            if(short.TryParse(packet.Discriminator, out var discriminator))
+            {
+                return GetAvatarUrl(discriminator);
+            }
+            return GetAvatarUrl(1);
         }
 
         /// <summary>
@@ -55,9 +60,7 @@ namespace Miki.Discord.Common
         {
             if(imageType == ImageType.AUTO)
             {
-                imageType = hash.StartsWith("a_")
-                    ? ImageType.GIF
-                    : ImageType.PNG;
+                imageType = hash.StartsWith("a_") ? ImageType.GIF : ImageType.PNG;
             }
 
             return $"{CdnUrl}/avatars/{id}/{hash}.{imageType.ToString().ToLower()}?size={(int)size}";
@@ -79,9 +82,7 @@ namespace Miki.Discord.Common
         {
             if (type == ImageType.AUTO)
             {
-                type = packet.Icon.StartsWith("a_")
-                    ? ImageType.GIF
-                    : ImageType.PNG;
+                type = packet.Icon.StartsWith("a_") ? ImageType.GIF : ImageType.PNG;
             }
 
             var imgType = type.ToString().ToLowerInvariant();

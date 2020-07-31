@@ -50,6 +50,12 @@
             Erlang binary format
             </summary>
         </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToShortConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToShortConverter.Write(System.Text.Json.Utf8JsonWriter,System.Int16,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
         <member name="M:Miki.Discord.Gateway.Converters.StringToUlongConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
             <inheritdoc/>
         </member>

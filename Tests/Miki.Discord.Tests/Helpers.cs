@@ -15,7 +15,7 @@ namespace Miki.Discord.Tests
                 user = new DiscordUserPacket()
                 {
                     Id = 111,
-                    Discriminator = 1234
+                    Discriminator = "1234"
                 };
             }
 
@@ -54,12 +54,13 @@ namespace Miki.Discord.Tests
             public void AvatarNull()
             {
                 user.Avatar = null;
+                var discriminator = short.Parse(user.Discriminator);
 
                 Assert.Equal
-                    ($"https://cdn.discordapp.com/embed/avatars/{user.Discriminator % 5}.png", 
+                    ($"https://cdn.discordapp.com/embed/avatars/{discriminator % 5}.png", 
                     DiscordHelpers.GetAvatarUrl(user));
                 Assert.Equal(
-                    $"https://cdn.discordapp.com/embed/avatars/{user.Discriminator % 5}.png", 
+                    $"https://cdn.discordapp.com/embed/avatars/{discriminator % 5}.png", 
                     DiscordHelpers.GetAvatarUrl(user, ImageType.PNG, ImageSize.x512));
             }
         }

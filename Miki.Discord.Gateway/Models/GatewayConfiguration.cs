@@ -69,7 +69,8 @@ namespace Miki.Discord.Gateway
         {
             Converters =
             {
-                new StringToUlongConverter()
+                new StringToUlongConverter(),
+                new StringToShortConverter()
             }
         };
 

@@ -44,6 +44,7 @@ namespace SimpleGateway
 
             // Subscribe to ready event.
             discordClient.Events.MessageCreate.SubscribeTask(OnMessageReceived);
+            discordClient.Events.MessageCreate.SubscribeTask(AssertMessage);
 
             // Start the connection to the gateway.
             await gateway.StartAsync();
@@ -59,6 +60,31 @@ namespace SimpleGateway
                 var channel = await message.GetChannelAsync();
                 await channel.SendMessageAsync("pong!");
             }
+
+            if (message.Content == "embed")
+            {
+                var builder = new EmbedBuilder()
+                    .SetTitle("Embed Test")
+                    .SetDescription("this is a test");
+                var channel = await message.GetChannelAsync();
+                var sentMessage = await channel.SendMessageAsync(null, embed: builder.ToEmbed());
+
+                builder.SetDescription("This is an edited test");
+
+                await sentMessage.EditAsync(new EditMessageArgs
+                {
+                    Embed = builder.ToEmbed()
+                });
+            }
         }
+
+        static async Task AssertMessage(IDiscordMessage message)
+        {
+            if(message.Author == null)
+            {
+                throw new Exception();
+            }
+        }
+
     }
 }
