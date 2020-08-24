@@ -222,7 +222,7 @@ namespace Miki.Discord.Events
             gateway.Events.MessageUpdate
                 .WhereNotNull()
                 .Select(x => AbstractionHelpers.ResolveMessage(client, x))
-                .Subscribe(messageCreate.OnNext);
+                .Subscribe(messageUpdate.OnNext);
 
             gateway.Events.MessageReactionCreate
                 .WhereNotNull()
