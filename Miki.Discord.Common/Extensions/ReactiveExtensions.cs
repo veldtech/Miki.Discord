@@ -28,5 +28,14 @@ namespace Miki.Discord.Common
                 .Concat()
                 .Subscribe();
         }
+
+        /// <summary>
+        /// Filters all members that are null or default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IObservable<T> WhereNotNull<T>(this IObservable<T> source)
+            => source.Where(x => !x.Equals(default));
     }
 }

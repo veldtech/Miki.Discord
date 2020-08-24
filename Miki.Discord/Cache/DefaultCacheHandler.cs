@@ -72,5 +72,10 @@ namespace Miki.Discord.Cache
         {
             await cache.HashUpsertAsync(CacheHelpers.UsersCacheKey, "me", packet);
         }
+        public async ValueTask<bool> HasGuildAsync(ulong guildId)
+        {
+            var guild = await Guilds.GetAsync(guildId);
+            return guild != null;
+        }
     }
 }

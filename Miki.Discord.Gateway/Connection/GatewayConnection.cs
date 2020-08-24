@@ -68,14 +68,14 @@ namespace Miki.Discord.Gateway.Connection
         private ConnectionStatus lastConnectionStatus = ConnectionStatus.Disconnected;
         private ConnectionStatus connectionStatus = ConnectionStatus.Disconnected;
 
-        private IWebSocketClient webSocketClient;
+        private IWebSocketClient? webSocketClient;
         private readonly GatewayProperties configuration;
 
-        private Task runTask;
-        private Task heartbeatTask;
+        private Task? runTask;
+        private Task? heartbeatTask;
 
         private int? sequenceNumber;
-        private string sessionId;
+        private string? sessionId;
 
         private readonly Memory<byte> receivePacket 
             = new byte[GatewayConstants.WebSocketReceiveSize];
@@ -84,13 +84,14 @@ namespace Miki.Discord.Gateway.Connection
         private readonly MemoryStream uncompressedStream = new MemoryStream();
         private readonly DeflateStream deflateStream;
 
-        private CancellationTokenSource connectionToken;
-        private SemaphoreSlim heartbeatLock;
+        private CancellationTokenSource? connectionToken;
+        private SemaphoreSlim? heartbeatLock;
 
         /// <summary>
         /// Shows whether the gateway is active at the moment.
         /// </summary>
-        public bool IsRunning => runTask != null && !connectionToken.IsCancellationRequested;
+        public bool IsRunning => runTask != null 
+            && !(connectionToken?.IsCancellationRequested ?? true);
 
         /// <summary>
         /// Creates a new gateway connection
@@ -211,17 +212,17 @@ namespace Miki.Discord.Gateway.Connection
                 runTask.Wait();
                 heartbeatTask.Wait();
             }
-            catch(Exception ex)
-            {
-                
-            }
+            catch { }
 
             try
             {
-                await webSocketClient.CloseAsync(
-                    WebSocketCloseStatus.NormalClosure, 
-                    string.Empty,
-                    token);
+                if (webSocketClient != null)
+                {
+                    await webSocketClient.CloseAsync(
+                        WebSocketCloseStatus.NormalClosure,
+                        string.Empty,
+                        token);
+                }
                 ConnectionStatus = ConnectionStatus.Disconnected;
             }
             catch (TaskCanceledException)
@@ -238,7 +239,7 @@ namespace Miki.Discord.Gateway.Connection
                 await OnError(ex);
             }
 
-            webSocketClient.Dispose();
+            webSocketClient?.Dispose();
             webSocketClient = null;
 
             connectionToken = null;

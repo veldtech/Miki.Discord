@@ -5,7 +5,7 @@
     <AssemblyName>Miki.Discord</AssemblyName>
     <RootNamespace>Miki.Discord</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>4.0.0-rc.1</Version>
+    <Version>4.0.0-rc.7</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Abstractified wrapper over Miki.Discord components. Used as a high level client relatable to other Discord libraries.</Description>

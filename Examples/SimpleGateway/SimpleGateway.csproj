@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Discord.Common\Miki.Discord.Common.csproj" />
     <ProjectReference Include="..\..\Miki.Discord.Gateway\Miki.Discord.Gateway.csproj" />
     <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.csproj" />
     <ProjectReference Include="..\helpers\Example.Helpers\Example.Helpers.csproj" />

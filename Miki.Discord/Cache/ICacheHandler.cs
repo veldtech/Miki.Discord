@@ -48,5 +48,7 @@ namespace Miki.Discord.Cache
         /// Sets the current user connected to the gateway.
         /// </summary>
         ValueTask SetCurrentUserAsync(DiscordUserPacket user);
+
+        ValueTask<bool> HasGuildAsync(ulong guildId);
     }
 }

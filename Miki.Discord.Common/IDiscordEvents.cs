@@ -9,9 +9,24 @@ namespace Miki.Discord.Events
         IObservable<IDiscordChannel> ChannelCreate { get; }
         IObservable<IDiscordChannel> ChannelDelete { get; }
         IObservable<IDiscordChannel> ChannelUpdate { get; }
+
+        /// <summary>
+        /// Emits events for guilds that were previously unavailable that have been loaded now.
+        /// </summary>
+        IObservable<IDiscordGuild> GuildAvailable { get; }
+
+        /// <summary>
+        /// Raw guild create call, will respond with every server.
+        /// </summary>
         IObservable<IDiscordGuild> GuildCreate { get; }
-        IObservable<IDiscordGuild> GuildDelete { get; }
+
+        /// <summary>
+        /// Emits events when the bot user joins a new guild.
+        /// </summary>
+        IObservable<IDiscordGuild> GuildJoin { get; }
+        IObservable<IDiscordGuild> GuildLeave { get; }
         IObservable<IDiscordGuild> GuildUpdate { get; }
+        IObservable<IDiscordGuild> GuildUnavailable { get; }
         IObservable<DiscordEmoji> GuildEmojiUpdate { get; }
         IObservable<IDiscordGuildUser> GuildMemberCreate { get; }
         IObservable<IDiscordGuildUser> GuildMemberDelete { get; }

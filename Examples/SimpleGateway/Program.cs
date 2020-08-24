@@ -6,7 +6,7 @@ using Miki.Discord.Gateway;
 using Miki.Discord.Rest;
 using Miki.Logging;
 using Miki.Serialization.Protobuf;
-using System;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleGateway
@@ -22,7 +22,7 @@ namespace SimpleGateway
 		{
             // Sets up Miki.Logging for internal library logging. Can be removed if you do not want to
             // see internal logs.
-            ExampleHelper.InitLog(LogLevel.Debug);
+            ExampleHelper.InitLog(LogLevel.Information);
 
             // Fetches your token from environment values.
             var token = ExampleHelper.GetTokenFromEnv();

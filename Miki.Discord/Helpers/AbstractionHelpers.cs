@@ -8,6 +8,11 @@ namespace Miki.Discord.Helpers
     {
         internal static IDiscordMessage ResolveMessage(IDiscordClient client, DiscordMessagePacket packet)
         {
+            if (packet == null)
+            {
+                return null;
+            }
+
             if (packet.GuildId.HasValue)
             {
                 return new DiscordGuildMessage(packet, client);

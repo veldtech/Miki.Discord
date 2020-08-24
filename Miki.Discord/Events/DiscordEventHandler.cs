@@ -1,8 +1,11 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using Miki.Discord.Cache;
 using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
 using Miki.Discord.Common.Packets.API;
 using Miki.Discord.Common.Packets.Events;
 using Miki.Discord.Helpers;
@@ -15,110 +18,105 @@ namespace Miki.Discord.Events
     /// </summary>
     public class DiscordEventHandler : IDiscordEvents
     {
-        private readonly Subject<IDiscordChannel> channelCreate;
-
         /// <inheritdoc/>
         public IObservable<IDiscordChannel> ChannelCreate => channelCreate;
-        
-        private readonly Subject<IDiscordChannel> channelDelete;
 
         /// <inheritdoc/>
         public IObservable<IDiscordChannel> ChannelDelete => channelDelete;
 
-        private readonly Subject<IDiscordChannel> channelUpdate;
-
         /// <inheritdoc/>
         public IObservable<IDiscordChannel> ChannelUpdate => channelUpdate;
+
+        /// <inheritdoc/>
+        public IObservable<IDiscordGuild> GuildAvailable => guildAvailable;
+
+        /// <inheritdoc/>
+        public IObservable<IDiscordGuild> GuildJoin => guildJoin;
+
+        /// <inheritdoc/>
+        public IObservable<IDiscordGuild> GuildLeave => guildLeave;
         
-        private readonly Subject<IDiscordGuild> guildCreate;
+        /// <inheritdoc/>
+        public IObservable<IDiscordGuild> GuildUnavailable => guildUnavailable;
 
         /// <inheritdoc/>
         public IObservable<IDiscordGuild> GuildCreate => guildCreate;
-        
-        private readonly Subject<IDiscordGuild> guildDelete;
 
         /// <inheritdoc/>
         public IObservable<IDiscordGuild> GuildDelete => guildDelete;
 
-        private readonly Subject<IDiscordGuild> guildUpdate;
-
         /// <inheritdoc/>
         public IObservable<IDiscordGuild> GuildUpdate => guildUpdate;
 
-        private readonly Subject<DiscordEmoji> guildEmojiUpdate;
-
         /// <inheritdoc/>
         public IObservable<DiscordEmoji> GuildEmojiUpdate => guildEmojiUpdate;
-        
 
-        /// <inheritdoc/>
-        private readonly Subject<IDiscordGuildUser> guildMemberCreate;
         public IObservable<IDiscordGuildUser> GuildMemberCreate => guildMemberCreate;
-
-        private readonly Subject<IDiscordGuildUser> guildMemberDelete;
 
         /// <inheritdoc/>
         public IObservable<IDiscordGuildUser> GuildMemberDelete => guildMemberDelete;
-        
-        private readonly Subject<IDiscordGuildUser> guildMemberUpdate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordGuildUser> GuildMemberUpdate => guildMemberUpdate;
-        
-        private readonly Subject<IDiscordRole> guildRoleCreate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordRole> GuildRoleCreate => guildRoleCreate;
-        
-        private readonly Subject<IDiscordRole> guildRoleDelete;
 
         /// <inheritdoc/>
         public IObservable<IDiscordRole> GuildRoleDelete => guildRoleDelete;
-        
-        private readonly Subject<IDiscordRole> guildRoleUpdate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordRole> GuildRoleUpdate => guildRoleUpdate;
-        
-        private readonly Subject<IDiscordMessage> messageCreate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordMessage> MessageCreate => messageCreate;
 
-        private readonly Subject<IDiscordMessage> messageDelete;
-
         /// <inheritdoc/>
         public IObservable<IDiscordMessage> MessageDelete => messageDelete;
-        
-        private readonly Subject<IDiscordMessage> messageUpdate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordMessage> MessageUpdate => messageUpdate;
-        
-        private readonly Subject<IDiscordReaction> messageReactionCreate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordReaction> MessageReactionCreate => messageReactionCreate;
-        
-        private readonly Subject<IDiscordReaction> messageReactionDelete;
 
         /// <inheritdoc/>
         public IObservable<IDiscordReaction> MessageReactionDelete => messageReactionDelete;
-        
-        private readonly Subject<IDiscordPresence> presenceUpdate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordPresence> PresenceUpdate => presenceUpdate;
-        
-        private readonly Subject<TypingStartEventArgs> typingStart;
 
         /// <inheritdoc/>
         public IObservable<TypingStartEventArgs> TypingStart => typingStart;
-        
-        private readonly Subject<IDiscordUser> userUpdate;
 
         /// <inheritdoc/>
         public IObservable<IDiscordUser> UserUpdate => userUpdate;
+
+        private readonly Subject<IDiscordChannel> channelCreate;
+        private readonly Subject<IDiscordChannel> channelDelete;
+        private readonly Subject<IDiscordChannel> channelUpdate;
+        private readonly Subject<IDiscordGuild> guildAvailable;
+        private readonly Subject<IDiscordGuild> guildJoin;
+        private readonly Subject<IDiscordGuild> guildLeave;
+        private readonly Subject<IDiscordGuild> guildUnavailable;
+        private readonly Subject<IDiscordGuild> guildCreate;
+        private readonly Subject<IDiscordGuild> guildDelete;
+        private readonly Subject<IDiscordGuild> guildUpdate;
+        private readonly Subject<DiscordEmoji> guildEmojiUpdate;
+        private readonly Subject<IDiscordGuildUser> guildMemberCreate;
+        private readonly Subject<IDiscordGuildUser> guildMemberDelete;
+        private readonly Subject<IDiscordGuildUser> guildMemberUpdate;
+        private readonly Subject<IDiscordRole> guildRoleCreate;
+        private readonly Subject<IDiscordRole> guildRoleDelete;
+        private readonly Subject<IDiscordRole> guildRoleUpdate;
+        private readonly Subject<IDiscordMessage> messageCreate;
+        private readonly Subject<IDiscordMessage> messageDelete;
+        private readonly Subject<IDiscordMessage> messageUpdate;
+        private readonly Subject<IDiscordReaction> messageReactionCreate;
+        private readonly Subject<IDiscordReaction> messageReactionDelete;
+        private readonly Subject<IDiscordPresence> presenceUpdate;
+        private readonly Subject<TypingStartEventArgs> typingStart;
+        private readonly Subject<IDiscordUser> userUpdate;
 
         private readonly IDiscordClient client;
         private readonly ICacheHandler cacheHandler;
@@ -131,9 +129,13 @@ namespace Miki.Discord.Events
             channelCreate = new Subject<IDiscordChannel>();
             channelDelete = new Subject<IDiscordChannel>();
             channelUpdate = new Subject<IDiscordChannel>();
+            guildAvailable = new Subject<IDiscordGuild>();
             guildCreate = new Subject<IDiscordGuild>();
             guildDelete = new Subject<IDiscordGuild>();
+            guildJoin = new Subject<IDiscordGuild>();
+            guildLeave = new Subject<IDiscordGuild>();
             guildUpdate = new Subject<IDiscordGuild>();
+            guildUnavailable = new Subject<IDiscordGuild>();
             guildEmojiUpdate = new Subject<DiscordEmoji>();
             guildMemberCreate = new Subject<IDiscordGuildUser>();
             guildMemberDelete = new Subject<IDiscordGuildUser>();
@@ -154,37 +156,40 @@ namespace Miki.Discord.Events
         public void SubscribeTo(IGateway gateway)
         {
             gateway.Events.ChannelCreate
+                .WhereNotNull()
                 .Select(x => AbstractionHelpers.ResolveChannel(client, x))
                 .Subscribe(channelCreate.OnNext);
             
             gateway.Events.ChannelDelete
+                .WhereNotNull()
                 .Select(x => AbstractionHelpers.ResolveChannel(client, x))
                 .Subscribe(channelDelete.OnNext);
             
             gateway.Events.ChannelUpdate
+                .WhereNotNull()
                 .Select(x => AbstractionHelpers.ResolveChannel(client, x))
                 .Subscribe(channelUpdate.OnNext);
 
             gateway.Events.GuildCreate
-                .Select(x => new DiscordGuild(x, client))
-                .Subscribe(guildCreate.OnNext);
+                .WhereNotNull()
+                .SubscribeTask(OnGuildCreate);
             
             gateway.Events.GuildDelete
-                .SubscribeTask(async x =>
-                {
-                    var guild = await cacheHandler.Guilds.GetAsync(x.GuildId);
-                    guildDelete.OnNext(new DiscordGuild(guild, client));
-                });
+                .WhereNotNull()
+                .SubscribeTask(OnGuildDelete);
             
             gateway.Events.GuildUpdate
+                .WhereNotNull()
                 .Select(x => new DiscordGuild(x, client))
                 .Subscribe(guildCreate.OnNext);
 
             gateway.Events.GuildMemberCreate
+                .WhereNotNull()
                 .Select(x => new DiscordGuildUser(x, client))
                 .Subscribe(guildMemberCreate.OnNext);
             
             gateway.Events.GuildMemberDelete
+                .WhereNotNull()
                 .SubscribeTask(async x =>
                 {
                     var guildUser = await cacheHandler.Members.GetAsync(x.User.Id, x.GuildId);
@@ -192,6 +197,7 @@ namespace Miki.Discord.Events
                 });
             
             gateway.Events.GuildMemberUpdate
+                .WhereNotNull()
                 .SubscribeTask(async x =>
                 {
                     var guildUser = await cacheHandler.Members.GetAsync(x.User.Id, x.GuildId);
@@ -199,10 +205,12 @@ namespace Miki.Discord.Events
                 });
 
             gateway.Events.MessageCreate
+                .WhereNotNull()
                 .Select(x => AbstractionHelpers.ResolveMessage(client, x))
                 .Subscribe(messageCreate.OnNext);
             
             gateway.Events.MessageDelete
+                .WhereNotNull()
                 .Select(x => AbstractionHelpers.ResolveMessage(client,
                     new DiscordMessagePacket
                     {
@@ -212,25 +220,31 @@ namespace Miki.Discord.Events
                 .Subscribe(messageDelete.OnNext);
             
             gateway.Events.MessageUpdate
+                .WhereNotNull()
                 .Select(x => AbstractionHelpers.ResolveMessage(client, x))
                 .Subscribe(messageCreate.OnNext);
 
             gateway.Events.MessageReactionCreate
+                .WhereNotNull()
                 .Select(x => new DiscordReaction(x, client))
                 .Subscribe(messageReactionCreate.OnNext);
             
             gateway.Events.MessageReactionDelete
+                .WhereNotNull()
                 .Select(x => new DiscordReaction(x, client))
                 .Subscribe(messageReactionDelete.OnNext);
 
             gateway.Events.PresenceUpdate
+                .WhereNotNull()
                 .Select(x => new DiscordPresence(x, client))
                 .Subscribe(presenceUpdate.OnNext);
 
             gateway.Events.TypingStart
+                .WhereNotNull()
                 .Subscribe(typingStart.OnNext);
 
             gateway.Events.UserUpdate
+                .WhereNotNull()
                 .Select(x => new DiscordUser(x, client))
                 .Subscribe(userUpdate.OnNext);
         }
@@ -258,6 +272,37 @@ namespace Miki.Discord.Events
             presenceUpdate?.Dispose();
             typingStart?.Dispose();
             userUpdate?.Dispose();
+        }
+
+        private async Task OnGuildCreate(DiscordGuildPacket guild)
+        { 
+            var managedGuild = new DiscordGuild(guild, client);
+            guildCreate.OnNext(managedGuild);
+            if (!await cacheHandler.HasGuildAsync(guild.Id)
+                && !(guild.Unavailable ?? true))
+            {
+                guildJoin.OnNext(managedGuild);
+            }
+            else
+            {
+                guildAvailable.OnNext(managedGuild);
+            }
+        }
+
+        private async Task OnGuildDelete(DiscordGuildUnavailablePacket x)
+        {
+            var packet = await cacheHandler.Guilds.GetAsync(x.GuildId);
+            var guild = new DiscordGuild(packet, client);
+
+            guildDelete.OnNext(guild);
+            if (x.IsUnavailable.HasValue && x.IsUnavailable.Value)
+            {
+                guildUnavailable.OnNext(guild);
+            }
+            else
+            {
+                guildLeave.OnNext(guild);
+            }
         }
     }
 }

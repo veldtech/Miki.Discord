@@ -212,6 +212,18 @@
         <member name="P:Miki.Discord.Events.DiscordEventHandler.ChannelUpdate">
             <inheritdoc/>
         </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildAvailable">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildJoin">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildLeave">
+            <inheritdoc/>
+        </member>
+        <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildUnavailable">
+            <inheritdoc/>
+        </member>
         <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildCreate">
             <inheritdoc/>
         </member>
@@ -222,9 +234,6 @@
             <inheritdoc/>
         </member>
         <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildEmojiUpdate">
-            <inheritdoc/>
-        </member>
-        <member name="F:Miki.Discord.Events.DiscordEventHandler.guildMemberCreate">
             <inheritdoc/>
         </member>
         <member name="P:Miki.Discord.Events.DiscordEventHandler.GuildMemberDelete">

@@ -46,7 +46,7 @@ namespace Miki.Discord.Cache
         private async Task OnGuildEmojiUpdate(GuildEmojisUpdateEventArgs eventArgs)
         {
             var guild = await cacheHandler.Guilds.GetAsync(eventArgs.GuildId)
-                        ?? new DiscordGuildPacket {Id = eventArgs.GuildId};
+                        ?? new DiscordGuildPacket { Id = eventArgs.GuildId };
             guild.Emojis = eventArgs.Emojis.ToArray();
             await cacheHandler.Guilds.EditAsync(guild);
         }
@@ -80,8 +80,9 @@ namespace Miki.Discord.Cache
 
         private async Task OnGuildMemberUpdate(GuildMemberUpdateEventArgs updateEventArgs)
         {
-            var member = await cacheHandler.Members.GetAsync(updateEventArgs.GuildId, updateEventArgs.User.Id) 
-                         ?? new DiscordGuildMemberPacket();
+            var member = await cacheHandler.Members.GetAsync(
+                updateEventArgs.GuildId, updateEventArgs.User.Id) 
+                ?? new DiscordGuildMemberPacket();
 
             member.User = updateEventArgs.User;
             member.Roles = updateEventArgs.RoleIds.ToList();

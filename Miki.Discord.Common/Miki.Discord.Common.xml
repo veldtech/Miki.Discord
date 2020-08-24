@@ -79,6 +79,14 @@
             Subscribes with an asynchronous task and handles errors in case of error.
             </summary>
         </member>
+        <member name="M:Miki.Discord.Common.ReactiveExtensions.WhereNotNull``1(System.IObservable{``0})">
+            <summary>
+            Filters all members that are null or default.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
         <member name="T:Miki.Discord.Common.Gateway.GatewayConnectionPacket">
             <summary>
             Gateway bot connection recommended amount.
@@ -909,6 +917,21 @@
         <member name="F:Miki.Discord.Common.TokenType.BEARER">
             <summary>
             Discord user account.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Events.IDiscordEvents.GuildAvailable">
+            <summary>
+            Emits events for guilds that were previously unavailable that have been loaded now.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Events.IDiscordEvents.GuildCreate">
+            <summary>
+            Raw guild create call, will respond with every server.
+            </summary>
+        </member>
+        <member name="P:Miki.Discord.Events.IDiscordEvents.GuildJoin">
+            <summary>
+            Emits events when the bot user joins a new guild.
             </summary>
         </member>
         <member name="T:Miki.Discord.Rest.Ratelimit">
