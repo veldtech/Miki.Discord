@@ -32,7 +32,7 @@ namespace Miki.Discord.Internal.Repositories
 
         protected override async ValueTask<DiscordChannelPacket> GetFromCacheAsync(params object[] id)
         {
-            if (id.Length == 1 || id[1] == null)
+            if (id.Length == 1)
             {
                 return await cacheClient.HashGetAsync<DiscordChannelPacket>(
                     CacheHelpers.ChannelsKey(), id[0].ToString());

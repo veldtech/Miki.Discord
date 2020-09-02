@@ -185,8 +185,7 @@ the user without the guild ID. Use the cached client instead.");
         /// <inheritdoc/>
         public virtual async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
         {
-            var channel = await cacheHandler.Channels.GetAsync(id, guildId);
-
+            DiscordChannelPacket channel = (guildId == null) ? (await cacheHandler.Channels.GetAsync(id)) : (await cacheHandler.Channels.GetAsync(id, guildId));
             return AbstractionHelpers.ResolveChannel(this, channel);
         }
 
