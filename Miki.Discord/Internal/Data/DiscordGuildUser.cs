@@ -26,11 +26,11 @@ namespace Miki.Discord.Internal.Data
             => packet.GuildId;
 
         public DateTimeOffset JoinedAt
-            => new DateTimeOffset(packet.JoinedAt, new TimeSpan(0));
+            => new DateTimeOffset(packet.JoinedAt);
 
         public DateTimeOffset? PremiumSince
             => packet.PremiumSince.HasValue 
-                ? new DateTimeOffset(packet.PremiumSince.Value, new TimeSpan(0)) 
+                ? new DateTimeOffset(packet.PremiumSince.Value) 
                 : (DateTimeOffset?) null;
 
         public async Task AddRoleAsync(IDiscordRole role)
