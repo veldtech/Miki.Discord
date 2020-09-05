@@ -211,8 +211,7 @@ namespace Miki.Discord.Gateway.Connection
             {
                 runTask.Wait();
                 heartbeatTask.Wait();
-            }
-            catch { }
+            } catch { }
 
             try
             {
