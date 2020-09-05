@@ -88,7 +88,7 @@ namespace Miki.Discord
         public virtual async Task<IDiscordTextChannel> CreateDMAsync(ulong userid)
         {
             var channel = await ApiClient.CreateDMChannelAsync(userid);
-            if(!(AbstractionHelpers.ResolveChannel(this, channel) is IDiscordTextChannel textChannel))
+            if(!(AbstractionHelpers.ResolveChannel(this, channel) is IDiscordTextChannel textChannel))             
             {
                 throw new InvalidDataException("DM channel was not a text channel");
             }
@@ -185,7 +185,9 @@ the user without the guild ID. Use the cached client instead.");
         /// <inheritdoc/>
         public virtual async Task<IDiscordChannel> GetChannelAsync(ulong id, ulong? guildId = null)
         {
-            DiscordChannelPacket channel = (guildId == null) ? (await cacheHandler.Channels.GetAsync(id)) : (await cacheHandler.Channels.GetAsync(id, guildId));
+            DiscordChannelPacket channel = (guildId == null) 
+                ? await cacheHandler.Channels.GetAsync(id) 
+                : await cacheHandler.Channels.GetAsync(id, guildId);
             return AbstractionHelpers.ResolveChannel(this, channel);
         }
 
