@@ -69,10 +69,12 @@ namespace Miki.Discord.Gateway
         {
             Converters =
             {
+                new StringToEnumConverter<GuildPermission>(),
+                new StringToShortConverter(),
                 new StringToUlongConverter()
             }
         };
-
+         
         /// <summary>
         /// Allow events other than dispatch to be received in raw events?
         /// </summary>

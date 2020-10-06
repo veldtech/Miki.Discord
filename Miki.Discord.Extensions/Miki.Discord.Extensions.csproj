@@ -6,7 +6,7 @@
     <Authors>velddev</Authors>
     <Company>mikibot</Company>
     <Description>Extension usage for Miki.Discord for domain-related changes such as dependency injection.</Description>
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageIcon>miki.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.nuget\icon.png">
+    <None Include="..\.nuget\miki.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

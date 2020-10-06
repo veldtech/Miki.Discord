@@ -135,7 +135,11 @@ namespace Miki.Discord.Gateway.Connection
 
             ConnectionStatus = ConnectionStatus.Connecting;
 
-            var hello = await InitGateway();
+            webSocketClient = configuration.WebSocketFactory();
+            heartbeatLock = new SemaphoreSlim(0, 1);
+            connectionToken = new CancellationTokenSource();
+
+            var hello = await InitGatewayAsync(connectionToken.Token);
             TraceServers = hello.TraceServers;
 
             if(sequenceNumber.HasValue)
@@ -146,7 +150,7 @@ namespace Miki.Discord.Gateway.Connection
                     Sequence = sequenceNumber.Value,
                     SessionId = sessionId,
                     Token = configuration.Token
-                });
+                }, connectionToken.Token);
             }
             else
             {
@@ -154,14 +158,8 @@ namespace Miki.Discord.Gateway.Connection
                 await IdentifyAsync(token);
             }
 
-            heartbeatTask = HeartbeatAsync(hello.HeartbeatInterval);
+            heartbeatTask = HeartbeatAsync(hello.HeartbeatInterval, connectionToken.Token);
             runTask = RunAsync(connectionToken.Token);
-        }
-
-        public async Task CloseAsync()
-        {
-            await StopAsync(default);
-            sessionId = null;
         }
 
         private async Task IdentifyAsync(CancellationToken token)
@@ -183,10 +181,7 @@ namespace Miki.Discord.Gateway.Connection
 
                 if (canIdentify)
                 {
-                    await SendCommandAsync(
-                            GatewayOpcode.Identify,
-                            identifyPacket,
-                            connectionToken.Token)
+                    await SendCommandAsync(GatewayOpcode.Identify, identifyPacket, token)
                         .ConfigureAwait(false);
                     break;
                 }
@@ -210,7 +205,7 @@ namespace Miki.Discord.Gateway.Connection
             try
             {
                 runTask.Wait();
-                heartbeatTask.Wait();
+                heartbeatTask?.Wait();
             } catch { }
 
             try
@@ -235,13 +230,13 @@ namespace Miki.Discord.Gateway.Connection
             catch(Exception ex)
             {
                 ConnectionStatus = ConnectionStatus.Error;
-                await OnError(ex);
+                await ReportErrorAsync(ex);
             }
 
             webSocketClient?.Dispose();
             webSocketClient = null;
 
-            connectionToken = null;
+            connectionToken.Cancel();
             heartbeatTask = null;
             runTask = null;
         }
@@ -272,7 +267,7 @@ namespace Miki.Discord.Gateway.Connection
                                     .ToObject<GatewayReadyPacket>(configuration.SerializerOptions);
                                 sessionId = readyPacket.SessionId;
                                 TraceServers = readyPacket.TraceGuilds;
-                                heartbeatLock.Release();
+                                heartbeatLock?.Release();
                                 ConnectionStatus = ConnectionStatus.Connected;
                             }
 
@@ -281,13 +276,13 @@ namespace Miki.Discord.Gateway.Connection
                                 var readyPacket = ((JsonElement) msg.Data)
                                     .ToObject<GatewayReadyPacket>(configuration.SerializerOptions);
                                 TraceServers = readyPacket.TraceGuilds;
-                                heartbeatLock.Release();
+                                heartbeatLock?.Release();
                                 ConnectionStatus = ConnectionStatus.Connected;
                             }
 
                             packageReceiveSubject.OnNext(msg);
-                        }
                             break;
+                        }
 
                         case GatewayOpcode.InvalidSession:
                         {
@@ -309,20 +304,20 @@ namespace Miki.Discord.Gateway.Connection
 
                         case GatewayOpcode.Heartbeat:
                         {
-                            await SendHeartbeatAsync();
+                            await SendHeartbeatAsync(token);
                             break;
                         }
 
                         case GatewayOpcode.HeartbeatAcknowledge:
                         {
-                            heartbeatLock.Release();
+                            heartbeatLock?.Release();
                             break;
                         }
                     }
                 }
                 catch(WebSocketException w)
                 {
-                    Log.Error(w);
+                    await ReportErrorAsync(w);
                     _ = HandleGatewayErrorsAsync(w)
                         .ConfigureAwait(false);
                     return;
@@ -334,7 +329,7 @@ namespace Miki.Discord.Gateway.Connection
                 }
                 catch(Exception e)
                 {
-                    Log.Error(e);
+                    await ReportErrorAsync(e);
                 }
             }
         }
@@ -354,6 +349,11 @@ namespace Miki.Discord.Gateway.Connection
             if(ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
             {
                 return true;
+            }
+
+            if(webSocketClient == null)
+            {
+                throw new Exception("Websocket client already disposed before recovery was attempted");
             }
 
             if(webSocketClient.CloseStatus != null
@@ -391,23 +391,23 @@ namespace Miki.Discord.Gateway.Connection
             return false;
         }
 
-        private async Task HeartbeatAsync(int latency)
+        private async Task HeartbeatAsync(int latency, CancellationToken token)
         {
             // Will stop running heartbeat if connectionToken is cancelled.
-            while(!connectionToken.IsCancellationRequested)
+            while(!token.IsCancellationRequested)
             {
                 try
                 {
-                    if(!await heartbeatLock.WaitAsync(latency, connectionToken.Token))
+                    if(!await heartbeatLock.WaitAsync(latency, token))
                     {
                         var _ = Task.Run(() => ReconnectAsync());
                         break;
                     }
 
-                    await SendHeartbeatAsync()
+                    await SendHeartbeatAsync(token)
                         .ConfigureAwait(false);
 
-                    await Task.Delay(latency, connectionToken.Token)
+                    await Task.Delay(latency, token)
                         .ConfigureAwait(false);
                 }
                 catch(OperationCanceledException)
@@ -416,16 +416,15 @@ namespace Miki.Discord.Gateway.Connection
                 }
                 catch(Exception e)
                 {
-                    Log.Error(e);
+                    await ReportErrorAsync(e);
                     break;
                 }
             }
         }
 
-        private async Task ResumeAsync(GatewayResumePacket packet)
+        private async Task ResumeAsync(GatewayResumePacket packet, CancellationToken token)
         {
-            await SendCommandAsync(GatewayOpcode.Resume, packet, connectionToken.Token)
-                .ConfigureAwait(false);
+            await SendCommandAsync(GatewayOpcode.Resume, packet, token).ConfigureAwait(false);
         }
 
         public async Task ReconnectAsync(
@@ -485,6 +484,12 @@ namespace Miki.Discord.Gateway.Connection
 
         private async Task SendCommandAsync(GatewayMessage msg, CancellationToken token)
         {
+            if(webSocketClient == null)
+            {
+                throw new InvalidOperationException(
+                    "Cannot send command when websocket is uninitialized");
+            }
+
             await using var stream = new MemoryStream();
             await JsonSerializer.SerializeAsync(
                 stream, msg, typeof(GatewayMessage), configuration.SerializerOptions, token);
@@ -501,31 +506,32 @@ namespace Miki.Discord.Gateway.Connection
                 .ConfigureAwait(false);
         }
 
-        private async Task SendHeartbeatAsync()
+        private async Task SendHeartbeatAsync(CancellationToken token)
         {
             GatewayMessage msg = new GatewayMessage
             {
                 OpCode = GatewayOpcode.Heartbeat,
                 Data = sequenceNumber
             };
-            await SendCommandAsync(msg, connectionToken.Token)
+            await SendCommandAsync(msg, token)
                 .ConfigureAwait(false);
         }
 
-        private async Task<GatewayHelloPacket> InitGateway()
+        private async Task<GatewayHelloPacket> InitGatewayAsync(
+            CancellationToken token)
         {
-            webSocketClient = configuration.WebSocketFactory();
-            heartbeatLock = new SemaphoreSlim(0, 1);
-            connectionToken = new CancellationTokenSource();
-
             string connectionUri = new WebSocketUrlBuilder("wss://gateway.discord.gg/")
                 .SetCompression(configuration.Compressed)
                 .SetEncoding(configuration.Encoding)
                 .SetVersion(configuration.Version)
                 .Build();
 
-            await webSocketClient.ConnectAsync(new Uri(connectionUri), connectionToken.Token);
-            var msg = await ReceivePacketAsync(connectionToken.Token);
+            if(webSocketClient == null)
+            {
+                throw new InvalidOperationException("Websocket uninitialized during init.");
+            }
+            await webSocketClient.ConnectAsync(new Uri(connectionUri), token);
+            var msg = await ReceivePacketAsync(token);
             return ((JsonElement) msg.Data).ToObject<GatewayHelloPacket>(
                 configuration.SerializerOptions);
         }

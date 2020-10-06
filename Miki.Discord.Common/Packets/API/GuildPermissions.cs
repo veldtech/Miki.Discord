@@ -11,9 +11,12 @@ namespace Miki.Discord.Common
         [DataMember(Name = "id")]
         public ulong Id { get; set; }
 
+        /// <summary>
+        /// Either 0 (role) or 1 (member)
+        /// </summary>
         [JsonPropertyName("type")]
         [DataMember(Name = "type")]
-        public string Type { get; set; }
+        public int Type { get; set; }
 
         [JsonPropertyName("allow")]
         [DataMember(Name = "allow")]

@@ -35,6 +35,21 @@
             </summary>
             <param name="configuration"></param>
         </member>
+        <member name="F:Miki.Discord.Gateway.Connection.GatewayConstants.DefaultVersion">
+            <summary>
+            Default Gateway version supported by Miki.Discord.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.Connection.GatewayConstants.WebSocketReceiveSize">
+            <summary>
+            Default websocket receive payload size.
+            </summary>
+        </member>
+        <member name="F:Miki.Discord.Gateway.Connection.GatewayConstants.WebSocketSendSize">
+            <summary>
+            Default websocket send payload size.
+            </summary>
+        </member>
         <member name="T:Miki.Discord.Gateway.Connection.GatewayEncoding">
             <summary>
             Discord supported Gateway encoding formats
@@ -49,6 +64,18 @@
             <summary>
             Erlang binary format
             </summary>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToEnumConverter`1.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToEnumConverter`1.Write(System.Text.Json.Utf8JsonWriter,`0,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToShortConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Miki.Discord.Gateway.Converters.StringToShortConverter.Write(System.Text.Json.Utf8JsonWriter,System.Int16,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
         </member>
         <member name="M:Miki.Discord.Gateway.Converters.StringToUlongConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
             <inheritdoc/>

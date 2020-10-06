@@ -26,7 +26,7 @@ namespace Miki.Discord.Internal.Data
             => packet.Id;
 
         public GuildPermission Permissions
-            => (GuildPermission)packet.Permissions;
+            => packet.Permissions;
 
         public bool IsManaged
             => packet.Managed;

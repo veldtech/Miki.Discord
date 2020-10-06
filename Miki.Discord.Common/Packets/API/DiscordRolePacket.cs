@@ -28,7 +28,7 @@ namespace Miki.Discord.Common
 
         [JsonPropertyName("permissions")]
         [DataMember(Name = "permissions", Order = 6)]
-        public int Permissions { get; set; }
+        public GuildPermission Permissions { get; set; }
 
         [JsonPropertyName("managed")]
         [DataMember(Name = "managed", Order = 7)]
