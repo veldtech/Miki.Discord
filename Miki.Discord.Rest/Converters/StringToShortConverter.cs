@@ -3,26 +3,26 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Miki.Discord.Gateway.Converters
+namespace Miki.Discord.Rest.Converters
 {
-    public sealed class StringToUlongConverter : JsonConverter<ulong>
+    public sealed class StringToShortConverter : JsonConverter<short>
     {
         /// <inheritdoc/>
-        public override ulong Read(
+        public override short Read(
             ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var value = reader.GetString();
-            if(ulong.TryParse(value, out var longValue))
+            if(short.TryParse(value, out var shortValue))
             {
-                return longValue;
+                return shortValue;
             }
 
             throw new InvalidOperationException(
-                $"Value '{value}' was not a valid integer.");
+                $"Value '{value}' was not a valid short.");
         }
 
         /// <inheritdoc/>
-        public override void Write(Utf8JsonWriter writer, ulong value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, short value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture));
         }

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Miki.Discord.Gateway.Converters
+namespace Miki.Discord.Rest.Converters
 {
     public class StringToEnumConverter<T> : JsonConverter<T> where T : Enum
     {

@@ -3,7 +3,7 @@ using Miki.Discord.Gateway.Connection;
 using Miki.Discord.Gateway.Ratelimiting;
 using System;
 using System.Text.Json;
-using Miki.Discord.Gateway.Converters;
+using Miki.Discord.Rest.Converters;
 using Miki.Discord.Gateway.WebSocket;
 
 namespace Miki.Discord.Gateway

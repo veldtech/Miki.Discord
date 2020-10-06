@@ -15,8 +15,8 @@ using Miki.Discord.Rest.Exceptions;
 using Miki.Discord.Rest.Http;
 using Miki.Net.Http;
 using Miki.Net.Http.Factories;
-using Newtonsoft.Json;
 using Miki.Discord.Common.Packets.API;
+using System.Text.Json;
 
 namespace Miki.Discord.Rest
 {
@@ -27,7 +27,7 @@ namespace Miki.Discord.Rest
         : IApiClient, IDisposable
     {
         private readonly IHttpClient httpClient;
-        private readonly JsonSerializerSettings serializer;
+        private readonly JsonSerializerOptions options;
 
         /// <summary>
         /// Creates a new Discord API instance.
@@ -42,22 +42,20 @@ namespace Miki.Discord.Rest
                 .CreateNew()
                 .SetAuthorization(token.GetOAuthType(), token.Token);
 
-            serializer = new JsonSerializerSettings()
+            options = new JsonSerializerOptions()
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                Converters = new List<JsonConverter>
-                {
-                    new UserAvatarConverter()
+                Converters = {
+                    new UserAvatarConverter(),
+                    new StringToShortConverter(),
+                    new StringToUlongConverter(),
+                    new StringToEnumConverter<GuildPermission>()
                 }
             };
         }
 
         /// <inheritdoc/>
         public async Task AddGuildBanAsync(
-            ulong guildId,
-            ulong userId,
-            int pruneDays = 7,
-            string reason = null)
+            ulong guildId, ulong userId, int pruneDays = 7, string reason = null)
         {
             QueryString qs = new QueryString();
 
@@ -74,31 +72,27 @@ namespace Miki.Discord.Rest
             var response = await httpClient.PutAsync(
                     DiscordApiRoutes.GuildBan(guildId, userId) + qs.Query)
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
-        public async Task AddGuildMemberRoleAsync(
-            ulong guildId,
-            ulong userId,
-            ulong roleId)
+        public async Task AddGuildMemberRoleAsync(ulong guildId, ulong userId, ulong roleId)
         {
             var response = await httpClient.PutAsync(
                     DiscordApiRoutes.GuildMemberRole(guildId, userId, roleId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
     
         /// <inheritdoc/>
-        public async Task<DiscordChannelPacket> CreateDMChannelAsync(
-            ulong userId)
+        public async Task<DiscordChannelPacket> CreateDMChannelAsync(ulong userId)
         {
             var response = await httpClient.PostAsync(
                     DiscordApiRoutes.UserMeChannels(),
                     $"{{\"recipient_id\":{userId}}}")
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordChannelPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordChannelPacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -108,10 +102,10 @@ namespace Miki.Discord.Rest
         {
             var response = await httpClient.PostAsync(
                     DiscordApiRoutes.GuildEmoji(guildId),
-                    JsonConvert.SerializeObject(args, serializer))
+                    JsonSerializer.Serialize(args, options))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordEmoji>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -121,10 +115,10 @@ namespace Miki.Discord.Rest
         {
             var response = await httpClient.PostAsync(
                     DiscordApiRoutes.GuildRoles(guildId),
-                    JsonConvert.SerializeObject(args) ?? "")
+                    JsonSerializer.Serialize(args, options) ?? "")
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordRolePacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordRolePacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -136,7 +130,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.PutAsync(
                     DiscordApiRoutes.MessageReactionMe(channelId, messageId, emoji))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -146,17 +140,16 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.Channel(channelId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
         public async Task DeleteGuildAsync(
             ulong guildId)
         {
-            var response = await httpClient.DeleteAsync(
-                    DiscordApiRoutes.Guild(guildId))
+            var response = await httpClient.DeleteAsync(DiscordApiRoutes.Guild(guildId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -167,7 +160,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.GuildEmoji(guildId, emojiId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -178,7 +171,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.ChannelMessage(channelId, messageId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -188,9 +181,9 @@ namespace Miki.Discord.Rest
         {
             var response = await httpClient.PostAsync(
                     DiscordApiRoutes.ChannelBulkDeleteMessages(channelId),
-                    JsonConvert.SerializeObject(new ChannelBulkDeleteArgs(messageId)))
+                    JsonSerializer.Serialize(new ChannelBulkDeleteArgs(messageId), options))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -202,7 +195,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.MessageReactionMe(channelId, messageId, emoji))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -215,7 +208,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.MessageReaction(channelId, messageId, emoji, userId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -226,7 +219,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.MessageReactions(channelId, messageId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -237,10 +230,10 @@ namespace Miki.Discord.Rest
         {
             var response = await httpClient.PatchAsync(
                     DiscordApiRoutes.GuildEmoji(guildId, emojiId),
-                    JsonConvert.SerializeObject(args, serializer))
+                    JsonSerializer.Serialize(args, options))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordEmoji>(response.Body, options);
         }
         
         /// <inheritdoc/>
@@ -257,10 +250,10 @@ namespace Miki.Discord.Rest
         {
             var response = await httpClient.PatchAsync(
                     DiscordApiRoutes.ChannelMessage(channelId, messageId),
-                    JsonConvert.SerializeObject(args, serializer))
+                    JsonSerializer.Serialize(args, options))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordMessagePacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -270,10 +263,10 @@ namespace Miki.Discord.Rest
         {
             var response = await httpClient.PutAsync(
                     DiscordApiRoutes.GuildRole(guildId, role.Id),
-                    JsonConvert.SerializeObject(role))
+                    JsonSerializer.Serialize(role, options))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordRolePacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordRolePacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -282,8 +275,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.UserMe())
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordUserPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordUserPacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -293,8 +286,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.Channel(channelId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordChannelPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordChannelPacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -304,8 +297,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.GuildChannels(guildId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<List<DiscordChannelPacket>>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<List<DiscordChannelPacket>>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -314,8 +307,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.UserMeChannels())
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<List<DiscordChannelPacket>>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<List<DiscordChannelPacket>>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -326,8 +319,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.GuildEmoji(guildId, emojiId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordEmoji>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordEmoji>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -337,8 +330,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.GuildEmoji(guildId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordEmoji[]>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordEmoji[]>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -348,8 +341,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.Guild(guildId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordGuildPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordGuildPacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -360,8 +353,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.GuildMember(guildId, userId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordGuildMemberPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordGuildMemberPacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -372,8 +365,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.ChannelMessage(channelId, messageId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordMessagePacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -388,8 +381,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.ChannelMessages(channelId) + qs.Query)
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordMessagePacket[]>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordMessagePacket[]>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -409,8 +402,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.GuildPrune(guildId) + qs.Query)
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordPruneObject>(response.Body).Pruned;
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordPruneObject>(response.Body, options).Pruned;
         }
 
         /// <inheritdoc/>
@@ -422,8 +415,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.MessageReaction(channelId, messageId, emoji))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordUserPacket[]>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordUserPacket[]>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -433,8 +426,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.GuildRoles(guildId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<List<DiscordRolePacket>>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<List<DiscordRolePacket>>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -443,8 +436,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.User(userId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<DiscordUserPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<DiscordUserPacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -455,12 +448,12 @@ namespace Miki.Discord.Rest
                 throw new InvalidDataException("Can't upload WEBP images.");
             }
 
-            var json = JsonConvert.SerializeObject(args, serializer);
+            var json = JsonSerializer.Serialize(args, options);
             var response = await httpClient.PatchAsync(
                     DiscordApiRoutes.UserMe(),
                     json)
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -471,9 +464,9 @@ namespace Miki.Discord.Rest
         {
             var response = await httpClient.PatchAsync(
                     DiscordApiRoutes.GuildMember(guildId, userId),
-                    JsonConvert.SerializeObject(packet, serializer))
+                    JsonSerializer.Serialize(packet, options))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -496,10 +489,10 @@ namespace Miki.Discord.Rest
                     DiscordApiRoutes.GuildPrune(
                         guildId) + qs.Query)
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
             if(computePruneCount)
             {
-                return JsonConvert.DeserializeObject<DiscordPruneObject>(response.Body).Pruned;
+                return JsonSerializer.Deserialize<DiscordPruneObject>(response.Body, options).Pruned;
             }
 
             return null;
@@ -513,7 +506,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.GuildBan(guildId, userId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -532,7 +525,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.GuildMember(guildId, userId) + qs.Query)
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -544,7 +537,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.DeleteAsync(
                     DiscordApiRoutes.GuildMemberRole(guildId, userId, roleId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -589,20 +582,20 @@ namespace Miki.Discord.Rest
                 DiscordApiRoutes.ChannelMessages(channelId), form);
             await HandleErrorsAsync(response);
 
-            return JsonConvert.DeserializeObject<DiscordMessagePacket>(
+            return JsonSerializer.Deserialize<DiscordMessagePacket>(
                 await response.Content.ReadAsStringAsync());
         }
 
         /// <inheritdoc/>
         public async Task<DiscordMessagePacket> SendMessageAsync(ulong channelId, MessageArgs args)
         {
-            string json = JsonConvert.SerializeObject(args, serializer);
+            string json = JsonSerializer.Serialize(args, options);
             {
                 var response = await httpClient.PostAsync(
                         DiscordApiRoutes.ChannelMessages(channelId), json)
                     .ConfigureAwait(false);
-                HandleErrors(response);
-                return JsonConvert.DeserializeObject<DiscordMessagePacket>(response.Body);
+                HandleErrors(response, options);
+                return JsonSerializer.Deserialize<DiscordMessagePacket>(response.Body, options);
             }
         }
 
@@ -612,7 +605,7 @@ namespace Miki.Discord.Rest
             var response = await httpClient.PostAsync(
                     DiscordApiRoutes.ChannelTyping(channelId))
                 .ConfigureAwait(false);
-            HandleErrors(response);
+            HandleErrors(response, options);
         }
 
         /// <inheritdoc/>
@@ -621,8 +614,8 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.Gateway())
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<GatewayConnectionPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<GatewayConnectionPacket>(response.Body, options);
         }
 
         /// <inheritdoc/>
@@ -631,17 +624,17 @@ namespace Miki.Discord.Rest
             var response = await httpClient.GetAsync(
                     DiscordApiRoutes.BotGateway())
                 .ConfigureAwait(false);
-            HandleErrors(response);
-            return JsonConvert.DeserializeObject<GatewayConnectionPacket>(response.Body);
+            HandleErrors(response, options);
+            return JsonSerializer.Deserialize<GatewayConnectionPacket>(response.Body, options);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void HandleErrors(IHttpResponse response)
+        private static void HandleErrors(IHttpResponse response, JsonSerializerOptions options = null)
         {
             if(!response.Success)
             {
                 throw new DiscordRestException(
-                    JsonConvert.DeserializeObject<DiscordRestError>(response.Body));
+                    JsonSerializer.Deserialize<DiscordRestError>(response.Body, options));
             }
         }
 
@@ -651,7 +644,7 @@ namespace Miki.Discord.Rest
             if(!response.IsSuccessStatusCode)
             {
                 throw new DiscordRestException(
-                    JsonConvert.DeserializeObject<DiscordRestError>(
+                    JsonSerializer.Deserialize<DiscordRestError>(
                         await response.Content.ReadAsStringAsync()));
             }
         }
