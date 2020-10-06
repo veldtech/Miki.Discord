@@ -12,11 +12,11 @@ namespace Miki.Discord.Common
             Embed = embed;
         }
 
-        [JsonPropertyName("channels")]
+        [JsonPropertyName("content")]
         [DataMember(Name = "content")]
         public string Content { get; set; }
 
-        [JsonPropertyName("channels")]
+        [JsonPropertyName("embed")]
         [DataMember(Name = "embed")]
         public DiscordEmbed Embed { get; set; }
     }
