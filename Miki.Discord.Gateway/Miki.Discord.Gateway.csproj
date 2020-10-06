@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>4.0.0-rc.1</Version>
+    <Version>4.0.0-rc.2</Version>
     <Authors>Velddev</Authors>
     <Company>Velddev</Company>
     <Description>Discord gateway implementation</Description>
