@@ -25,12 +25,22 @@ namespace Miki.Discord.Extensions.DependencyInjection
                 config.GatewayProperties.Token = config.Token.ToString();
             }
 
-            collection.AddSingleton<IApiClient>(
-                x => new DiscordApiClient(config.Token, x.GetRequiredService<ICacheClient>()));
-            collection.AddSingleton<IGateway>(
-                new GatewayCluster(config.GatewayProperties));
-            collection.AddSingleton<IDiscordClient, DiscordClient>();
+            collection.AddSingleton(config);
+            collection.UseDiscord();
 
+            return collection;
+        }
+        public static IServiceCollection UseDiscord(
+            this IServiceCollection collection)
+        {
+            collection.AddSingleton<IApiClient, DiscordApiClient>(
+                x => new DiscordApiClient(
+                    x.GetRequiredService<DiscordConfiguration>().Token, 
+                    x.GetRequiredService<ICacheClient>()));
+            collection.AddSingleton<IGateway, GatewayCluster>(
+                x => new GatewayCluster(
+                    x.GetRequiredService<DiscordConfiguration>().GatewayProperties));
+            collection.AddSingleton<IDiscordClient, DiscordClient>();
             return collection;
         }
     }
